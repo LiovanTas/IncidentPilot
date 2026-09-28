@@ -1,0 +1,7 @@
+# Normalize to LF in the repository regardless of the checkout platform.
+# CRLF in a Dockerfile or a shell script breaks it on Linux.
+* text=auto eol=lf
+
+*.png binary
+*.jpg binary
+*.db  binary

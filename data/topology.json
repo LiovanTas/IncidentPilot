@@ -1,0 +1,100 @@
+{
+  "org": "checkout-platform",
+  "shared_paths": ["libs/", "packages/common/", "infra/"],
+  "slo": {
+    "availability_target": 0.999,
+    "window_days": 30
+  },
+  "services": {
+    "checkout-api": {
+      "paths": ["services/checkout-api/", "deploy/checkout-api/"],
+      "depends_on": ["cart-service", "payments-worker", "auth-gateway", "inventory-api"],
+      "user_facing": true,
+      "tier": 1,
+      "rps": 1850,
+      "unique_users_per_hour": 42000,
+      "owner": "#team-checkout",
+      "revenue_per_request_usd": 0.42
+    },
+    "cart-service": {
+      "paths": ["services/cart-service/", "deploy/cart-service/"],
+      "depends_on": ["inventory-api"],
+      "user_facing": true,
+      "tier": 1,
+      "rps": 2400,
+      "unique_users_per_hour": 58000,
+      "owner": "#team-checkout",
+      "revenue_per_request_usd": 0.09
+    },
+    "payments-worker": {
+      "paths": ["services/payments-worker/", "deploy/payments-worker/", "db/migrations/payments/"],
+      "depends_on": ["ledger"],
+      "user_facing": false,
+      "tier": 1,
+      "rps": 420,
+      "unique_users_per_hour": 26000,
+      "owner": "#team-payments",
+      "revenue_per_request_usd": 1.85
+    },
+    "ledger": {
+      "paths": ["services/ledger/", "db/migrations/ledger/", "deploy/ledger/"],
+      "depends_on": [],
+      "user_facing": false,
+      "tier": 1,
+      "rps": 310,
+      "unique_users_per_hour": 19000,
+      "owner": "#team-payments",
+      "revenue_per_request_usd": 2.10
+    },
+    "auth-gateway": {
+      "paths": ["services/auth-gateway/", "deploy/auth-gateway/"],
+      "depends_on": [],
+      "user_facing": true,
+      "tier": 1,
+      "rps": 3100,
+      "unique_users_per_hour": 71000,
+      "owner": "#team-platform",
+      "revenue_per_request_usd": 0.05
+    },
+    "search-api": {
+      "paths": ["services/search-api/", "deploy/search-api/"],
+      "depends_on": ["inventory-api"],
+      "user_facing": true,
+      "tier": 2,
+      "rps": 5200,
+      "unique_users_per_hour": 88000,
+      "owner": "#team-discovery",
+      "revenue_per_request_usd": 0.02
+    },
+    "inventory-api": {
+      "paths": ["services/inventory-api/", "deploy/inventory-api/", "db/migrations/inventory/"],
+      "depends_on": [],
+      "user_facing": false,
+      "tier": 2,
+      "rps": 1600,
+      "unique_users_per_hour": 33000,
+      "owner": "#team-supply",
+      "revenue_per_request_usd": 0.06
+    },
+    "notifications": {
+      "paths": ["services/notifications/", "deploy/notifications/"],
+      "depends_on": ["auth-gateway"],
+      "user_facing": false,
+      "tier": 3,
+      "rps": 260,
+      "unique_users_per_hour": 24000,
+      "owner": "#team-growth",
+      "revenue_per_request_usd": 0.0
+    },
+    "web-frontend": {
+      "paths": ["services/web-frontend/", "deploy/web-frontend/"],
+      "depends_on": ["checkout-api", "search-api", "auth-gateway", "cart-service"],
+      "user_facing": true,
+      "tier": 1,
+      "rps": 7400,
+      "unique_users_per_hour": 96000,
+      "owner": "#team-web",
+      "revenue_per_request_usd": 0.03
+    }
+  }
+}

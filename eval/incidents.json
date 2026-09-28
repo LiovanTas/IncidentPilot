@@ -1,0 +1,478 @@
+[
+  {
+    "incident_id": "INC-01",
+    "ground_truth_sha": "c6b182face9f09047a28de93bd7b8cd737421828",
+    "ground_truth_subject": "perf: right-size checkout db pool after connection audit",
+    "alert": {
+      "fingerprint": "INC-01",
+      "source": "generic",
+      "service": "checkout-api",
+      "severity": "sev1",
+      "title": "checkout-api 5xx rate above 8%",
+      "description": "HTTP 5xx on POST /checkout climbed from 0.2% to 8.4% over four minutes. Database CPU is flat at 18%. Application logs show repeated 'QueuePool limit of size 5 overflow 20 reached, connection timed out'.",
+      "started_at": "2026-08-10T09:00:00Z",
+      "labels": {
+        "alertname": "CheckoutHighErrorRate",
+        "endpoint": "/checkout",
+        "team": "checkout"
+      },
+      "metrics": {
+        "error_rate_before": 0.002,
+        "error_rate_after": 0.084,
+        "duration_minutes": 22,
+        "latency_p99_ms": 9400
+      }
+    }
+  },
+  {
+    "incident_id": "INC-02",
+    "ground_truth_sha": "eafbf4418229980b726e19231b223575cd66c6f1",
+    "ground_truth_subject": "db: drop unused indexes flagged by the index audit",
+    "alert": {
+      "fingerprint": "INC-02",
+      "source": "generic",
+      "service": "cart-service",
+      "severity": "sev2",
+      "title": "cart-service p99 latency 4.2s (was 180ms)",
+      "description": "p99 on GET /cart rose from 180ms to 4.2s while p50 moved only 40ms. Postgres read IOPS tripled and the slow-query log is dominated by SELECT * FROM cart_items WHERE cart_id = $1. Request volume is unchanged.",
+      "started_at": "2026-08-11T11:00:00Z",
+      "labels": {
+        "alertname": "CartLatencyHigh",
+        "endpoint": "/cart",
+        "team": "checkout"
+      },
+      "metrics": {
+        "error_rate_before": 0.001,
+        "error_rate_after": 0.021,
+        "duration_minutes": 41,
+        "latency_p99_ms": 4200
+      }
+    }
+  },
+  {
+    "incident_id": "INC-03",
+    "ground_truth_sha": "dadcbe6bfaee3f9036bc21ed250f6de3d89017e5",
+    "ground_truth_subject": "fix: disable search result caching while we debug stale facets",
+    "alert": {
+      "fingerprint": "INC-03",
+      "source": "generic",
+      "service": "search-api",
+      "severity": "sev2",
+      "title": "search-api origin load 11x, cache hit ratio at 2%",
+      "description": "Cache hit ratio fell from 94% to 2% at 14:05, exactly at a deploy boundary. Origin query volume is 11x baseline and inventory-api is now shedding load. User-facing latency is up but error rate is still low.",
+      "started_at": "2026-08-12T12:00:00Z",
+      "labels": {
+        "alertname": "SearchCacheHitRatioLow",
+        "team": "discovery"
+      },
+      "metrics": {
+        "error_rate_before": 0.001,
+        "error_rate_after": 0.018,
+        "duration_minutes": 35,
+        "latency_p99_ms": 2600
+      }
+    }
+  },
+  {
+    "incident_id": "INC-04",
+    "ground_truth_sha": "7a4d35f39fbe102bcf026410431d3d77269b2774",
+    "ground_truth_subject": "chore: reduce payments worker concurrency to ease ledger contention",
+    "alert": {
+      "fingerprint": "INC-04",
+      "source": "generic",
+      "service": "payments-worker",
+      "severity": "sev1",
+      "title": "payments-worker consumer lag 340k and climbing",
+      "description": "Consumer lag on payments.settle has grown linearly for 90 minutes and now exceeds 340k messages. Oldest message age is 51 minutes against a 15-minute SLO. Error rate is normal; nothing is failing, everything is late.",
+      "started_at": "2026-08-13T14:00:00Z",
+      "labels": {
+        "alertname": "PaymentsConsumerLag",
+        "topic": "payments.settle",
+        "team": "payments"
+      },
+      "metrics": {
+        "error_rate_before": 0.001,
+        "error_rate_after": 0.004,
+        "duration_minutes": 92,
+        "queue_depth": 340000
+      }
+    }
+  },
+  {
+    "incident_id": "INC-05",
+    "ground_truth_sha": "d62df2f6e29484e033fc4f5b5cb62e801521de52",
+    "ground_truth_subject": "security: shorten session lifetime per the Q3 audit finding",
+    "alert": {
+      "fingerprint": "INC-05",
+      "source": "generic",
+      "service": "auth-gateway",
+      "severity": "sev1",
+      "title": "auth-gateway 401 rate 31%, users logged out mid-session",
+      "description": "401 responses rose from 0.4% to 31%. The failures cluster by token age: everything older than about 15 minutes fails validation. Support is reporting users being logged out mid-checkout. Token issuance itself is healthy.",
+      "started_at": "2026-08-14T12:00:00Z",
+      "labels": {
+        "alertname": "AuthUnauthorizedSpike",
+        "team": "platform"
+      },
+      "metrics": {
+        "error_rate_before": 0.004,
+        "error_rate_after": 0.31,
+        "duration_minutes": 28
+      }
+    }
+  },
+  {
+    "incident_id": "INC-06",
+    "ground_truth_sha": "784953fc20916602ad2b763493443ba5b7ea0990",
+    "ground_truth_subject": "perf: tighten default HTTP timeout across services",
+    "alert": {
+      "fingerprint": "INC-06",
+      "source": "generic",
+      "service": "checkout-api",
+      "severity": "sev1",
+      "title": "checkout-api 504 gateway timeouts at 12%",
+      "description": "12% of POST /checkout requests return 504. Traces show the calls to payments-worker and inventory-api being cancelled client-side at ~300ms, well below their normal p99 of 1.8s. Downstream services report no errors and their own latency is unchanged.",
+      "started_at": "2026-08-15T13:00:00Z",
+      "labels": {
+        "alertname": "CheckoutGatewayTimeout",
+        "endpoint": "/checkout",
+        "team": "checkout"
+      },
+      "metrics": {
+        "error_rate_before": 0.002,
+        "error_rate_after": 0.12,
+        "duration_minutes": 33,
+        "latency_p99_ms": 320
+      }
+    }
+  },
+  {
+    "incident_id": "INC-07",
+    "ground_truth_sha": "293ed00d0ca0438543704402ae17258d97328d70",
+    "ground_truth_subject": "chore(deps): bump @platform/serialization 1.9.4 -> 2.0.1",
+    "alert": {
+      "fingerprint": "INC-07",
+      "source": "generic",
+      "service": "web-frontend",
+      "severity": "sev2",
+      "title": "web-frontend 500s on order confirmation render",
+      "description": "The order confirmation page throws on ~6% of renders with 'TypeError: cannot read property toFixed of string' in the price formatter. The deploy that preceded it contained no application code changes.",
+      "started_at": "2026-08-16T15:00:00Z",
+      "labels": {
+        "alertname": "FrontendRenderErrors",
+        "team": "web"
+      },
+      "metrics": {
+        "error_rate_before": 0.003,
+        "error_rate_after": 0.061,
+        "duration_minutes": 47
+      }
+    }
+  },
+  {
+    "incident_id": "INC-08",
+    "ground_truth_sha": "2e9dcd0d218bb123fb1c0cf9410a29d5ab92138e",
+    "ground_truth_subject": "chore: tighten inventory memory request after profiling",
+    "alert": {
+      "fingerprint": "INC-08",
+      "source": "generic",
+      "service": "inventory-api",
+      "severity": "sev2",
+      "title": "inventory-api pods in OOMKill restart loop",
+      "description": "All 6 inventory-api pods are restarting every 90 to 120 seconds with OOMKilled in lastState. Memory climbs to the limit then drops to zero, a clean sawtooth that began exactly at the 11:40 deploy. Error rate tracks the restart cycle.",
+      "started_at": "2026-08-17T14:00:00Z",
+      "labels": {
+        "alertname": "InventoryPodRestartLoop",
+        "team": "supply"
+      },
+      "metrics": {
+        "error_rate_before": 0.002,
+        "error_rate_after": 0.14,
+        "duration_minutes": 38,
+        "restart_count": 26
+      }
+    }
+  },
+  {
+    "incident_id": "INC-09",
+    "ground_truth_sha": "335047da8adba378b7b5851e5a85fbfe80ecf560",
+    "ground_truth_subject": "fix: correct notification rate limit units",
+    "alert": {
+      "fingerprint": "INC-09",
+      "source": "generic",
+      "service": "notifications",
+      "severity": "sev3",
+      "title": "notifications 429 rate at 78%, delivery backlog growing",
+      "description": "78% of outbound notification sends are rejected with 429 by our own limiter. Send volume is normal for the hour. The backlog is growing at roughly 4k/min and order confirmation emails are delayed by 20+ minutes.",
+      "started_at": "2026-08-18T14:00:00Z",
+      "labels": {
+        "alertname": "NotificationsRateLimited",
+        "team": "growth"
+      },
+      "metrics": {
+        "error_rate_before": 0.01,
+        "error_rate_after": 0.78,
+        "duration_minutes": 64
+      }
+    }
+  },
+  {
+    "incident_id": "INC-10",
+    "ground_truth_sha": "bf312878d85fdf81c87c4cccf3226d401a5b0e08",
+    "ground_truth_subject": "fix: make idempotency keys unique per attempt",
+    "alert": {
+      "fingerprint": "INC-10",
+      "source": "generic",
+      "service": "ledger",
+      "severity": "sev1",
+      "title": "ledger reconciliation found 412 double-charged orders",
+      "description": "The hourly reconciliation job flagged 412 orders with more than one successful charge in the last two hours. Affected orders share an order_id but have distinct payment_ids. The payment provider shows an elevated retry rate starting at 03:10.",
+      "started_at": "2026-08-19T16:00:00Z",
+      "labels": {
+        "alertname": "LedgerDuplicateCharges",
+        "team": "payments",
+        "priority": "P1"
+      },
+      "metrics": {
+        "error_rate_before": 0.0,
+        "error_rate_after": 0.009,
+        "duration_minutes": 120
+      }
+    }
+  },
+  {
+    "incident_id": "INC-11",
+    "ground_truth_sha": "9c64608abdb857dd2ee5394e1f3eb32efeb4158a",
+    "ground_truth_subject": "chore: flip new pricing engine default to on",
+    "alert": {
+      "fingerprint": "INC-11",
+      "source": "generic",
+      "service": "checkout-api",
+      "severity": "sev2",
+      "title": "checkout-api price mismatch errors on 22% of carts",
+      "description": "22% of checkouts fail validation with 'cart total does not match quoted price'. The failures are concentrated in carts containing promotional items. No checkout deploy happened in the window; the last one was 9 hours earlier and contained only tests.",
+      "started_at": "2026-08-20T15:00:00Z",
+      "labels": {
+        "alertname": "CheckoutPriceMismatch",
+        "endpoint": "/checkout",
+        "team": "checkout"
+      },
+      "metrics": {
+        "error_rate_before": 0.004,
+        "error_rate_after": 0.22,
+        "duration_minutes": 55
+      }
+    }
+  },
+  {
+    "incident_id": "INC-12",
+    "ground_truth_sha": "cbb0f91cf56f42800f9210c8ec4441edd795a657",
+    "ground_truth_subject": "fix: make cart resilient to inventory blips",
+    "alert": {
+      "fingerprint": "INC-12",
+      "source": "generic",
+      "service": "cart-service",
+      "severity": "sev1",
+      "title": "cart-service outbound request volume 7x inbound",
+      "description": "cart-service is sending 7x more requests to inventory-api than it receives from clients. inventory-api is saturated and now failing. The amplification started before inventory showed any degradation, so inventory is the victim not the cause.",
+      "started_at": "2026-08-21T16:00:00Z",
+      "labels": {
+        "alertname": "CartRetryAmplification",
+        "team": "checkout"
+      },
+      "metrics": {
+        "error_rate_before": 0.002,
+        "error_rate_after": 0.19,
+        "duration_minutes": 44
+      }
+    }
+  },
+  {
+    "incident_id": "INC-13",
+    "ground_truth_sha": "4f744ecdfff36986c7a2d6b4a48c45d483fa4f28",
+    "ground_truth_subject": "feat: return more results per search page",
+    "alert": {
+      "fingerprint": "INC-13",
+      "source": "generic",
+      "service": "search-api",
+      "severity": "sev2",
+      "title": "search-api p99 6.8s and memory pressure on all pods",
+      "description": "Search response sizes grew by roughly 20x. p99 latency is 6.8s, egress bandwidth is at the NAT gateway limit, and pods are approaching their memory limit without yet being killed. Query volume is flat.",
+      "started_at": "2026-08-22T16:00:00Z",
+      "labels": {
+        "alertname": "SearchResponseSizeHigh",
+        "team": "discovery"
+      },
+      "metrics": {
+        "error_rate_before": 0.002,
+        "error_rate_after": 0.033,
+        "duration_minutes": 51,
+        "latency_p99_ms": 6800
+      }
+    }
+  },
+  {
+    "incident_id": "INC-14",
+    "ground_truth_sha": "d0c29dab6a5334a4b07fa297ef8ff00a77e998f5",
+    "ground_truth_subject": "db: drop legacy_ref now that the backfill is complete",
+    "alert": {
+      "fingerprint": "INC-14",
+      "source": "generic",
+      "service": "payments-worker",
+      "severity": "sev1",
+      "title": "payments-worker failing 41% of settlements",
+      "description": "41% of settlement jobs fail with 'column payments.legacy_ref does not exist'. The failures began mid-run, not at a deploy: the worker code was unchanged for two days. Failed jobs are being retried and re-failing.",
+      "started_at": "2026-08-23T17:00:00Z",
+      "labels": {
+        "alertname": "PaymentsSettlementFailures",
+        "team": "payments"
+      },
+      "metrics": {
+        "error_rate_before": 0.003,
+        "error_rate_after": 0.41,
+        "duration_minutes": 36
+      }
+    }
+  },
+  {
+    "incident_id": "INC-15",
+    "ground_truth_sha": "9d45e1e601f9b483afca4c7a1d63307391b52bf5",
+    "ground_truth_subject": "fix: make the identity breaker more sensitive",
+    "alert": {
+      "fingerprint": "INC-15",
+      "source": "generic",
+      "service": "auth-gateway",
+      "severity": "sev2",
+      "title": "auth-gateway circuit breaker open, 503s on token refresh",
+      "description": "The breaker around the identity provider is opening within seconds of closing, producing 503s on ~9% of refresh calls. The provider itself reports normal latency and a 0.8% error rate, which is its usual background level.",
+      "started_at": "2026-08-24T15:00:00Z",
+      "labels": {
+        "alertname": "AuthCircuitOpen",
+        "team": "platform"
+      },
+      "metrics": {
+        "error_rate_before": 0.008,
+        "error_rate_after": 0.09,
+        "duration_minutes": 29
+      }
+    }
+  },
+  {
+    "incident_id": "INC-16",
+    "ground_truth_sha": "13c1a120883b88a84ba91e264201edbc5c5dffb2",
+    "ground_truth_subject": "security: cap request body size on checkout",
+    "alert": {
+      "fingerprint": "INC-16",
+      "source": "generic",
+      "service": "checkout-api",
+      "severity": "sev2",
+      "title": "checkout-api rejecting 17% of orders with 413",
+      "description": "17% of POST /checkout requests are rejected with 413 payload_too_large. The rejected requests are carts with more than about 12 line items, which correlates with our highest-value orders.",
+      "started_at": "2026-08-25T16:00:00Z",
+      "labels": {
+        "alertname": "CheckoutPayloadRejected",
+        "endpoint": "/checkout",
+        "team": "checkout"
+      },
+      "metrics": {
+        "error_rate_before": 0.003,
+        "error_rate_after": 0.17,
+        "duration_minutes": 62
+      }
+    }
+  },
+  {
+    "incident_id": "INC-17",
+    "ground_truth_sha": "1d9d7abb4df73d8c05f51f5b8dc8264d73ad7f9c",
+    "ground_truth_subject": "chore: point assets at the v5 CDN bucket",
+    "alert": {
+      "fingerprint": "INC-17",
+      "source": "generic",
+      "service": "web-frontend",
+      "severity": "sev2",
+      "title": "web-frontend 404s on all static assets, pages render unstyled",
+      "description": "Every CSS and JS asset returns 404 from the CDN. Pages render as unstyled HTML. The application itself is healthy: API calls succeed and the server returns 200 for document requests.",
+      "started_at": "2026-08-26T16:00:00Z",
+      "labels": {
+        "alertname": "FrontendAssetsMissing",
+        "team": "web"
+      },
+      "metrics": {
+        "error_rate_before": 0.002,
+        "error_rate_after": 0.44,
+        "duration_minutes": 19
+      }
+    }
+  },
+  {
+    "incident_id": "INC-18",
+    "ground_truth_sha": "cac4e7f5f658cd31836ddd8e0344fe3a14c6a5f2",
+    "ground_truth_subject": "refactor: simplify inventory availability lookup",
+    "alert": {
+      "fingerprint": "INC-18",
+      "source": "generic",
+      "service": "inventory-api",
+      "severity": "sev2",
+      "title": "inventory-api query rate 40x, database at 96% CPU",
+      "description": "Query count per API request jumped from roughly 2 to roughly 80. The database is at 96% CPU serving a very high volume of tiny, fast, identical-shape SELECTs. No individual query is slow.",
+      "started_at": "2026-08-27T15:00:00Z",
+      "labels": {
+        "alertname": "InventoryQueryAmplification",
+        "team": "supply"
+      },
+      "metrics": {
+        "error_rate_before": 0.002,
+        "error_rate_after": 0.07,
+        "duration_minutes": 48,
+        "latency_p99_ms": 3100
+      }
+    }
+  },
+  {
+    "incident_id": "INC-19",
+    "ground_truth_sha": "837b51cb39329952ee685a6decbf25d3c10f432f",
+    "ground_truth_subject": "chore: bump cache key namespace for the new payload shape",
+    "alert": {
+      "fingerprint": "INC-19",
+      "source": "generic",
+      "service": "cart-service",
+      "severity": "sev2",
+      "title": "cart-service cache hit ratio 0%, origin load 9x",
+      "description": "Cache hit ratio for cart-service went to zero at 08:15. search-api and inventory-api show the same pattern at the same minute, which rules out any single service's own code. Origin databases are carrying the full load.",
+      "started_at": "2026-08-28T16:00:00Z",
+      "labels": {
+        "alertname": "CartCacheHitRatioLow",
+        "team": "checkout"
+      },
+      "metrics": {
+        "error_rate_before": 0.002,
+        "error_rate_after": 0.028,
+        "duration_minutes": 40,
+        "latency_p99_ms": 2900
+      }
+    }
+  },
+  {
+    "incident_id": "INC-20",
+    "ground_truth_sha": "5f723ff4a2940b6c9d43f2a0f5b1fe0e11b38d93",
+    "ground_truth_subject": "perf: emit datetimes as epoch millis in shared serialization",
+    "alert": {
+      "fingerprint": "INC-20",
+      "source": "generic",
+      "service": "payments-worker",
+      "severity": "sev1",
+      "title": "payments-worker rejecting amounts, 28% of settlements failing",
+      "description": "28% of settlements fail with 'invalid amount: expected string, got float' from the provider SDK. Failures affect only amounts with fractional cents after currency conversion. The worker's own code has not changed in three days.",
+      "started_at": "2026-08-29T16:00:00Z",
+      "labels": {
+        "alertname": "PaymentsAmountRejected",
+        "team": "payments"
+      },
+      "metrics": {
+        "error_rate_before": 0.003,
+        "error_rate_after": 0.28,
+        "duration_minutes": 43
+      }
+    }
+  }
+]

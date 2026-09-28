@@ -1,0 +1,14 @@
+{
+  "alert_id": "99881",
+  "event_type": "query_alert_monitor",
+  "title": "cart-service p99 latency 4.2s (was 180ms)",
+  "body": "p99 on GET /cart rose from 180ms to 4.2s while p50 moved only 40ms. Postgres read IOPS tripled and the slow-query log is dominated by SELECT * FROM cart_items WHERE cart_id = $1. Request volume is unchanged.",
+  "priority": "P2",
+  "alert_type": "error",
+  "tags": "service:cart-service,env:prod,team:checkout",
+  "date": "2026-08-11T11:00:00Z",
+  "error_rate_before": 0.001,
+  "error_rate_after": 0.021,
+  "duration_minutes": 41,
+  "latency_p99_ms": 4200
+}

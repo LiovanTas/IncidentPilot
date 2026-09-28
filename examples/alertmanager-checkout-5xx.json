@@ -1,0 +1,29 @@
+{
+  "receiver": "incidentpilot",
+  "status": "firing",
+  "alerts": [
+    {
+      "status": "firing",
+      "fingerprint": "7f3a91c20ab4",
+      "labels": {
+        "alertname": "CheckoutHighErrorRate",
+        "service": "checkout-api",
+        "severity": "critical",
+        "endpoint": "/checkout",
+        "team": "checkout",
+        "error_rate_before": "0.002",
+        "error_rate_after": "0.084",
+        "duration_minutes": "22"
+      },
+      "annotations": {
+        "summary": "checkout-api 5xx rate above 8%",
+        "description": "HTTP 5xx on POST /checkout climbed from 0.2% to 8.4% over four minutes. Database CPU is flat at 18%. Application logs show repeated 'QueuePool limit of size 5 overflow 20 reached, connection timed out'.",
+        "runbook_url": "https://wiki.internal/runbooks/checkout-5xx-triage"
+      },
+      "startsAt": "2026-08-10T09:00:00Z",
+      "generatorURL": "https://prometheus.internal/graph?g0.expr=checkout_5xx_rate"
+    }
+  ],
+  "groupLabels": { "alertname": "CheckoutHighErrorRate" },
+  "externalURL": "https://alertmanager.internal"
+}

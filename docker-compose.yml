@@ -1,0 +1,30 @@
+services:
+  incidentpilot:
+    build: .
+    image: incidentpilot:0.1.0
+    ports:
+      - "8080:8080"
+    environment:
+      # Diagnosis falls back to the heuristic ranker when this is unset.
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      INCIDENTPILOT_MODEL: ${INCIDENTPILOT_MODEL:-claude-opus-5}
+      INCIDENTPILOT_EFFORT: ${INCIDENTPILOT_EFFORT:-high}
+      INCIDENTPILOT_LOOKBACK_HOURS: ${INCIDENTPILOT_LOOKBACK_HOURS:-72}
+      INCIDENTPILOT_WEBHOOK_TOKEN: ${INCIDENTPILOT_WEBHOOK_TOKEN:-}
+      # Optional: dense embeddings for runbook retrieval. Falls back to hashed TF-IDF.
+      VOYAGE_API_KEY: ${VOYAGE_API_KEY:-}
+      # Slack posting stays off unless BOTH of these are set.
+      SLACK_BOT_TOKEN: ${SLACK_BOT_TOKEN:-}
+      SLACK_CHANNEL: ${SLACK_CHANNEL:-#incidents}
+      INCIDENTPILOT_SLACK_POST: ${INCIDENTPILOT_SLACK_POST:-0}
+    volumes:
+      # The repository under investigation. Read-only: IncidentPilot never writes to it.
+      - ${INCIDENTPILOT_REPO_HOST:-./eval/fixtures/repo}:/repo:ro
+      # Reports and Slack payloads land here.
+      - ./out:/app/out
+      # Persist the runbook index so it is not rebuilt on every restart.
+      - incidentpilot-state:/app/state
+    restart: unless-stopped
+
+volumes:
+  incidentpilot-state:

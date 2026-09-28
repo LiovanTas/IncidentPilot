@@ -1,0 +1,20 @@
+{
+  "source": "generic",
+  "fingerprint": "INC-06",
+  "service": "checkout-api",
+  "severity": "sev1",
+  "title": "checkout-api 504 gateway timeouts at 12%",
+  "description": "12% of POST /checkout requests return 504. Traces show the calls to payments-worker and inventory-api being cancelled client-side at ~300ms, well below their normal p99 of 1.8s. Downstream services report no errors and their own latency is unchanged.",
+  "started_at": "2026-08-15T13:00:00Z",
+  "labels": {
+    "alertname": "CheckoutGatewayTimeout",
+    "endpoint": "/checkout",
+    "team": "checkout"
+  },
+  "metrics": {
+    "error_rate_before": 0.002,
+    "error_rate_after": 0.12,
+    "duration_minutes": 33,
+    "latency_p99_ms": 320
+  }
+}
