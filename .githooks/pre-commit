@@ -1,0 +1,28 @@
+#!/bin/sh
+# Refuse any commit that would be attributed to someone other than the repo owner.
+#
+# Repo-local user.name/user.email are not sufficient on their own: GIT_AUTHOR_EMAIL and
+# GIT_COMMITTER_EMAIL environment variables override them, and tooling (IDEs, agents, CI)
+# sets those. This hook checks the identity git has actually resolved, after all overrides.
+#
+# Enable with:  git config core.hooksPath .githooks
+
+EXPECTED_EMAIL="islam.tasnimul11213@gmail.com"
+
+author_email=$(git var GIT_AUTHOR_IDENT | sed -n 's/.*<\(.*\)>.*/\1/p')
+committer_email=$(git var GIT_COMMITTER_IDENT | sed -n 's/.*<\(.*\)>.*/\1/p')
+
+fail() {
+    echo "pre-commit: refusing to commit as the wrong identity." >&2
+    echo "  $1: $2" >&2
+    echo "  expected: $EXPECTED_EMAIL" >&2
+    echo >&2
+    echo "  Fix with:" >&2
+    echo "    git config user.name  \"LiovanTas\"" >&2
+    echo "    git config user.email \"$EXPECTED_EMAIL\"" >&2
+    echo "  and unset any GIT_AUTHOR_EMAIL / GIT_COMMITTER_EMAIL in your environment." >&2
+    exit 1
+}
+
+[ "$author_email" = "$EXPECTED_EMAIL" ] || fail "author" "$author_email"
+[ "$committer_email" = "$EXPECTED_EMAIL" ] || fail "committer" "$committer_email"
