@@ -69,12 +69,26 @@ def score_one(record: dict, pilot: IncidentPilot, use_agent: bool) -> dict:
     verdict_sha = result.diagnosis.offending_sha or ""
     correct = bool(verdict_sha) and truth.startswith(verdict_sha[:10])
 
+    by_sha = {c.sha: c for c in result.candidates}
+    blamed = next((c for c in result.candidates if c.sha.startswith(verdict_sha[:10])), None) if verdict_sha else None
+    truth_commit = by_sha.get(truth)
+
+    # Was the real cause outside the service that alerted? Those are the hard ones: a
+    # shared library or another team's migration breaking a downstream service.
+    owners = truth_commit.services if truth_commit else []
+    cross_service = bool(truth_commit) and alert.service not in owners
+
     return {
         "incident_id": record["incident_id"],
         "service": alert.service,
         "truth_sha": truth[:10],
         "truth_subject": record["ground_truth_subject"],
         "verdict_sha": verdict_sha[:10] if verdict_sha else None,
+        "verdict_subject": blamed.subject if blamed else None,
+        "alert_title": alert.title,
+        "truth_files": (truth_commit.files[:3] if truth_commit else []),
+        "truth_owners": owners,
+        "cross_service": cross_service,
         "correct": correct,
         "truth_rank": rank,
         "candidates": len(result.candidates),
@@ -163,50 +177,186 @@ def calibration(rows: list[dict]) -> dict:
     }
 
 
+ARM_LABEL = {
+    "heuristic": "Correlation ranker only (no AI model)",
+    "agent": "Full agent (Claude reads the diffs)",
+}
+
+
+def _ordinal(n: int) -> str:
+    return {1: "1st", 2: "2nd", 3: "3rd"}.get(n, f"{n}th")
+
+
+def _incident_card(r: dict) -> list[str]:
+    """One incident, written the way you would explain it to a colleague."""
+    mark = "✅" if r["correct"] else "❌"
+    out = [f"### {mark} {r['incident_id']} — {r['service']}", ""]
+    out.append(f"**The alert said:** {r['alert_title']}")
+    out.append("")
+    out.append(f"**What actually broke it:** {r['truth_subject']}")
+
+    if r["truth_files"]:
+        where = ", ".join(f"`{f}`" for f in r["truth_files"])
+        if r["cross_service"]:
+            if r["truth_owners"]:
+                whose = f"it belongs to {', '.join(r['truth_owners'])}"
+            else:
+                whose = "it is shared library code that every service depends on"
+            out.append(f"  - in {where} — **not in {r['service']}**: {whose}, so the team staring "
+                       f"at the alert would have no reason to look there")
+        else:
+            out.append(f"  - in {where}")
+    out.append("")
+
+    if r["correct"]:
+        out.append("**IncidentPilot blamed:** the same commit. **Correct.**")
+    else:
+        blamed = r["verdict_subject"] or "(nothing)"
+        out.append(f"**IncidentPilot blamed:** {blamed}")
+        out.append("")
+        if r["truth_rank"]:
+            out.append(f"**Did it at least shortlist the real cause?** Yes — it was "
+                       f"{_ordinal(r['truth_rank'])} of {r['candidates']} suspects. It had the "
+                       f"right answer in hand and picked a different one.")
+        else:
+            out.append("**Did it at least shortlist the real cause?** No — the real cause never "
+                       "made the suspect list. This is a retrieval failure, not a judgement one.")
+    out.append("")
+
+    if r["needs_human"]:
+        out.append(f"**Did it admit uncertainty?** Yes — flagged for a human to check "
+                   f"({r['confidence']:.0%} confidence).")
+    else:
+        verb = "Correctly confident" if r["correct"] else "**Wrong, and it did not say so**"
+        out.append(f"**Did it admit uncertainty?** No — it stood behind this answer at "
+                   f"{r['confidence']:.0%} confidence. {verb}.")
+    out.append("")
+
+    detail = f"**Time to answer:** {r['seconds']}s"
+    if r["tool_calls"]:
+        used = ", ".join(sorted(set(r["tools_used"])))
+        detail += f" · looked at {r['tool_calls']} pieces of evidence ({used})"
+    out.append(detail)
+    out.append("")
+    return out
+
+
+def _arm_narrative(arm: str, summary: dict, cal: dict, rows: list[dict]) -> list[str]:
+    n = summary["n"]
+    out = [f"## {ARM_LABEL.get(arm, arm)}", ""]
+    out.append(f"**Named the right commit in {summary['top1']} of {n} incidents.**")
+    out.append("")
+
+    out.append(f"- The real cause made its suspect list every single time "
+               f"({summary['recall']}/{n}), and was among its top 3 guesses in "
+               f"{summary['top3_retrieval']}/{n}. So it is never losing the culprit — it is "
+               f"picking the wrong one off a shortlist that already contains the right answer.")
+
+    misses = [r for r in rows if not r["correct"]]
+    cross = [r for r in misses if r["cross_service"]]
+    if cross:
+        out.append(f"- {len(cross)} of the {len(misses)} misses were changes made **outside the "
+                   f"service that alerted** — a shared library or another team's migration. Those "
+                   f"are the ones a human loses hours to as well.")
+
+    danger = cal.get("unflagged_and_wrong", 0)
+    if danger == 0 and cal.get("unflagged_n", 0) == 0:
+        out.append(f"- It never presented a wrong answer as settled: every verdict was flagged for "
+                   f"review, including the {cal.get('flagged_and_correct', 0)} it got right. Safe, "
+                   f"but it means a human still checks all {n}.")
+    elif danger:
+        out.append(f"- **{danger} wrong answers went out without a warning flag.** That is the "
+                   f"expensive failure: an engineer acts on it at 3am and loses the time anyway.")
+    else:
+        out.append("- Every answer it stood behind was correct.")
+
+    out.append(f"- Typical time to an answer: {summary['mean_seconds']}s"
+               + (f", at ${summary['estimated_cost_usd']} for all {n}."
+                  if summary["estimated_cost_usd"] else ", at no API cost."))
+    out.append("")
+    return out
+
+
 def render_markdown(report: dict) -> str:
-    lines = [f"# IncidentPilot eval - {report['run_at']}", ""]
-    lines.append(f"Corpus: {report['n_incidents']} replayed incidents, "
-                 f"{report['repo_commits']} commits, model `{report['model']}`")
+    arms = {a: s for a, s in report["arms"].items() if s}
+    lines = ["# IncidentPilot — replay results", ""]
+    lines.append(f"*{report['run_at']}*")
     lines.append("")
-    lines.append("| Arm | top-1 | top-3 (retrieval) | recall | MRR | mean conf | tool calls | s/incident | cost |")
-    lines.append("| --- | --- | --- | --- | --- | --- | --- | --- | --- |")
-    for arm, summary in report["arms"].items():
-        if not summary:
-            continue
-        lines.append(
-            f"| {arm} | {summary['top1']}/{summary['n']} ({summary['top1_pct']}%) "
-            f"| {summary['top3_retrieval']}/{summary['n']} ({summary['top3_pct']}%) "
-            f"| {summary['recall']}/{summary['n']} | {summary['mrr']} "
-            f"| {summary['mean_confidence']} | {summary['mean_tool_calls']} "
-            f"| {summary['mean_seconds']} | ${summary['estimated_cost_usd']} |"
-        )
+    lines.append(
+        f"{report['n_incidents']} incidents were replayed through the system. For each one it saw "
+        f"only what an on-call engineer sees at 3am: the alert text, and a repository with "
+        f"{report['repo_commits']} commits of recent history. It then had to name the single "
+        f"commit that caused the outage."
+    )
     lines.append("")
+    lines.append(
+        "The incidents and the repository are synthetic — written so that every outage has a known "
+        "cause to score against, which production history cannot give you. The breaking changes are "
+        "real commits with real diffs, and the system reads them through `git` exactly as it would "
+        "a production repo. Each verdict is simply right or wrong."
+    )
+    lines.append("")
+
+    if len(arms) > 1:
+        lines.append("## The short version")
+        lines.append("")
+        for arm, summary in arms.items():
+            lines.append(f"- **{ARM_LABEL.get(arm, arm)}** — right {summary['top1']} of "
+                         f"{summary['n']} times, {summary['mean_seconds']}s per incident.")
+        lines.append("")
+
+    for arm, summary in arms.items():
+        lines += _arm_narrative(arm, summary, report["calibration"].get(arm, {}),
+                                report["rows"][arm])
 
     for arm, rows in report["rows"].items():
         if not rows:
             continue
-        lines.append(f"## {arm} - per incident")
+        lines.append(f"# Incident by incident — {ARM_LABEL.get(arm, arm).lower()}")
         lines.append("")
-        lines.append("| Incident | Service | Truth | Verdict | Hit | Truth rank | Conf | Tools |")
-        lines.append("| --- | --- | --- | --- | --- | --- | --- | --- |")
         for r in rows:
-            hit = "yes" if r["correct"] else "no"
-            rank = r["truth_rank"] if r["truth_rank"] else "-"
-            flag = " (flagged)" if r["needs_human"] else ""
-            lines.append(
-                f"| {r['incident_id']} | {r['service']} | `{r['truth_sha']}` | "
-                f"`{r['verdict_sha'] or '-'}` | {hit}{flag} | {rank} | {r['confidence']:.2f} | "
-                f"{r['tool_calls']} |"
-            )
-        lines.append("")
-        cal = report["calibration"].get(arm)
-        if cal:
-            lines.append(f"Calibration: {cal['high_confidence_n']} verdicts at confidence >=0.70 "
-                         f"were {cal['high_confidence_accuracy_pct']}% correct; "
-                         f"{cal['low_confidence_n']} below 0.70 were "
-                         f"{cal['low_confidence_accuracy_pct']}% correct. "
-                         f"{cal['unflagged_and_wrong']} wrong verdict(s) went out unflagged.")
-            lines.append("")
+            lines += _incident_card(r)
+
+    lines.append("---")
+    lines.append("")
+    lines.append("# Appendix: the raw numbers")
+    lines.append("")
+    lines.append("For anyone who wants the standard information-retrieval metrics.")
+    lines.append("")
+    lines.append("| | meaning |")
+    lines.append("| --- | --- |")
+    lines.append("| **top-1** | how often the single commit it named was the right one |")
+    lines.append("| **top-3** | how often the right commit was among its three best guesses |")
+    lines.append("| **recall** | how often the right commit appeared on its suspect list at all |")
+    lines.append("| **MRR** | mean reciprocal rank — 1.0 if the right commit is always first, "
+                 "0.5 if always second, and so on |")
+    lines.append("| **wrong & unflagged** | wrong answers presented without a review flag — "
+                 "the costly failure |")
+    lines.append("| **needlessly escalated** | right answers flagged for review anyway — "
+                 "the cost of playing it safe |")
+    lines.append("| **discrimination gap** | accuracy on answers it stood behind minus accuracy "
+                 "on answers it escalated. Zero or below means its confidence score is "
+                 "meaningless |")
+    lines.append("")
+    lines.append("| Arm | top-1 | top-3 | recall | MRR | mean conf | wrong & unflagged | "
+                 "needlessly escalated | discrimination gap | tool calls | s each | cost |")
+    lines.append("| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |")
+    for arm, summary in arms.items():
+        c = report["calibration"].get(arm, {})
+        gap = c.get("discrimination_gap_pp")
+        lines.append(
+            f"| {arm} | {summary['top1']}/{summary['n']} ({summary['top1_pct']}%) "
+            f"| {summary['top3_retrieval']}/{summary['n']} | {summary['recall']}/{summary['n']} "
+            f"| {summary['mrr']} | {summary['mean_confidence']} "
+            f"| {c.get('unflagged_and_wrong', '-')} | {c.get('flagged_and_correct', '-')} "
+            f"| {'no signal' if gap is None else str(gap) + 'pp'} "
+            f"| {summary['mean_tool_calls']} | {summary['mean_seconds']} "
+            f"| ${summary['estimated_cost_usd']} |"
+        )
+    lines.append("")
+    lines.append(f"Model: `{report['model']}` (effort {report['effort']}) · "
+                 f"runbook corpus: {report['runbook_chunks']} chunks via the "
+                 f"`{report['embedder']}` embedder")
     return "\n".join(lines)
 
 
