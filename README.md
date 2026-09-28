@@ -287,3 +287,20 @@ runbooks/          12 runbooks
 data/topology.json service graph, traffic volumes, SLO
 examples/          sample webhook payloads
 ```
+
+---
+
+## Repo setup
+
+Commits must be attributed to the repository owner. After a fresh clone:
+
+```bash
+git config user.name  "LiovanTas"
+git config user.email "islam.tasnimul11213@gmail.com"
+git config core.hooksPath .githooks
+```
+
+`core.hooksPath` enables `.githooks/pre-commit`, which refuses any commit whose resolved
+author or committer email is not the expected one. Repo-local config alone is not enough:
+`GIT_AUTHOR_EMAIL` and `GIT_COMMITTER_EMAIL` environment variables silently override it,
+and IDEs, CI and agent tooling set them.
