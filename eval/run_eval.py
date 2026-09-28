@@ -137,12 +137,29 @@ def calibration(rows: list[dict]) -> dict:
     def acc(group: list[dict]) -> float | None:
         return round(sum(1 for r in group if r["correct"]) / len(group) * 100, 1) if group else None
 
+    flagged = [r for r in rows if r["needs_human"]]
+    unflagged = [r for r in rows if not r["needs_human"]]
+
+    # `unflagged_and_wrong` alone is gameable -- flag everything and it goes to zero. The
+    # paired cost is `flagged_and_correct`: verdicts that were right but escalated anyway,
+    # which is the on-call time the system fails to save. The discrimination gap is what
+    # actually says whether the confidence signal carries information: accuracy among
+    # verdicts the system stood behind, minus accuracy among those it escalated. A gap at
+    # or below zero means the confidence number is worthless regardless of either count.
+    gap = None
+    if flagged and unflagged:
+        gap = round(acc(unflagged) - acc(flagged), 1)
+
     return {
         "high_confidence_n": len(high), "high_confidence_accuracy_pct": acc(high),
         "low_confidence_n": len(low), "low_confidence_accuracy_pct": acc(low),
-        "flagged_for_human_n": sum(1 for r in rows if r["needs_human"]),
-        "flagged_and_wrong": sum(1 for r in rows if r["needs_human"] and not r["correct"]),
-        "unflagged_and_wrong": sum(1 for r in rows if not r["needs_human"] and not r["correct"]),
+        "flagged_for_human_n": len(flagged),
+        "flagged_and_wrong": sum(1 for r in flagged if not r["correct"]),
+        "flagged_and_correct": sum(1 for r in flagged if r["correct"]),
+        "unflagged_n": len(unflagged),
+        "unflagged_accuracy_pct": acc(unflagged),
+        "unflagged_and_wrong": sum(1 for r in unflagged if not r["correct"]),
+        "discrimination_gap_pp": gap,
     }
 
 

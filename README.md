@@ -167,19 +167,42 @@ Scored metrics:
 | `recall` | Ground truth appears anywhere in the candidate list |
 | `MRR` | Mean reciprocal rank of ground truth |
 
-It also reports **calibration**: accuracy above vs below 0.70 stated confidence, and how
-many wrong verdicts went out *unflagged*. An agent that is wrong but says so is far more
-useful on-call than one that is wrong confidently.
+It also reports **calibration**, because being wrong confidently is a worse failure than
+being wrong loudly. Three numbers, and they have to be read together:
+
+- `unflagged_and_wrong` — wrong verdicts the system stood behind. The dangerous error.
+- `flagged_and_correct` — right verdicts escalated anyway. The cost, and the reason
+  `unflagged_and_wrong` cannot be gamed by flagging everything.
+- `discrimination_gap_pp` — accuracy among verdicts the system stood behind, minus
+  accuracy among those it escalated. **At or below zero, the confidence number is
+  worthless** no matter how the other two look.
+
+### Why the heuristic arm always defers
+
+The ranker reports ~0.35–0.45 confidence and flags every verdict for review. That is not
+timidity, it is a measurement. Two earlier confidence formulas were tried — one keyed on
+absolute score, one on the leader-to-runner-up margin — and both were uncalibrated; the
+margin version was measurably *worse* (wrong-and-unflagged went 9 → 12, and the confidence
+bands inverted, with sub-0.70 verdicts scoring 42.9% against 30.8% above).
+
+The cause is in the data. Across the corpus the margin is **0.061 when the ranker is right
+and 0.053 when it is wrong** — the distributions overlap almost entirely, so no monotone
+function of (score, margin) can separate them. Deciding between two plausible commits
+requires knowing what their diffs *do*, and the ranker only ever sees commit metadata.
+
+So the baseline's honest job is: generate candidates at 100% top-3 recall, and defer.
+Discriminating is what the agent is for — and whether it actually does is exactly what
+`discrimination_gap_pp` on the agent arm will show.
 
 Results are written to `eval/results/` as JSON plus a markdown summary, with per-incident
 rows and token cost.
 
 ### Current numbers
 
-| Arm | top-1 | top-3 (retrieval) | recall | MRR | cost |
-| --- | --- | --- | --- | --- | --- |
-| heuristic | 7/20 (35%) | 20/20 (100%) | 20/20 | 0.608 | $0.00 |
-| agent | *not yet measured* | 20/20 (100%) | 20/20 | 0.608 | — |
+| Arm | top-1 | top-3 (retrieval) | recall | MRR | wrong & unflagged | cost |
+| --- | --- | --- | --- | --- | --- | --- |
+| heuristic | 7/20 (35%) | 20/20 (100%) | 20/20 | 0.608 | 0 — defers on all 20 | $0.00 |
+| agent | *not yet measured* | 20/20 (100%) | 20/20 | 0.608 | *not yet measured* | — |
 
 The heuristic arm is deterministic and reproducible. The agent arm has not been run yet;
 run it and paste the result here rather than assuming one.

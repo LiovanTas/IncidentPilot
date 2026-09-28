@@ -58,6 +58,36 @@ def _diagnosis_from_tool_input(payload: dict[str, Any]) -> Diagnosis:
     )
 
 
+# The ranker's measured top-1 precision on the replay corpus (eval/run_eval.py). It is a
+# candidate generator, not a diagnostician: 100% top-3 recall, ~35% top-1. Re-derive this
+# if the ranker's signals or weights change.
+RANKER_BASE_PRECISION = 0.35
+
+# It reads commit metadata and never a diff, so it is capped well below any threshold at
+# which a verdict would be acted on unreviewed.
+HEURISTIC_CONFIDENCE_CEILING = 0.45
+
+
+def _ranker_confidence(top_score: float, margin: float, n_candidates: int) -> float:
+    """Confidence for a metadata-only verdict, anchored to measured precision.
+
+    Two earlier formulas keyed off the absolute score and off the margin. Both were
+    uncalibrated, and the margin version was measurably worse. The reason is in the data:
+    across the replay corpus the leader-to-runner-up margin is 0.061 when the ranker is
+    right and 0.053 when it is wrong -- the distributions overlap almost entirely, so no
+    monotone function of (score, margin) can separate the two.
+
+    That is not a tuning failure, it is a statement about the inputs. Deciding between two
+    plausible commits requires knowing what their diffs *do*, which is information the
+    ranker never sees. So it reports a confidence anchored near its measured precision and
+    defers; discriminating is the agent's job.
+    """
+    if n_candidates == 0:
+        return 0.0
+    nudge = min(margin, 0.15) if n_candidates > 1 else 0.0
+    return round(min(HEURISTIC_CONFIDENCE_CEILING, RANKER_BASE_PRECISION + nudge), 2)
+
+
 def heuristic_diagnosis(alert: Alert, candidates: list[CommitCandidate],
                         runbooks: list[RunbookChunk]) -> Diagnosis:
     """Deterministic verdict from the ranker alone.
@@ -80,7 +110,7 @@ def heuristic_diagnosis(alert: Alert, candidates: list[CommitCandidate],
     top = candidates[0]
     runner_up = candidates[1] if len(candidates) > 1 else None
     margin = top.score - runner_up.score if runner_up else top.score
-    confidence = round(min(0.85, 0.35 + top.score * 0.5 + min(margin, 0.2)), 2)
+    confidence = _ranker_confidence(top.score, margin, len(candidates))
 
     return Diagnosis(
         root_cause=f"Likely caused by {top.short_sha}: {top.subject}",
@@ -95,7 +125,8 @@ def heuristic_diagnosis(alert: Alert, candidates: list[CommitCandidate],
                      "Confirm the error rate returns to baseline within 10 minutes.",
                      "If it does not, widen the correlation window and re-run."],
         rollback_command=f"git revert --no-edit {top.short_sha}",
-        needs_human=margin < 0.05,
+        # Always. A verdict from metadata alone is a lead to check, not a conclusion.
+        needs_human=True,
         source="heuristic",
     )
 
