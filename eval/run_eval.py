@@ -41,7 +41,7 @@ os.environ.setdefault("INCIDENTPILOT_OUT", str(ROOT / "eval" / "results" / "repo
 
 from incidentpilot.config import load_config  # noqa: E402
 from incidentpilot.ingest import normalize  # noqa: E402
-from incidentpilot.pipeline import IncidentPilot  # noqa: E402
+from incidentpilot.pipeline import AgentConfigError, IncidentPilot  # noqa: E402
 
 INCIDENTS_JSON = ROOT / "eval" / "incidents.json"
 RESULTS_DIR = ROOT / "eval" / "results"
@@ -125,8 +125,13 @@ def aggregate(rows: list[dict]) -> dict:
         + usage.get("output_tokens", 0) / 1e6 * PRICE_OUT
     )
 
+    sources: dict[str, int] = {}
+    for r in rows:
+        sources[r["source"]] = sources.get(r["source"], 0) + 1
+
     return {
         "n": n,
+        "verdict_sources": sources,
         "top1": top1,
         "top1_pct": round(top1 / n * 100, 1),
         "top3_retrieval": top3,
@@ -244,6 +249,15 @@ def _incident_card(r: dict) -> list[str]:
 def _arm_narrative(arm: str, summary: dict, cal: dict, rows: list[dict]) -> list[str]:
     n = summary["n"]
     out = [f"## {ARM_LABEL.get(arm, arm)}", ""]
+
+    # An agent arm whose verdicts came from the fallback ranker is not an agent result.
+    degraded = n - summary["verdict_sources"].get("agent", 0) if arm == "agent" else 0
+    if degraded:
+        out.append(f"> ⚠️ **These numbers are not an agent result.** {degraded} of {n} verdicts "
+                   f"came from the fallback correlation ranker because the agent errored. "
+                   f"Do not quote this as agent accuracy — fix the errors and re-run.")
+        out.append("")
+
     out.append(f"**Named the right commit in {summary['top1']} of {n} incidents.**")
     out.append("")
 
@@ -391,7 +405,19 @@ def main() -> int:
     for arm in arms:
         rows[arm] = []
         for record in records:
-            row = score_one(record, pilot, use_agent=(arm == "agent"))
+            try:
+                row = score_one(record, pilot, use_agent=(arm == "agent"))
+            except AgentConfigError as exc:
+                print(f"\nThe agent could not run, so there is nothing to score.\n\n  {exc}\n",
+                      file=sys.stderr)
+                if "authentication" in str(exc).lower() or "401" in str(exc):
+                    print("  ANTHROPIC_API_KEY looks wrong. In PowerShell:\n"
+                          "    $env:ANTHROPIC_API_KEY = \"<your real key>\"\n"
+                          "  A real key starts with sk-ant- and is ~100 characters; "
+                          "\"sk-ant-...\" is a placeholder.\n", file=sys.stderr)
+                print("  Nothing was written. Re-run once the key is set, or use "
+                      "--mode heuristic to score the baseline alone.", file=sys.stderr)
+                return 2
             rows[arm].append(row)
             if not args.quiet:
                 mark = "HIT " if row["correct"] else "miss"
@@ -431,6 +457,10 @@ def main() -> int:
         print(f"{arm:10s} top-1 {s['top1']}/{s['n']} ({s['top1_pct']}%)  "
               f"top-3 {s['top3_retrieval']}/{s['n']}  recall {s['recall']}/{s['n']}  "
               f"MRR {s['mrr']}  cost ${s['estimated_cost_usd']}")
+        degraded = s["n"] - s["verdict_sources"].get("agent", 0) if arm == "agent" else 0
+        if degraded:
+            print(f"{'':10s} NOT AN AGENT RESULT: {degraded}/{s['n']} verdicts came from the "
+                  f"fallback ranker after agent errors. Do not quote this number.")
     print(f"\nwrote {summary_path}")
     return 0
 

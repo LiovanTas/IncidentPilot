@@ -18,6 +18,26 @@ from .rag import RunbookIndex
 
 log = logging.getLogger("incidentpilot.pipeline")
 
+# Errors that will recur identically on every incident: bad credentials, a model the
+# account cannot reach, a malformed request. Retrying or degrading past these produces
+# results that look real and are not.
+_FATAL_STATUS = {401, 403, 404}
+_FATAL_TYPES = {
+    "AuthenticationError", "PermissionDeniedError", "NotFoundError", "APIConnectionError",
+}
+
+
+class AgentConfigError(RuntimeError):
+    """The agent cannot run at all. Distinct from a single incident failing."""
+
+
+def is_fatal_config_error(exc: BaseException) -> bool:
+    if isinstance(exc, AgentConfigError):
+        return True
+    if getattr(exc, "status_code", None) in _FATAL_STATUS:
+        return True
+    return type(exc).__name__ in _FATAL_TYPES
+
 
 class IncidentPilot:
     """Holds the expensive, reusable pieces (git handle, runbook index, topology)."""
@@ -96,7 +116,15 @@ class IncidentPilot:
                     ctx, runbooks, impact.to_dict(), self._topology_summary(alert.service)
                 )
             except Exception as exc:
-                log.exception("agent failed; falling back to heuristic")
+                # A bad key or a revoked token will fail identically on every incident.
+                # Falling back silently would hand back 20 heuristic verdicts wearing an
+                # agent label, so configuration errors stop the run instead.
+                if is_fatal_config_error(exc):
+                    raise AgentConfigError(
+                        f"{type(exc).__name__}: {exc}. The agent cannot run until this is fixed."
+                    ) from exc
+                log.warning("agent failed on %s (%s: %s); falling back to the heuristic ranker",
+                            incident_id, type(exc).__name__, exc)
                 diagnosis = heuristic_diagnosis(alert, candidates, runbooks)
                 diagnosis.needs_human = True
                 diagnosis.reasoning = f"Agent error ({type(exc).__name__}: {exc}). " + diagnosis.reasoning
