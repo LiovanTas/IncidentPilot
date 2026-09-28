@@ -28,10 +28,9 @@ RUN useradd --create-home --uid 10001 pilot \
     && chown -R pilot:pilot /app
 
 # The mounted repo is owned by the host user, not by `pilot`. Without this, git refuses
-# to read it with "detected dubious ownership".
-ENV GIT_CONFIG_COUNT=1 \
-    GIT_CONFIG_KEY_0=safe.directory \
-    GIT_CONFIG_VALUE_0=*
+# to read it with "detected dubious ownership". Written to /etc/gitconfig rather than
+# passed as GIT_CONFIG_* env vars, which trip the SecretsUsedInArgOrEnv build check.
+RUN git config --system --add safe.directory '*'
 
 ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
