@@ -18,6 +18,15 @@ from .models import Alert, ImpactEstimate
 DEFAULT_BASELINE_ERROR_RATE = 0.002
 UNCERTAINTY_BAND = 0.40
 
+# Distinct daily users as a multiple of hourly, when topology does not state it.
+DEFAULT_DAILY_MULTIPLIER = 6.0
+
+# `rps` counts all traffic a service handles, most of which is service-to-service rather
+# than one person clicking. Deriving requests-per-user straight from it implies absurd
+# figures (1850 rps / 42k users/hr = 158 requests per user per hour), which drives the
+# probability that any given user was hit to ~100% for any error rate. Capped instead.
+MAX_REQUESTS_PER_USER_HOUR = 20.0
+
 
 @lru_cache(maxsize=8)
 def load_topology(path: str) -> dict:
@@ -48,14 +57,35 @@ def blast_radius(service: str, topology: dict, depth: int = 2) -> list[str]:
     return sorted(seen)
 
 
-def _unique_users(uph: float, hours: float) -> float:
-    """Unique users seen in a window shorter than an hour overlap heavily, so the
-    count grows sublinearly below 1h and linearly above it."""
+def _daily_users(spec: dict) -> float:
+    """Distinct people who touch a service in a day. The hard ceiling on its reach."""
+    uph = float(spec.get("unique_users_per_hour", 0))
+    return float(spec.get("daily_unique_users", uph * DEFAULT_DAILY_MULTIPLIER))
+
+
+def _reach(spec: dict, hours: float) -> float:
+    """Distinct users a service serves over `hours`.
+
+    Reach saturates: extending an outage brings in fewer *new* people because the same
+    users keep coming back. Modelled as coupon-collector style saturation toward the
+    service's daily population, which makes the daily figure a hard ceiling.
+
+        reach(t) = DAU * (1 - (1 - uph/DAU)^t)
+
+    At t = 1 this returns uph exactly; as t grows it approaches DAU and never exceeds it.
+    The previous implementation multiplied uph by hours, so a 12-hour incident claimed 12x
+    the hourly population -- more people than the service has.
+    """
     if hours <= 0:
+        return 0.0
+    uph = float(spec.get("unique_users_per_hour", 0))
+    dau = _daily_users(spec)
+    if uph <= 0 or dau <= 0:
         return 0.0
     if hours < 1.0:
         return uph * (hours ** 0.85)
-    return uph * hours
+    ratio = min(uph / dau, 1.0)
+    return dau * (1.0 - (1.0 - ratio) ** hours)
 
 
 def _error_delta(alert: Alert) -> tuple[float, str]:
@@ -91,13 +121,18 @@ def estimate_impact(alert: Alert, topology: dict, now: datetime | None = None) -
     failed_requests = rps * minutes * 60.0 * delta
 
     # A user is "affected" if at least one of their requests failed.
-    requests_per_user_hour = (rps * 3600.0) / uph if uph else 1.0
+    derived = (rps * 3600.0) / uph if uph else 1.0
+    requests_per_user_hour = min(derived, MAX_REQUESTS_PER_USER_HOUR)
     requests_per_user = max(1.0, requests_per_user_hour * min(hours, 1.0))
     hit_probability = 1.0 - (1.0 - min(delta, 1.0)) ** requests_per_user
 
-    direct_users = _unique_users(uph, hours) * hit_probability
+    direct_reach = _reach(spec, hours)
+    direct_users = direct_reach * hit_probability
 
-    # Downstream user-facing services inherit a fraction of the failure.
+    # Downstream user-facing services share most of their audience with the service that
+    # broke -- somebody browsing through web-frontend and hitting cart is one person, not
+    # two. Adding whole populations double-counts them, so a dependent only contributes
+    # the users it reaches *beyond* the alerting service's own reach.
     radius = blast_radius(alert.service, topology)
     downstream = 0.0
     for name in radius:
@@ -106,13 +141,23 @@ def estimate_impact(alert: Alert, topology: dict, now: datetime | None = None) -
         child = services.get(name, {})
         if not child.get("user_facing"):
             continue
-        child_uph = float(child.get("unique_users_per_hour", 0))
-        # 60% propagation for a direct caller; assume no perfect fallbacks.
-        downstream += _unique_users(child_uph, hours) * hit_probability * 0.6
+        excess = max(0.0, _reach(child, hours) - direct_reach)
+        downstream += excess * hit_probability * 0.6
 
     point = direct_users + downstream
+
+    # Hard ceiling: you cannot affect more people than exist in the blast radius. The
+    # largest single user-facing population bounds it, because the audiences overlap
+    # rather than stack.
+    ceiling = max(
+        (_daily_users(services.get(n, {})) for n in radius
+         if services.get(n, {}).get("user_facing")),
+        default=_daily_users(spec),
+    )
+    point = min(point, ceiling)
+
     low = point * (1 - UNCERTAINTY_BAND)
-    high = point * (1 + UNCERTAINTY_BAND)
+    high = min(point * (1 + UNCERTAINTY_BAND), ceiling)
 
     slo = topology.get("slo", {})
     target = float(slo.get("availability_target", 0.999))
@@ -126,9 +171,10 @@ def estimate_impact(alert: Alert, topology: dict, now: datetime | None = None) -
 
     method = (
         f"{delta_note}; {rps:.0f} rps x {minutes:.0f}m sustained; "
-        f"{uph:,.0f} unique users/hr on {alert.service}; "
+        f"reach {direct_reach:,.0f} distinct users over that window "
+        f"(saturating toward {_daily_users(spec):,.0f}/day, which is the hard ceiling); "
         f"P(user hit) = 1-(1-delta)^{requests_per_user:.1f} = {hit_probability:.1%}; "
-        f"downstream propagation at 60% across {len(radius) - 1} dependent service(s)"
+        f"dependents contribute only their non-overlapping users, capped at {ceiling:,.0f}"
     )
 
     return ImpactEstimate(

@@ -130,3 +130,63 @@ def test_duration_defaults_to_elapsed_time_when_absent():
     started = datetime.now(timezone.utc) - timedelta(minutes=17)
     estimate = estimate_impact(make_alert(started_at=started, metrics={"error_rate_after": 0.05}), TOPOLOGY)
     assert 15 <= estimate.duration_minutes <= 20
+
+
+# --------------------------------------------------- impact cannot exceed reality
+
+
+def _daily(spec):
+    return spec.get("daily_unique_users", spec.get("unique_users_per_hour", 0) * 6)
+
+
+def _population(radius, topology, service):
+    """Largest user-facing daily population in the blast radius -- the hard ceiling.
+
+    When nothing in the radius is user-facing (a backend worker whose failure nobody
+    calls into), the alerting service's own population is the bound.
+    """
+    return max(
+        (_daily(topology["services"][name]) for name in radius
+         if topology["services"][name].get("user_facing")),
+        default=_daily(topology["services"][service]),
+    )
+
+
+@pytest.mark.parametrize("service", sorted(TOPOLOGY["services"]))
+@pytest.mark.parametrize("error_rate,minutes", [
+    (0.02, 720), (0.05, 240), (0.23, 18), (0.5, 60), (1.0, 1440),
+])
+def test_impact_never_exceeds_the_population_that_exists(service, error_rate, minutes):
+    """A 12h outage once claimed 1.58M affected users against a 196k population, because
+    reach grew linearly with duration and downstream services were added whole."""
+    estimate = estimate_impact(
+        make_alert(service=service,
+                   metrics={"error_rate_after": error_rate, "duration_minutes": minutes}),
+        TOPOLOGY,
+    )
+    ceiling = _population(estimate.blast_radius, TOPOLOGY, service)
+    assert estimate.affected_users_high <= ceiling, (
+        f"{service} claims {estimate.affected_users_high:,} affected "
+        f"but only {ceiling:,} people exist in the blast radius"
+    )
+
+
+def test_longer_outages_reach_proportionally_fewer_new_people():
+    """Doubling the duration must not double the audience -- the same users come back."""
+    short = estimate_impact(make_alert(metrics={"error_rate_after": 0.1, "duration_minutes": 60}), TOPOLOGY)
+    long_run = estimate_impact(make_alert(metrics={"error_rate_after": 0.1, "duration_minutes": 480}), TOPOLOGY)
+    assert long_run.affected_users_point > short.affected_users_point
+    assert long_run.affected_users_point < short.affected_users_point * 8
+
+
+def test_downstream_services_do_not_double_count_shared_users():
+    """web-frontend calls cart-service; a user going through both is one person."""
+    estimate = estimate_impact(
+        make_alert(service="cart-service", metrics={"error_rate_after": 1.0, "duration_minutes": 60}),
+        TOPOLOGY,
+    )
+    naive_sum = sum(
+        TOPOLOGY["services"][n]["unique_users_per_hour"]
+        for n in estimate.blast_radius if TOPOLOGY["services"][n].get("user_facing")
+    )
+    assert estimate.affected_users_point < naive_sum
