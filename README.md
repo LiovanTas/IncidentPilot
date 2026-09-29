@@ -5,7 +5,7 @@ commit caused it, estimates how many users are affected, posts a structured Slac
 and writes a resolution report — replacing the manual triage an on-call engineer would
 otherwise assemble by hand from Grafana, `git log` and the runbook wiki.
 
-Built on the Anthropic API (`claude-opus-5`) with tool use, RAG over a runbook corpus,
+Built on the Anthropic API (`claude-sonnet-5` by default) with tool use, RAG over a runbook corpus,
 and git correlation. Ships with a 20-incident replay harness so the accuracy claim is a
 measurement rather than an assertion.
 
@@ -59,7 +59,7 @@ whether the mechanism in it actually produces *this* symptom in *this* service.
 
 A hand-written tool-use loop rather than the SDK tool runner, because the resolution
 report needs the full tool transcript and the eval needs a hard per-incident turn
-ceiling. It runs `claude-opus-5` with adaptive thinking, configurable effort, streamed
+ceiling. It runs `claude-sonnet-5` by default with adaptive thinking, configurable effort, streamed
 turns, and a prompt-cache breakpoint on the static system prompt.
 
 Seven tools:
@@ -202,7 +202,8 @@ rows and token cost.
 | Arm | top-1 | top-3 (retrieval) | recall | MRR | wrong & unflagged | cost |
 | --- | --- | --- | --- | --- | --- | --- |
 | heuristic | 7/20 (35%) | 20/20 (100%) | 20/20 | 0.608 | 0 — defers on all 20 | $0.00 |
-| agent | *not yet measured* | 20/20 (100%) | 20/20 | 0.608 | *not yet measured* | — |
+| agent, `claude-opus-5` | 18/20 (90%) | 20/20 (100%) | 20/20 | 0.608 | 1 | $3.00 |
+| agent, `claude-sonnet-5` (default) | *not yet measured* | 20/20 (100%) | 20/20 | 0.608 | *not yet measured* | — |
 
 The heuristic arm is deterministic and reproducible. The agent arm has not been run yet;
 run it and paste the result here rather than assuming one.
@@ -216,7 +217,7 @@ All configuration is environment-driven. See `.env.example`.
 | Variable | Default | Notes |
 | --- | --- | --- |
 | `ANTHROPIC_API_KEY` | — | Unset means heuristic-only mode. Everything still runs. |
-| `INCIDENTPILOT_MODEL` | `claude-opus-5` | |
+| `INCIDENTPILOT_MODEL` | `claude-sonnet-5` | 40% of Opus 5's per-token price. Set `claude-opus-5` to reproduce the 18/20 result. |
 | `INCIDENTPILOT_EFFORT` | `high` | `low`–`max` |
 | `INCIDENTPILOT_MAX_TURNS` | `14` | Turn ceiling per incident; exceeding it falls back to the heuristic and flags for review |
 | `INCIDENTPILOT_REPO` | fixture repo | Repository under investigation. Read-only. |

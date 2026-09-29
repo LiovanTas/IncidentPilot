@@ -36,17 +36,30 @@ VARIANTS: dict[str, Variant] = {v.name: v for v in [
         name="baseline",
         overrides={},
         target=None,
-        hypothesis="The configuration that scored 18/20. Every other variant is judged "
-                   "against it, and its repeated runs set the noise band.",
+        hypothesis="Production defaults: claude-sonnet-5 with conversation-history caching. "
+                   "Every other variant is judged against it, and its repeated runs set the "
+                   "noise band. NOT the configuration that scored 18/20 -- that was "
+                   "claude-opus-5 without history caching; see the opus-5 variant.",
         risk="n/a",
+    ),
+    Variant(
+        name="opus-5",
+        overrides={"model": "claude-opus-5"},
+        target="accuracy",
+        hypothesis="Opus 5 scored 18/20 on the full benchmark. The question is whether it is "
+                   "worth 2.5x the per-token price of the Sonnet 5 baseline: if Sonnet holds "
+                   "the same accuracy, the default stays Sonnet.",
+        risk="Costs roughly 2.5x a Sonnet repeat. And if Sonnet also scores near-perfectly on "
+             "dev, the gap is unmeasurable here, not zero -- the harness will say so.",
     ),
     Variant(
         name="effort-medium",
         overrides={"effort": "medium"},
         target="cost",
         hypothesis="Most incidents need two or three diffs read and one matched to a "
-                   "symptom. Medium effort should hold accuracy while cutting output tokens "
-                   "(the expensive side, at $25/M) by roughly a third.",
+                   "symptom. Medium effort should hold accuracy while cutting output tokens -- "
+                   "priced at 5x input, and 52% of the bill on the last full run -- by "
+                   "roughly a third.",
         risk="The cross-service cases -- where the cause is in a shared library and the "
              "agent has to reason about who calls it -- are the ones most likely to need the "
              "extra thinking. Watch INC-06, INC-07 and INC-19 specifically.",

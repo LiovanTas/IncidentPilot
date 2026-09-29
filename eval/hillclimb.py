@@ -47,6 +47,7 @@ import run_eval  # noqa: E402  (sets the fixture-repo environment on import)
 import variants  # noqa: E402
 from incidentpilot.config import load_config  # noqa: E402
 from incidentpilot.pipeline import AgentConfigError, IncidentPilot  # noqa: E402
+from incidentpilot.pricing import price_for  # noqa: E402
 
 STATE_DIR = HERE / "hillclimb"
 STATE = STATE_DIR / "state.json"
@@ -58,7 +59,10 @@ REPO = HERE / "fixtures" / "repo"
 
 SPLIT_SEED = 20260929
 TEST_FRACTION = 0.4
-DEFAULT_COST_PER_INCIDENT = 0.15   # from the first full run; replaced once a baseline exists
+# Opus 5 measured $0.15/incident. Sonnet 5 is 40% of the per-token price, with better
+# caching on top, so this is a deliberately cautious estimate used only until a
+# baseline exists.
+DEFAULT_COST_PER_INCIDENT = 0.08
 
 # A cost or latency change smaller than this is not worth a config change even if real.
 MIN_RELATIVE_GAIN = 0.10
@@ -224,15 +228,17 @@ def decide(baseline: list[dict], candidate: list[dict], target: str | None) -> D
 # ========================================================================== running
 
 
-def _metrics(rows: list[dict]) -> dict:
-    agg = run_eval.aggregate(rows)
+def _metrics(rows: list[dict], model: str) -> dict:
+    agg = run_eval.aggregate(rows, model)
     cal = run_eval.calibration(rows)
     return {
         "n": agg["n"],
         "top1": agg["top1"],
         "unflagged_wrong": cal["unflagged_and_wrong"],
         "flagged_correct": cal["flagged_and_correct"],
-        "cost": agg["estimated_cost_usd"],
+        "cost": agg["estimated_cost_usd"] or 0.0,
+        "cache_hit_rate": agg["cache_hit_rate"],
+        "model": model,
         "seconds_total": round(sum(r["seconds"] for r in rows), 2),
         "tool_calls_mean": agg["mean_tool_calls"],
         "sources": agg["verdict_sources"],
@@ -268,6 +274,12 @@ def _guard_benchmark(state: dict) -> None:
             "not be comparable with the recorded baseline.\n"
             "Start a new campaign:  move eval/hillclimb/ aside, then run `init` again."
         )
+    if load_config().model != state["default_model"]:
+        raise SystemExit(
+            f"The default model changed from {state['default_model']} to {load_config().model} "
+            f"since this hill-climb started, so every variant would be compared against a "
+            f"baseline measured on a different model. Start a new campaign with `init --force`."
+        )
     tag = subprocess.run(["git", "-C", str(REPO), "rev-parse", "--verify", "-q", "benchmark-baseline"],
                          capture_output=True, text=True)
     if tag.returncode == 0:
@@ -291,9 +303,11 @@ def cmd_init(args: argparse.Namespace) -> int:
         "budget_usd": args.budget,
         "spent_usd": 0.0,
         "benchmark": split["benchmark"],
+        "default_model": load_config().model,
         "iterations": [],
     })
     print(f"Hill-climb initialised in {STATE_DIR}")
+    print(f"  model  : {load_config().model}")
     print(f"  budget : ${args.budget:.2f}")
     print(f"  dev    : {len(split['dev'])} incidents  {', '.join(split['dev'])}")
     print(f"  test   : {len(split['test'])} incidents  (held out -- only aggregates are shown)")
@@ -322,6 +336,10 @@ def cmd_run(args: argparse.Namespace) -> int:
     by_id = {r["incident_id"]: r for r in records}
     n = len(split["dev"]) + len(split["test"])
     per_incident = (baseline_it["cost_per_incident"] if baseline_it else DEFAULT_COST_PER_INCIDENT)
+    # A variant on a pricier model costs proportionally more than the baseline measured.
+    base_price, var_price = price_for(state["default_model"]), price_for(config.model)
+    if base_price and var_price:
+        per_incident *= var_price.output / base_price.output
     estimate = per_incident * n * args.repeats
     remaining = state["budget_usd"] - state["spent_usd"]
     print(f"{variant.name}: {args.repeats} repeat(s) x {n} incidents, estimated ${estimate:.2f} "
@@ -354,7 +372,7 @@ def cmd_run(args: argparse.Namespace) -> int:
                 print(f"  [rep {rep} {split_name:4s}] {incident_id} {shown} "
                       f"conf={row['confidence']:.2f} tools={row['tool_calls']} {row['seconds']}s")
 
-        metrics = {s: _metrics(rows) for s, rows in rows_by_split.items()}
+        metrics = {s: _metrics(rows, config.model) for s, rows in rows_by_split.items()}
         agent_verdicts = sum(m["sources"].get("agent", 0) for m in metrics.values())
         if agent_verdicts != n:
             print(f"\nOnly {agent_verdicts}/{n} verdicts came from the agent -- the rest fell back "
@@ -481,7 +499,7 @@ def main() -> int:
     sub = parser.add_subparsers(dest="command", required=True)
 
     p = sub.add_parser("init", help="create the split and state")
-    p.add_argument("--budget", type=float, default=30.0, help="USD ceiling for the campaign")
+    p.add_argument("--budget", type=float, default=10.0, help="USD ceiling for the campaign")
     p.add_argument("--force", action="store_true")
     p.set_defaults(func=cmd_init)
 

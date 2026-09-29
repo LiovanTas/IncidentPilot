@@ -25,6 +25,10 @@ log = logging.getLogger("incidentpilot.agent")
 
 FALLBACK_BETA = "server-side-fallback-2026-07-01"
 
+# Server-side refusal fallbacks are only requested on models they are documented for.
+# Anything else gets a plain request rather than a parameter it may not accept.
+FALLBACK_MODELS = frozenset({"claude-opus-5", "claude-fable-5-1"})
+
 
 class AgentUnavailable(RuntimeError):
     """Raised when the Anthropic SDK or credentials are missing."""
@@ -145,7 +149,7 @@ class DiagnosisAgent:
         self.escalate_below = escalate_below
         # Fixed for the agent's lifetime, so every request it sends shares one cache prefix.
         self.tools = tools_for(enable_read_file)
-        self._use_fallbacks = True
+        self._use_fallbacks = model in FALLBACK_MODELS
         if client is not None:
             self.client = client
         else:
@@ -158,11 +162,21 @@ class DiagnosisAgent:
     # ------------------------------------------------------------------ requests
 
     def _request_kwargs(self, messages: list[dict[str, Any]]) -> dict[str, Any]:
+        # Two cache breakpoints, each doing a different job:
+        #
+        # * On the system prompt: covers tools + system, which are identical for every
+        #   incident, so the second alert in a burst reads them from cache.
+        # * Top-level (automatic): placed on the last block of the conversation. Every
+        #   turn of the loop resends the whole history -- alert, candidates, every diff
+        #   read so far -- so turn N+1 reads everything up to turn N from cache and pays
+        #   full price only for what is new. Without it, that history was re-billed at the
+        #   full input rate on every turn, 44% of the cost of the last full run.
         return {
             "model": self.model,
             "max_tokens": self.max_tokens,
             "thinking": {"type": "adaptive"},
             "output_config": {"effort": self.effort},
+            "cache_control": {"type": "ephemeral"},
             "system": [{
                 "type": "text",
                 "text": SYSTEM_PROMPT,

@@ -42,12 +42,11 @@ os.environ.setdefault("INCIDENTPILOT_OUT", str(ROOT / "eval" / "results" / "repo
 from incidentpilot.config import load_config  # noqa: E402
 from incidentpilot.ingest import normalize  # noqa: E402
 from incidentpilot.pipeline import AgentConfigError, IncidentPilot  # noqa: E402
+from incidentpilot.pricing import cache_hit_rate, cost_usd  # noqa: E402
 
 INCIDENTS_JSON = ROOT / "eval" / "incidents.json"
 RESULTS_DIR = ROOT / "eval" / "results"
 
-# Claude Opus 5 list price, USD per million tokens.
-PRICE_IN, PRICE_OUT, PRICE_CACHE_READ = 5.00, 25.00, 0.50
 
 
 def rank_of(sha: str, candidates: list) -> int | None:
@@ -105,7 +104,7 @@ def score_one(record: dict, pilot: IncidentPilot, use_agent: bool) -> dict:
     }
 
 
-def aggregate(rows: list[dict]) -> dict:
+def aggregate(rows: list[dict], model: str = "") -> dict:
     n = len(rows)
     if not n:
         return {}
@@ -118,12 +117,9 @@ def aggregate(rows: list[dict]) -> dict:
     for row in rows:
         for key, value in (row["usage"] or {}).items():
             usage[key] = usage.get(key, 0) + value
-    cost = (
-        usage.get("input_tokens", 0) / 1e6 * PRICE_IN
-        + usage.get("cache_creation_input_tokens", 0) / 1e6 * PRICE_IN * 1.25
-        + usage.get("cache_read_input_tokens", 0) / 1e6 * PRICE_CACHE_READ
-        + usage.get("output_tokens", 0) / 1e6 * PRICE_OUT
-    )
+    # Unknown model -> None rather than a confident number at somebody else's rates.
+    cost = cost_usd(model, usage) if usage else 0.0
+    hit_rate = cache_hit_rate(usage)
 
     sources: dict[str, int] = {}
     for r in rows:
@@ -144,8 +140,27 @@ def aggregate(rows: list[dict]) -> dict:
         "mean_tool_calls": round(sum(r["tool_calls"] for r in rows) / n, 1),
         "mean_seconds": round(sum(r["seconds"] for r in rows) / n, 1),
         "total_usage": usage,
-        "estimated_cost_usd": round(cost, 4),
+        "estimated_cost_usd": round(cost, 4) if cost is not None else None,
+        "cache_hit_rate": round(hit_rate, 3) if hit_rate is not None else None,
     }
+
+
+def caching_problem(summary: dict) -> str | None:
+    """Prompt caching fails silently: a prefix under the model's minimum cacheable size, or
+    a byte that changes between requests, just means every read is billed in full. Zero
+    cache reads across a multi-incident agent run can only mean one of those."""
+    usage = summary.get("total_usage") or {}
+    if summary.get("n", 0) < 2 or not usage.get("input_tokens"):
+        return None
+    if usage.get("cache_read_input_tokens", 0) == 0:
+        return ("prompt caching is not working: zero cache reads across "
+                f"{summary['n']} incidents. Either the cached prefix is below this model's "
+                "minimum cacheable size, or something in it changes between requests.")
+    return None
+
+
+def _money(value) -> str:
+    return "unknown (no price for this model)" if value is None else f"${value}"
 
 
 def calibration(rows: list[dict]) -> dict:
@@ -298,9 +313,19 @@ def _arm_narrative(arm: str, summary: dict, cal: dict, rows: list[dict]) -> list
     else:
         out.append("- Every answer it stood behind was correct.")
 
-    out.append(f"- Typical time to an answer: {summary['mean_seconds']}s"
-               + (f", at ${summary['estimated_cost_usd']} for all {n}."
-                  if summary["estimated_cost_usd"] else ", at no API cost."))
+    cost = summary["estimated_cost_usd"]
+    if cost is None:
+        cost_text = ", at an unknown cost (no price on file for this model)."
+    elif cost:
+        cost_text = f", at ${cost} for all {n}"
+        if summary.get("cache_hit_rate") is not None:
+            cost_text += f" ({summary['cache_hit_rate']:.0%} of input served from cache)"
+        cost_text += "."
+    else:
+        cost_text = ", at no API cost."
+    out.append(f"- Typical time to an answer: {summary['mean_seconds']}s{cost_text}")
+    if arm == "agent" and caching_problem(summary):
+        out.append(f"- **Warning:** {caching_problem(summary)}")
     out.append("")
     return out
 
@@ -379,7 +404,7 @@ def render_markdown(report: dict) -> str:
             f"| {c.get('unflagged_and_wrong', '-')} | {c.get('flagged_and_correct', '-')} "
             f"| {'no signal' if gap is None else str(gap) + 'pp'} "
             f"| {summary['mean_tool_calls']} | {summary['mean_seconds']} "
-            f"| ${summary['estimated_cost_usd']} |"
+            f"| {_money(summary['estimated_cost_usd'])} |"
         )
     lines.append("")
     lines.append(f"Model: `{report['model']}` (effort {report['effort']}) · "
@@ -453,7 +478,7 @@ def main() -> int:
         "effort": config.effort,
         "embedder": pilot.index.embedder.name,
         "runbook_chunks": pilot.index.size,
-        "arms": {arm: aggregate(rows[arm]) for arm in arms},
+        "arms": {arm: aggregate(rows[arm], config.model) for arm in arms},
         "calibration": {arm: calibration(rows[arm]) for arm in arms},
         "rows": rows,
     }
@@ -470,7 +495,10 @@ def main() -> int:
         s = report["arms"][arm]
         print(f"{arm:10s} top-1 {s['top1']}/{s['n']} ({s['top1_pct']}%)  "
               f"top-3 {s['top3_retrieval']}/{s['n']}  recall {s['recall']}/{s['n']}  "
-              f"MRR {s['mrr']}  cost ${s['estimated_cost_usd']}")
+              f"MRR {s['mrr']}  cost {_money(s['estimated_cost_usd'])}"
+              + (f"  cache hits {s['cache_hit_rate']:.0%}" if s.get("cache_hit_rate") is not None else ""))
+        if arm == "agent" and caching_problem(s):
+            print(f"{'':10s} WARNING: {caching_problem(s)}")
         degraded = s["n"] - s["verdict_sources"].get("agent", 0) if arm == "agent" else 0
         if degraded:
             print(f"{'':10s} NOT AN AGENT RESULT: {degraded}/{s['n']} verdicts came from the "

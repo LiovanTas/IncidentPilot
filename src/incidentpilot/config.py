@@ -45,7 +45,9 @@ def _env_path(name: str, default: Path) -> Any:
 @dataclass(frozen=True)
 class Config:
     # --- Claude ---
-    model: str = _env("INCIDENTPILOT_MODEL", "claude-opus-5")
+    # Sonnet 5 by default: 40% of Opus 5's per-token price. The 18/20 benchmark result was
+    # measured on claude-opus-5; set INCIDENTPILOT_MODEL=claude-opus-5 to reproduce it.
+    model: str = _env("INCIDENTPILOT_MODEL", "claude-sonnet-5")
     effort: str = _env("INCIDENTPILOT_EFFORT", "high")
     max_tokens: int = _env_int("INCIDENTPILOT_MAX_TOKENS", 16000)
     max_agent_turns: int = _env_int("INCIDENTPILOT_MAX_TURNS", 14)
