@@ -71,6 +71,14 @@ class CommitCandidate:
     score: float = 0.0
     signals: dict[str, float] = field(default_factory=dict)
     rationale: list[str] = field(default_factory=list)
+    # When it landed on the main line. Differs from authored_at for anything that went
+    # through a pull request; None when only the author date is known.
+    landed_at: datetime | None = None
+
+    @property
+    def shipped_at(self) -> datetime:
+        """Best available estimate of when this change reached production."""
+        return self.landed_at or self.authored_at
 
     @property
     def short_sha(self) -> str:

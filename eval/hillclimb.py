@@ -73,8 +73,18 @@ MAX_NEEDLESS_ESCALATION = 0.10
 # ============================================================================ split
 
 
+# Bumped whenever the replay changes what the agent can see, so a baseline measured under
+# one protocol is never compared with a variant run under another -- the incidents file can
+# be byte-identical while the experiment underneath it is not.
+#   1  repository viewed from HEAD: later history visible through file-history lookups
+#   2  repository pinned to each incident's onset, commits dated by when they landed
+REPLAY_PROTOCOL = 2
+
+
 def _benchmark_fingerprint() -> str:
-    return hashlib.sha256(INCIDENTS.read_bytes()).hexdigest()[:16]
+    digest = hashlib.sha256(INCIDENTS.read_bytes())
+    digest.update(f"replay-protocol-{REPLAY_PROTOCOL}".encode())
+    return digest.hexdigest()[:16]
 
 
 def _cause_is_cross_service(record: dict) -> bool:
@@ -270,8 +280,9 @@ def _load_reps(iteration: dict) -> list[dict]:
 def _guard_benchmark(state: dict) -> None:
     if state["benchmark"] != _benchmark_fingerprint():
         raise SystemExit(
-            "eval/incidents.json has changed since this hill-climb started, so results would "
-            "not be comparable with the recorded baseline.\n"
+            "The benchmark has changed since this hill-climb started -- either eval/incidents.json "
+            f"was edited or the replay protocol moved on (now v{REPLAY_PROTOCOL}) -- so results "
+            "would not be comparable with the recorded baseline.\n"
             "Start a new campaign:  move eval/hillclimb/ aside, then run `init` again."
         )
     if load_config().model != state["default_model"]:

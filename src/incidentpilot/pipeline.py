@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import logging
+from datetime import timedelta
 from pathlib import Path
 from typing import Any
 
@@ -10,7 +11,7 @@ from . import report as report_mod
 from . import slack as slack_mod
 from .agent import AgentUnavailable, DiagnosisAgent, ToolContext, heuristic_diagnosis
 from .config import Config, load_config
-from .gitctx import GitRepo, collect_candidates
+from .gitctx import LEAD_MINUTES, GitRepo, collect_candidates
 from .impact import dependents_of, estimate_impact, load_topology
 from .ingest import alert_keywords
 from .models import Alert, IncidentResult, make_incident_id, utcnow
@@ -94,9 +95,14 @@ class IncidentPilot:
         incident_id = make_incident_id(alert)
         log.info("%s: %s", incident_id, alert.summary_line)
 
+        # Every git query for this incident sees the repository as it stood when the alert
+        # fired. Live, that is HEAD. Replaying a past incident, anything later -- a revert,
+        # a fix -- would hand the agent the answer.
+        repo = self.repo.at(alert.started_at + timedelta(minutes=LEAD_MINUTES))
+
         keywords = alert_keywords(alert)
         candidates = collect_candidates(
-            self.repo, alert, self.topology, keywords,
+            repo, alert, self.topology, keywords,
             self.config.lookback_hours, self.config.max_candidates,
         )
         runbooks = self.index.search(self._runbook_query(alert), top_k=self.config.top_k)
@@ -110,7 +116,7 @@ class IncidentPilot:
             diagnosis = heuristic_diagnosis(alert, candidates, runbooks)
         else:
             ctx = ToolContext(
-                alert=alert, repo=self.repo, index=self.index, topology=self.topology,
+                alert=alert, repo=repo, index=self.index, topology=self.topology,
                 candidates=candidates, lookback_hours=self.config.lookback_hours,
                 keywords=keywords,
             )

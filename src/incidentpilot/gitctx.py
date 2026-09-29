@@ -9,9 +9,10 @@ Claude agent arbitrates on top of it.
 from __future__ import annotations
 
 import math
+import os
 import re
 import subprocess
-from datetime import timedelta
+from datetime import datetime, timedelta
 from pathlib import Path
 
 from .models import Alert, CommitCandidate, parse_ts
@@ -36,41 +37,123 @@ RISK_PATTERNS: dict[str, tuple[str, float]] = {
 
 _TOKEN_RE = re.compile(r"[a-z0-9]+")
 
+# Alerts lag the change that caused them, so the window reaches this far past onset.
+LEAD_MINUTES = 30.0
+
+# A merge of a long-lived branch can bring in hundreds of commits; beyond this many from
+# one merge, the rest are dropped rather than flooding the candidate list.
+MAX_MERGE_EXPANSION = 50
+
 
 class GitError(RuntimeError):
     pass
 
 
 class GitRepo:
-    """Thin, read-only wrapper over the git CLI."""
+    """Thin, read-only wrapper over the git CLI, viewed from one point in history.
 
-    def __init__(self, path: Path | str):
+    `ref` is the newest commit this view can see. In production it is HEAD: when an alert
+    has just fired, nothing newer exists. When replaying a past incident it must be the
+    commit that was current when the alert fired (see `at`), because the repository's later
+    history contains the answer -- a revert or a fix that names the guilty commit. Every
+    query walks backwards from `ref`, and a commit that is not an ancestor of it is refused.
+    """
+
+    def __init__(self, path: Path | str, ref: str = "HEAD", timeout: int = 120):
         self.path = Path(path)
+        self.ref = ref
+        # Seconds per git call. Generous enough for any local query; a first read of a large
+        # window from a partial clone downloads file contents and needs far longer.
+        self.timeout = timeout
         if not (self.path / ".git").exists():
             raise GitError(f"not a git repository: {self.path}")
 
-    def _run(self, *args: str, timeout: int = 60) -> str:
+    def _run(self, *args: str, stdin: str | None = None) -> str:
         proc = subprocess.run(
-            ["git", "-C", str(self.path), *args],
-            capture_output=True, text=True, timeout=timeout, encoding="utf-8", errors="replace",
+            ["git", "-C", str(self.path), *args], input=stdin, capture_output=True, text=True,
+            timeout=self.timeout, encoding="utf-8", errors="replace",
         )
         if proc.returncode != 0:
-            raise GitError(f"git {' '.join(args)} failed: {proc.stderr.strip()}")
+            raise GitError(f"git {' '.join(args[:4])} failed: {proc.stderr.strip()}")
         return proc.stdout
 
-    def commits_in_window(self, alert: Alert, lookback_hours: float, lead_minutes: float = 30.0
-                          ) -> list[CommitCandidate]:
-        """Commits authored between (onset - lookback) and (onset + lead)."""
+    # ------------------------------------------------------------------ the past
+
+    def at(self, when: datetime) -> "GitRepo":
+        """The repository as it stood at `when`: the newest commit on the main line that had
+        landed by then. Nothing after it is visible through the returned view."""
+        sha = self._run("rev-list", "-1", "--first-parent", f"--before={when.isoformat()}",
+                        self.ref).strip()
+        if not sha:
+            raise GitError(f"no commits on the main line before {when.isoformat()}")
+        return GitRepo(self.path, ref=sha, timeout=self.timeout)
+
+    def _require_visible(self, sha: str) -> None:
+        if self.ref == "HEAD":
+            return
+        # Commits are always local, even in a blob:none partial clone. A SHA that is not
+        # local does not exist as far as this incident is concerned -- and letting git go
+        # and look for it on the remote can pull hundreds of thousands of objects.
+        proc = subprocess.run(
+            ["git", "-C", str(self.path), "merge-base", "--is-ancestor", sha, self.ref],
+            capture_output=True, text=True, env={**os.environ, "GIT_NO_LAZY_FETCH": "1"},
+        )
+        if proc.returncode != 0:
+            raise GitError(f"commit {sha} does not exist in the repository as of this incident")
+
+    # ------------------------------------------------------------------ queries
+
+    def commits_in_window(self, alert: Alert, lookback_hours: float,
+                          lead_minutes: float = LEAD_MINUTES) -> list[CommitCandidate]:
+        """Every commit that *landed on the main line* between (onset - lookback) and
+        (onset + lead), stamped with when it landed.
+
+        Landing time, not author time, is what an incident correlates with. On GitHub a
+        commit can be written days before it merges, and in a merge-commit workflow even its
+        committer date is the branch date -- so a change merged two hours before the alert
+        could be dated five days earlier and fall outside the window entirely. Walking the
+        first-parent line finds what actually shipped; a merge's commits are dated by the
+        merge.
+        """
+        landed = self.landed_in_window(alert, lookback_hours, lead_minutes)
+        if not landed:
+            return []
+
+        raw = self._run("log", "--no-walk=unsorted", "--stdin",
+                        f"--pretty=format:{_LOG_FORMAT}", "--numstat", stdin="\n".join(landed))
+        commits = _parse_log(raw)
+        for commit in commits:
+            commit.landed_at = parse_ts(landed[commit.sha])
+        return commits
+
+    def landed_in_window(self, alert: Alert, lookback_hours: float,
+                         lead_minutes: float = LEAD_MINUTES) -> dict[str, str]:
+        """SHA -> ISO landing time for everything that shipped in the window. Metadata only,
+        so it never downloads file contents from a partial clone."""
         since = alert.started_at - timedelta(hours=lookback_hours)
         until = alert.started_at + timedelta(minutes=lead_minutes)
-        raw = self._run(
-            "log", "--no-merges", f"--since={since.isoformat()}", f"--until={until.isoformat()}",
-            f"--pretty=format:{_LOG_FORMAT}", "--numstat",
+        mainline = self._run(
+            "log", self.ref, "--first-parent", f"--since={since.isoformat()}",
+            f"--until={until.isoformat()}", f"--format=%H{FIELD}%P{FIELD}%cI",
         )
-        return _parse_log(raw)
+        landed: dict[str, str] = {}
+        for line in mainline.splitlines():
+            if not line.strip():
+                continue
+            sha, parents, landed_at = line.split(FIELD)
+            parent_list = parents.split()
+            if len(parent_list) <= 1:
+                landed.setdefault(sha, landed_at)
+                continue
+            branch = self._run("log", "--no-merges", f"--max-count={MAX_MERGE_EXPANSION}",
+                               "--format=%H", f"{parent_list[0]}..{sha}")
+            for branch_sha in branch.split():
+                landed.setdefault(branch_sha, landed_at)
+        return landed
 
     def show(self, sha: str, max_chars: int = 6000) -> str:
         """Unified diff for a commit, truncated so it cannot blow up the context window."""
+        self._require_visible(sha)
         out = self._run("show", "--stat", "--patch", "--no-color", sha)
         if len(out) > max_chars:
             out = out[:max_chars] + f"\n... [diff truncated at {max_chars} chars]"
@@ -78,17 +161,18 @@ class GitRepo:
 
     def file_at(self, sha: str, path: str, max_chars: int = 8000) -> str:
         """A whole file as it stood at `sha` -- the context a diff hunk leaves out."""
+        self._require_visible(sha)
         out = self._run("show", f"{sha}:{path}")
         if len(out) > max_chars:
             out = out[:max_chars] + f"\n... [file truncated at {max_chars} chars]"
         return out
 
     def file_history(self, path: str, limit: int = 10) -> str:
-        return self._run("log", f"-{limit}", "--pretty=format:%h %aI %an %s", "--", path)
+        return self._run("log", self.ref, f"-{limit}", "--pretty=format:%h %aI %an %s", "--", path)
 
     def blame_summary(self, path: str, limit: int = 40) -> str:
         try:
-            out = self._run("blame", "--line-porcelain", "-L", f"1,{limit}", path)
+            out = self._run("blame", "--line-porcelain", "-L", f"1,{limit}", self.ref, "--", path)
         except GitError as exc:
             return f"blame unavailable: {exc}"
         authors: dict[str, int] = {}
@@ -142,7 +226,7 @@ def services_for_files(files: list[str], topology: dict) -> list[str]:
 
 
 def _recency_signal(commit: CommitCandidate, alert: Alert) -> tuple[float, str]:
-    delta_h = (alert.started_at - commit.authored_at).total_seconds() / 3600.0
+    delta_h = (alert.started_at - commit.shipped_at).total_seconds() / 3600.0
     if delta_h < -0.5:
         return 0.0, "landed after the alert fired"
     if delta_h < 0:
@@ -239,7 +323,7 @@ def rank_candidates(alert: Alert, commits: list[CommitCandidate], topology: dict
         if recency == 0.0:
             commit.score = 0.0
 
-    commits.sort(key=lambda c: (-c.score, -c.authored_at.timestamp()))
+    commits.sort(key=lambda c: (-c.score, -c.shipped_at.timestamp()))
     return commits
 
 
