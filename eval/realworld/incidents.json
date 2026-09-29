@@ -1,0 +1,347 @@
+[
+  {
+    "incident_id": "RW-prometheus-01",
+    "repo": "prometheus",
+    "repo_url": "https://github.com/prometheus/prometheus.git",
+    "ground_truth_sha": "0e9e3e068d7e164a0069240cf54cbddc53abbe22",
+    "ground_truth_subject": "Add flags to build prometheus statically",
+    "revert_sha": "9c8112a053c7e6ec0d91e1b240a7613b1f22f906",
+    "hours_to_revert": 16.1,
+    "window_commits": 22,
+    "alert": {
+      "fingerprint": "prometheus-9c8112a053",
+      "source": "generic",
+      "service": "prometheus",
+      "severity": "sev2",
+      "title": "Not only do we know this to produce problematic artifacts, it refuses",
+      "description": "Not only do we know this to produce problematic artifacts, it refuses\nto build on Mac OS X.\nTMPDIR=/tmp GOROOT=/Users/mattproud/Development/go/src/github.com/prometheus/prometheus/.build/root/go GOPATH=/Users/mattproud/Development/go/src/github.com/prometheus/prometheus/.build/root/gopath /Users/mattproud/Development/go/src/github.com/prometheus/prometheus/.build/root/go/bin/go build -o prometheus -ldflags \" -X main.buildVersion -X main.buildBranch refactor/storage/modify-append-signature -X main.buildUser mattproud.local -X main.buildDate -11:15:49 -X main.goVersion 1.1 -X main.leveldbVersion 1.12.0 -X main.protobufVersion 2.5.0 -X main.snappyVersion 1.1.0 -linkmode external -extldflags '-lstdc++ -lpthread -static /Users/mattproud/Development/go/src/github.com/prometheus/prometheus/.build/root/lib/libleveldb.a /Users/mattproud/Development/go/src/github.com/prometheus/prometheus/.build/root/lib/libsnappy.a'\" .\n# _/Users/mattproud/Development/go/src/github.com/prometheus/prometheus",
+      "started_at": "2013-08-15T08:19:44Z",
+      "labels": {
+        "repo": "prometheus"
+      },
+      "metrics": {}
+    }
+  },
+  {
+    "incident_id": "RW-moby-01",
+    "repo": "moby",
+    "repo_url": "https://github.com/moby/moby.git",
+    "ground_truth_sha": "5d2006256f15f7252c11bd72d632de26a8b2ff06",
+    "ground_truth_subject": "API: /info: remove BridgeNfIptables, BridgeNfIp6tables fields",
+    "revert_sha": "eacbbdeec68779be81983f61f5de5f91d52f656a",
+    "hours_to_revert": 24.3,
+    "window_commits": 41,
+    "alert": {
+      "fingerprint": "moby-eacbbdeec6",
+      "source": "generic",
+      "service": "moby",
+      "severity": "sev2",
+      "title": "caused some issues in the docker/cli formatting code that needs some",
+      "description": "caused some issues in the docker/cli formatting code that needs some\ninvestigating.",
+      "started_at": "2025-04-11T11:47:10Z",
+      "labels": {
+        "repo": "moby"
+      },
+      "metrics": {}
+    }
+  },
+  {
+    "incident_id": "RW-moby-02",
+    "repo": "moby",
+    "repo_url": "https://github.com/moby/moby.git",
+    "ground_truth_sha": "87775923971f93828610335b272129b33571541e",
+    "ground_truth_subject": "Return no basic auth creds error when needed",
+    "revert_sha": "40fde69be9f2ce355498ee514a1c028d3a698744",
+    "hours_to_revert": 28.6,
+    "window_commits": 49,
+    "alert": {
+      "fingerprint": "moby-40fde69be9",
+      "source": "generic",
+      "service": "moby",
+      "severity": "sev2",
+      "title": "turns out to break other test cases/the registry flow.",
+      "description": "turns out to break other test cases/the registry flow.\nThe correct place to handle missing credentials is instead",
+      "started_at": "2023-10-13T16:39:48Z",
+      "labels": {
+        "repo": "moby"
+      },
+      "metrics": {}
+    }
+  },
+  {
+    "incident_id": "RW-moby-03",
+    "repo": "moby",
+    "repo_url": "https://github.com/moby/moby.git",
+    "ground_truth_sha": "d5cd032a86617249eadd7142227c5355ba9164b4",
+    "ground_truth_subject": "dockerversion placeholder for library-import",
+    "revert_sha": "b78ca243d9fc25d81c1b50008ee69f3e71e940f6",
+    "hours_to_revert": 5.8,
+    "window_commits": 56,
+    "alert": {
+      "fingerprint": "moby-b78ca243d9",
+      "source": "generic",
+      "service": "moby",
+      "severity": "sev2",
+      "title": "Commit caused issues on systems with case-insensitive filesystems.",
+      "description": "Commit caused issues on systems with case-insensitive filesystems.",
+      "started_at": "2015-10-28T00:23:53Z",
+      "labels": {
+        "repo": "moby"
+      },
+      "metrics": {}
+    }
+  },
+  {
+    "incident_id": "RW-grafana-01",
+    "repo": "grafana",
+    "repo_url": "https://github.com/grafana/grafana.git",
+    "ground_truth_sha": "413be3a6a0549c211677943ef5e77c67ff39049f",
+    "ground_truth_subject": "Modules: Add goavro dependency for extensions (#20920)",
+    "revert_sha": "30771f25bf03c0084b34104bf1da7c8c7daf12dd",
+    "hours_to_revert": 3.6,
+    "window_commits": 42,
+    "alert": {
+      "fingerprint": "grafana-30771f25bf",
+      "source": "generic",
+      "service": "grafana",
+      "severity": "sev2",
+      "title": "Goavro doesn't compile on 32-bit systems.",
+      "description": "Goavro doesn't compile on 32-bit systems.",
+      "started_at": "2019-12-06T12:10:07Z",
+      "labels": {
+        "repo": "grafana"
+      },
+      "metrics": {}
+    }
+  },
+  {
+    "incident_id": "RW-go-01",
+    "repo": "go",
+    "repo_url": "https://github.com/golang/go.git",
+    "ground_truth_sha": "361d51a6b58bccaab0559e06737c918018a7a5fa",
+    "ground_truth_subject": "runtime: remove the pc field of _defer struct",
+    "revert_sha": "48c7fa13c63761c8b52cbfac1f9eab062d475c0c",
+    "hours_to_revert": 67.6,
+    "window_commits": 51,
+    "alert": {
+      "fingerprint": "go-48c7fa13c6",
+      "source": "generic",
+      "service": "go",
+      "severity": "sev2",
+      "title": "Breaks some tests inside Google (on arm64?)",
+      "description": "Breaks some tests inside Google (on arm64?)",
+      "started_at": "2025-11-06T12:00:27Z",
+      "labels": {
+        "repo": "go"
+      },
+      "metrics": {}
+    }
+  },
+  {
+    "incident_id": "RW-go-02",
+    "repo": "go",
+    "repo_url": "https://github.com/golang/go.git",
+    "ground_truth_sha": "988eb0d11e8d96e8ca150f401ed82326b276f653",
+    "ground_truth_subject": "cmd/doc: better support for no network",
+    "revert_sha": "ef3bb638de442dc41d1e34a32e893d2041731e8c",
+    "hours_to_revert": 21.4,
+    "window_commits": 154,
+    "alert": {
+      "fingerprint": "go-ef3bb638de",
+      "source": "generic",
+      "service": "go",
+      "severity": "sev2",
+      "title": "breaks viewing documentation for unfetched modules",
+      "description": "breaks viewing documentation for unfetched modules",
+      "started_at": "2025-05-22T17:05:12Z",
+      "labels": {
+        "repo": "go"
+      },
+      "metrics": {}
+    }
+  },
+  {
+    "incident_id": "RW-go-03",
+    "repo": "go",
+    "repo_url": "https://github.com/golang/go.git",
+    "ground_truth_sha": "352dd2d932c1c1c6dbc3e112fcdfface07d4fffb",
+    "ground_truth_subject": "runtime: only poll network from one P at a time in findRunnable",
+    "revert_sha": "489917fc400ee25d34dfb06306da3b3cef126963",
+    "hours_to_revert": 13.0,
+    "window_commits": 14,
+    "alert": {
+      "fingerprint": "go-489917fc40",
+      "source": "generic",
+      "service": "go",
+      "severity": "sev2",
+      "title": "cockroachdb benchmark failing. Likely due to .",
+      "description": "cockroachdb benchmark failing. Likely due to .",
+      "started_at": "2025-04-22T21:49:52Z",
+      "labels": {
+        "repo": "go"
+      },
+      "metrics": {}
+    }
+  },
+  {
+    "incident_id": "RW-go-04",
+    "repo": "go",
+    "repo_url": "https://github.com/golang/go.git",
+    "ground_truth_sha": "c51f6c62576ab3088a981b9cef90e413ac99e333",
+    "ground_truth_subject": "go/types, types2: track gotypesalias non-default behavior",
+    "revert_sha": "5bb4f4947158311255583ff2d6acd427ac2cb0d8",
+    "hours_to_revert": 15.4,
+    "window_commits": 29,
+    "alert": {
+      "fingerprint": "go-5bb4f49471",
+      "source": "generic",
+      "service": "go",
+      "severity": "sev2",
+      "title": "This breaks toolchain bootstrapping in Google. Root cause investigation is pending.",
+      "description": "This breaks toolchain bootstrapping in Google. Root cause investigation is pending.\nError message is\n```\n<unknown line number>: internal compiler error: panic: godebug: Value of name not listed in godebugs.All: gotypesalias\n```",
+      "started_at": "2024-04-17T13:04:17Z",
+      "labels": {
+        "repo": "go"
+      },
+      "metrics": {}
+    }
+  },
+  {
+    "incident_id": "RW-go-05",
+    "repo": "go",
+    "repo_url": "https://github.com/golang/go.git",
+    "ground_truth_sha": "6382893890b82bbc0439eade5b132d9d1b3fb3a7",
+    "ground_truth_subject": "math/rand/v2: add ChaCha8",
+    "revert_sha": "82fc03f9c9a1e3539d60ce085500dde3af5ff0b7",
+    "hours_to_revert": 20.6,
+    "window_commits": 27,
+    "alert": {
+      "fingerprint": "go-82fc03f9c9",
+      "source": "generic",
+      "service": "go",
+      "severity": "sev2",
+      "title": "Causes failures on big endian platforms and riscv64.",
+      "description": "Causes failures on big endian platforms and riscv64.\nPossibly a bug in the generic implementation.",
+      "started_at": "2023-11-20T17:39:03Z",
+      "labels": {
+        "repo": "go"
+      },
+      "metrics": {}
+    }
+  },
+  {
+    "incident_id": "RW-go-06",
+    "repo": "go",
+    "repo_url": "https://github.com/golang/go.git",
+    "ground_truth_sha": "c1dfbf72e1298df8495171810a553836e5027f98",
+    "ground_truth_subject": "cmd/compile: use shorter ANDL/TESTL if upper 32 bits are known to be zero",
+    "revert_sha": "0e02baa59af2e8e3e26702bd8ebe72ae5a0e39c7",
+    "hours_to_revert": 45.8,
+    "window_commits": 40,
+    "alert": {
+      "fingerprint": "go-0e02baa59a",
+      "source": "generic",
+      "service": "go",
+      "severity": "sev2",
+      "title": "TESTL rule is wrong when the result is used for an ordered comparison.",
+      "description": "TESTL rule is wrong when the result is used for an ordered comparison.",
+      "started_at": "2023-08-30T14:15:28Z",
+      "labels": {
+        "repo": "go"
+      },
+      "metrics": {}
+    }
+  },
+  {
+    "incident_id": "RW-go-07",
+    "repo": "go",
+    "repo_url": "https://github.com/golang/go.git",
+    "ground_truth_sha": "99914db5eea927c7694276169585f1fff9e614c8",
+    "ground_truth_subject": "cmd/internal/objabi: regenerate RelocType stringer file",
+    "revert_sha": "aafc734c7807bafeb8aa69c019494f69965154b0",
+    "hours_to_revert": 45.2,
+    "window_commits": 34,
+    "alert": {
+      "fingerprint": "go-aafc734c78",
+      "source": "generic",
+      "service": "go",
+      "severity": "sev2",
+      "title": "aka",
+      "description": "aka\ninit order change that required this CL is causing some problems in some internal Google programs.",
+      "started_at": "2023-03-09T18:18:53Z",
+      "labels": {
+        "repo": "go"
+      },
+      "metrics": {}
+    }
+  },
+  {
+    "incident_id": "RW-go-08",
+    "repo": "go",
+    "repo_url": "https://github.com/golang/go.git",
+    "ground_truth_sha": "66165739828b8326b625463beb51ae510b2ab8dd",
+    "ground_truth_subject": "cmd/cgo, cmd/compile, cmd/link: remove old style build tags",
+    "revert_sha": "902da52f7b5826c2083effc20b209f39d58d2919",
+    "hours_to_revert": 3.4,
+    "window_commits": 128,
+    "alert": {
+      "fingerprint": "go-902da52f7b",
+      "source": "generic",
+      "service": "go",
+      "severity": "sev2",
+      "title": "this is causing some bootstrap build problems with older versions of Go 1.17, as I understand it. Still under investigat",
+      "description": "this is causing some bootstrap build problems with older versions of Go 1.17, as I understand it. Still under investigation.",
+      "started_at": "2022-09-30T13:43:55Z",
+      "labels": {
+        "repo": "go"
+      },
+      "metrics": {}
+    }
+  },
+  {
+    "incident_id": "RW-go-09",
+    "repo": "go",
+    "repo_url": "https://github.com/golang/go.git",
+    "ground_truth_sha": "3dcf6e2c29f533865aad58488b60ae8d819a566e",
+    "ground_truth_subject": "net/netip: use slice-to-array conversions",
+    "revert_sha": "e5deb1556b230642d544c451a83cb79f641727a3",
+    "hours_to_revert": 1.8,
+    "window_commits": 25,
+    "alert": {
+      "fingerprint": "go-e5deb1556b",
+      "source": "generic",
+      "service": "go",
+      "severity": "sev2",
+      "title": "breaks the longtest builders for x/tools",
+      "description": "breaks the longtest builders for x/tools",
+      "started_at": "2022-09-23T21:21:53Z",
+      "labels": {
+        "repo": "go"
+      },
+      "metrics": {}
+    }
+  },
+  {
+    "incident_id": "RW-go-10",
+    "repo": "go",
+    "repo_url": "https://github.com/golang/go.git",
+    "ground_truth_sha": "b589208c8cc6e08239868f47e12c1449cd797bac",
+    "ground_truth_subject": "runtime: redo heap bitmap",
+    "revert_sha": "ad0287f4960610c01c12ea99da50d7138509c0b0",
+    "hours_to_revert": 23.2,
+    "window_commits": 61,
+    "alert": {
+      "fingerprint": "go-ad0287f496",
+      "source": "generic",
+      "service": "go",
+      "severity": "sev2",
+      "title": "Bug somewhere in this code, causing wasm and maybe linux/386 to fail.",
+      "description": "Bug somewhere in this code, causing wasm and maybe linux/386 to fail.",
+      "started_at": "2022-08-09T15:10:10Z",
+      "labels": {
+        "repo": "go"
+      },
+      "metrics": {}
+    }
+  }
+]

@@ -126,25 +126,65 @@ until it exists.
 
 ### Tier 1 — Better measurement
 
-**1. A real-world held-out set from revert commits.** *Highest leverage.*
-When someone commits "Revert X", X is a developer-labelled bad change. Measured:
-grafana (439 reverts, 67% with a machine-readable `This reverts commit <sha>`), moby
-(323, 54%), prometheus (101, 40%) — roughly 500 real pairs from three service-shaped
-repos. Build a harness that mines the pairs, synthesises a *symptom-only* alert from each
-revert's stated reason (withholding anything that names the change), and scores against
-real history. The hard part is the alert: revert messages often name the fix, which
-would leak the answer.
+**1. A real-world held-out set from revert commits.** *Built — `eval/realworld/`.*
+When someone commits "Revert X", X is a developer-labelled bad change. The builder mines
+those pairs from seven public repositories, turns each revert's stated reason into a
+symptom-only alert, pins the repository to one hour before the revert, and keeps the pair
+only if the guilty commit landed inside the window the tool searches. Every rule is in
+`build.py`, and `FUNNEL.md` counts what each one dropped — nothing is hand-picked.
 
-**2. Negative controls.**
-Every current incident has a guilty commit, so a tool that always blames *something* is
-never penalised for it. Most real alerts aren't caused by a deploy — traffic spikes,
-upstream outages, a full disk. Add incidents with no causal commit in the window; the
-correct answer is to name none and escalate.
+Reading the first build's alerts against their answers is what shaped the rules. Each
+failure found became a general rule and a regression test:
+
+| Found in the alerts | Rule it became |
+| --- | --- |
+| Moby's `Docker-DCO-1.1-Signed-off-by` lines passed as the "reason" | Sign-offs are removed in any form |
+| `* Revert "Update dependency @types/core…"` named the answer — a bullet hid it from the filter, and scrubbing `@types` hid it from the leak check | Bullets stripped before filtering; the answer's subject is scrubbed identically before comparing |
+| Grafana squash-merges its reverts, so the "reason" was the PR's commit list: the fix, the answer reworded, or unrelated work | An alert must describe a failure; lines shaped like commit subjects are dropped even if they mention one |
+| "Likely due to CL 564197" — the guilty commit's own message says `Reviewed-on: …/564197` | Gerrit change numbers are scrubbed |
+| A squashed fix PR matched because one of its bullets was a revert | The reverting commit must itself be a revert |
+| Two reverts shared one explanation — one alert, two different answers | Duplicate alerts are dropped |
+| A window of one commit, whose only suspect was the answer | At least 10 commits in the window |
+
+Also checked: alerts that name the guilty commit's author are rejected.
+
+The strict rules keep few pairs: most reverts never say *why*, and most that do restate the
+change. golang/go supplies the most, because Gerrit's revert template records a "Reason
+for revert:". That skews the suite towards compiler and build regressions — read its
+results as regression attribution in real codebases, not as production incidents.
+
+Two infrastructure traps worth knowing if you extend it. The clones are metadata-only
+(`--filter=blob:none`), so asking git about a commit that is not in local history makes it
+silently fetch that commit's entire ancestry from GitHub: one run pulled 47 near-complete
+copies of grafana's history, 7 GB, before it was caught. `GIT_NO_LAZY_FETCH=1` on every
+metadata query prevents it. And the builder pre-fetches each window's file contents, or the
+eval would measure GitHub's download speed instead of the agent.
+
+**2. Negative controls.** *Built — `eval/make_negatives.py`.*
+Eight alerts with no guilty commit: a provider outage, an expired certificate, a traffic
+spike, a database failover, an exhausted email quota, a full disk, an availability-zone
+fault, a malformed third-party feed. The right answer is to name no commit. Each window is
+chosen by rule — the one with the most commits in which nothing the service depends on
+changed — and the label is asserted before it is written. checkout-api and web-frontend get
+none: they depend on so much that no such window exists, and an indefensible label is worse
+than a missing one.
+
+The correlation ranker blames an innocent commit on all eight, which is the point.
 
 **3. Harder synthetic cases.**
 Multi-commit causes (two changes that are only broken together), causes older than the
 72h window, merge commits, a revert of a revert, and commit messages written in more than
 one author's voice — all twenty current incidents were written by one person, in one style.
+
+### Replay protocol v2 — the campaign above needs a new baseline
+
+Building the real-world suite exposed that replays could see the future: file-history
+lookups ran from HEAD, and a real repository's later history contains the revert that names
+the answer. Every incident is now pinned to its onset, and commits are dated by when they
+landed on the main line rather than when they were written. The synthetic scores are
+unchanged by it, but what the agent can see during a replay did change, so the hill-climb
+fingerprint now includes the protocol version and refuses to compare new variants against
+the protocol-1 baseline. Start a new campaign before running any variant.
 
 ### Tier 2 — Agent changes, pre-registered and ready to run
 

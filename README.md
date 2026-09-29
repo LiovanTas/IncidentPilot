@@ -137,34 +137,67 @@ config, corpus size and whether the agent is enabled.
 
 ## The eval
 
-`eval/` builds a real git repository: nine services, shared libraries, deploy manifests
-and SQL migrations, with 62 commits authored across three weeks. Twenty of those commits
-are ground-truth incident causes.
+Three suites, scored and reported separately so an easy one can never mask a hard one.
 
-The corpus is built to be hard in the ways real triage is hard:
-
-- **Decoys are designed to beat the ranker.** Most incidents include a commit that lands
-  closer to onset, touches only the alerting service's own files, and carries a
-  risk-flavoured message — while the true cause sits further back.
-- **Five causes are not in the alerting service at all.** A shared HTTP client timeout,
-  a shared cache namespace, a serialization default, a migration owned by another team,
-  a dependency bump visible only in a lockfile.
-- **Windows overlap.** Neighbouring incidents' commits fall inside each other's 72-hour
-  correlation windows, so no window is artificially clean.
+| Suite | What it is | Right answer |
+| --- | --- | --- |
+| `synthetic` | 20 scripted outages in a synthetic monorepo | the one guilty commit |
+| `negatives` | 8 alerts where no commit is to blame | **name no commit** |
+| `realworld` | 15 regressions mined from revert commits in golang/go, moby, prometheus and grafana | the commit its developers reverted |
 
 ```bash
-python eval/run_eval.py --mode heuristic      # free, deterministic control arm
-python eval/run_eval.py --mode both           # adds the agent arm (needs an API key)
-python eval/run_eval.py --mode agent --limit 5
+python eval/run_eval.py --mode heuristic --suite all     # free, deterministic control arm
+python eval/run_eval.py --mode agent --suite realworld   # needs an API key
+python eval/run_eval.py --mode both --suite negatives
 ```
+
+Every replay is pinned to the moment the alert fired: the agent sees the repository as it
+stood then, and commits are dated by when they landed on the main line, not when they were
+written. Without that, a real repository's later history hands over the answer — the revert
+that names the guilty commit is sitting right there.
+
+### Synthetic
+
+`eval/build_fixture_repo.py` builds a real git repository — nine services, shared libraries,
+deploy manifests and SQL migrations, 62 commits across three weeks — in which 20 commits are
+incident causes. It is built to be hard in the ways triage is hard: decoys land closer to the
+alert and inside the alerting service; five causes are outside the alerting service entirely
+(a shared HTTP client, a shared cache namespace, a serialization default, another team's
+migration, a lockfile-only dependency bump); and neighbouring incidents' commits overlap each
+other's windows. It is now saturated — see *Current numbers*.
+
+### Negative controls
+
+Every synthetic incident has a guilty commit, so a tool that always blames *something* is
+never penalised there. `eval/make_negatives.py` adds eight alerts with an external cause — a
+provider outage, an expired certificate, a traffic spike, a database failover, an exhausted
+email quota, a full disk, an availability-zone fault, a malformed supplier feed. Each window
+is chosen by rule: the one with the most commits in which nothing the alerting service
+depends on changed, so there is plenty to wrongly blame and the label can be defended.
+
+### Real-world regressions
+
+`eval/realworld/build.py` mines revert commits (`This reverts commit <sha>`) from seven
+public repositories. The revert's stated reason, scrubbed of anything identifying, becomes
+the alert; the reverted commit is the answer. Its rules — fixed in the file, applied
+newest-first, with every drop counted in `eval/realworld/FUNNEL.md` — were shaped by reading
+the alerts of early builds against their answers and finding leaks: bulleted revert titles,
+squash-merge commit lists passing as reasons, Gerrit change numbers, sign-off lines. Each
+became a rule and a regression test; the full list is in `eval/HILLCLIMB.md`.
+
+The rules are strict, so few pairs survive — most reverts never say why, and most that do
+restate the change. golang/go contributes 10 of the 15, because Gerrit's revert template
+records a "Reason for revert:"; etcd, containerd and consul contribute none. That skews the
+suite towards build and compiler regressions, so read it as *regression attribution in real
+codebases*, not as replayed production incidents.
 
 Scored metrics:
 
 | Metric | Meaning |
 | --- | --- |
-| `top1` | The verdict names the ground-truth commit. **The headline number.** |
-| `top3` | Ground truth is in the ranker's top 3 — the retrieval ceiling |
-| `recall` | Ground truth appears anywhere in the candidate list |
+| `top1` | The verdict names the ground-truth commit (for a negative: names none). **The headline number.** |
+| `top3` | Ground truth is in the ranker's top 3 |
+| `recall` | Ground truth appears anywhere on the ranker's shortlist — the ceiling for an agent that never widens its search |
 | `MRR` | Mean reciprocal rank of ground truth |
 
 It also reports **calibration**, because being wrong confidently is a worse failure than
@@ -199,11 +232,31 @@ rows and token cost.
 
 ### Current numbers
 
-| Arm | top-1 | top-3 (retrieval) | recall | MRR | wrong & unflagged | cost |
+**Synthetic**
+
+| Arm | top-1 | top-3 | recall | MRR | wrong & unflagged | cost |
 | --- | --- | --- | --- | --- | --- | --- |
-| heuristic | 7/20 (35%) | 20/20 (100%) | 20/20 | 0.608 | 0 — defers on all 20 | $0.00 |
-| agent, `claude-opus-5` | 18/20 (90%) | 20/20 (100%) | 20/20 | 0.608 | 1 | $3.00 |
-| agent, `claude-sonnet-5` (default) | **20/20 on both of 2 runs** | 20/20 (100%) | 20/20 | 0.608 | 0 | $0.90/run |
+| heuristic | 7/20 (35%) | 20/20 | 20/20 | 0.608 | 0 — defers on all 20 | $0.00 |
+| agent, `claude-opus-5` | 18/20 (90%) | 20/20 | 20/20 | 0.608 | 1 | $3.00 |
+| agent, `claude-sonnet-5` (default) | **20/20 on both of 2 runs** | 20/20 | 20/20 | 0.608 | 0 | $0.90/run |
+
+**Negative controls**
+
+| Arm | named no commit | blamed an innocent commit, flagged | blamed one confidently |
+| --- | --- | --- | --- |
+| heuristic | 0/8 | 8 | 0 |
+| agent, `claude-sonnet-5` | *not yet measured* | | |
+
+**Real-world regressions**
+
+| Arm | top-1 | top-3 | recall | MRR |
+| --- | --- | --- | --- | --- |
+| heuristic | 3/15 (20%) | 5/15 | 10/15 | 0.297 |
+| agent, `claude-sonnet-5` | *not yet measured* | 5/15 | 10/15 | 0.297 |
+
+On the real-world suite the guilty commit never makes the ranker's 12-commit shortlist in
+5 of 15 incidents — windows hold 14 to 154 real commits. The agent can still reach those
+only by widening the search itself, so an agent score above 10/15 would mean it did.
 
 The heuristic arm is deterministic and reproducible. The Opus 5 run predates two changes
 and should be read with both in mind: it scored the original INC-20, whose labelled cause

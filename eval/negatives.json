@@ -1,0 +1,211 @@
+[
+  {
+    "incident_id": "NEG-01",
+    "negative": true,
+    "ground_truth_sha": null,
+    "ground_truth_subject": "No commit -- The external payment provider had a regional outage.",
+    "cause": "The external payment provider had a regional outage.",
+    "temptations": 10,
+    "alert": {
+      "fingerprint": "NEG-01",
+      "source": "generic",
+      "service": "payments-worker",
+      "severity": "sev1",
+      "title": "payments-worker settlement calls failing, 38% error rate",
+      "description": "Settlement requests to api.payprovider.example are failing with HTTP 503 'upstream temporarily unavailable'. Calls from payments-worker to ledger and to our own database are healthy, with normal latency. The provider's public status page shows 'Degraded performance - EU region' starting two minutes before our alert. Failures are spread evenly across all six worker pods.",
+      "started_at": "2026-08-12T18:00:00Z",
+      "labels": {
+        "alertname": "NEG-01",
+        "negative_control": "true"
+      },
+      "metrics": {
+        "error_rate_before": 0.004,
+        "error_rate_after": 0.38,
+        "duration_minutes": 47
+      }
+    }
+  },
+  {
+    "incident_id": "NEG-02",
+    "negative": true,
+    "ground_truth_sha": null,
+    "ground_truth_subject": "No commit -- The identity provider's TLS certificate expired.",
+    "cause": "The identity provider's TLS certificate expired.",
+    "temptations": 9,
+    "alert": {
+      "fingerprint": "NEG-02",
+      "source": "generic",
+      "service": "auth-gateway",
+      "severity": "sev1",
+      "title": "auth-gateway token refresh failing on every request",
+      "description": "Every token refresh fails with 'x509: certificate has expired or is not yet valid' when calling idp.example.com. It began on every pod within the same second, with no gradual onset. Login with a still-valid session works; only calls that must reach the identity provider fail.",
+      "started_at": "2026-08-13T20:00:00Z",
+      "labels": {
+        "alertname": "NEG-02",
+        "negative_control": "true"
+      },
+      "metrics": {
+        "error_rate_before": 0.006,
+        "error_rate_after": 0.41,
+        "duration_minutes": 26
+      }
+    }
+  },
+  {
+    "incident_id": "NEG-03",
+    "negative": true,
+    "ground_truth_sha": null,
+    "ground_truth_subject": "No commit -- A scraper sent six times normal traffic from one network.",
+    "cause": "A scraper sent six times normal traffic from one network.",
+    "temptations": 10,
+    "alert": {
+      "fingerprint": "NEG-03",
+      "source": "generic",
+      "service": "search-api",
+      "severity": "sev2",
+      "title": "search-api p99 at 5.1s and shedding load",
+      "description": "Request volume is 6.2x normal. 81% of the excess comes from a single ASN, with a user agent that rotates every few requests. Errors are 429s and 503s from our own load shedding. Latency per request at normal traffic levels, measured on the remaining traffic, is unchanged from yesterday.",
+      "started_at": "2026-08-26T10:00:00Z",
+      "labels": {
+        "alertname": "NEG-03",
+        "negative_control": "true"
+      },
+      "metrics": {
+        "error_rate_before": 0.002,
+        "error_rate_after": 0.09,
+        "duration_minutes": 34,
+        "latency_p99_ms": 5100
+      }
+    }
+  },
+  {
+    "incident_id": "NEG-04",
+    "negative": true,
+    "ground_truth_sha": null,
+    "ground_truth_subject": "No commit -- The managed database failed over during the provider's maintenance window.",
+    "cause": "The managed database failed over during the provider's maintenance window.",
+    "temptations": 9,
+    "alert": {
+      "fingerprint": "NEG-04",
+      "source": "generic",
+      "service": "inventory-api",
+      "severity": "sev2",
+      "title": "inventory-api connection resets, 90-second burst",
+      "description": "A 90-second burst of 'connection reset by peer' from the primary database, then full recovery with no action taken. The cloud provider's maintenance calendar lists a scheduled failover of this database cluster in a window that includes the alert. Replica lag briefly spiked, then returned to zero.",
+      "started_at": "2026-08-24T21:00:00Z",
+      "labels": {
+        "alertname": "NEG-04",
+        "negative_control": "true"
+      },
+      "metrics": {
+        "error_rate_before": 0.002,
+        "error_rate_after": 0.11,
+        "duration_minutes": 2
+      }
+    }
+  },
+  {
+    "incident_id": "NEG-05",
+    "negative": true,
+    "ground_truth_sha": null,
+    "ground_truth_subject": "No commit -- The email provider's daily sending quota was exhausted.",
+    "cause": "The email provider's daily sending quota was exhausted.",
+    "temptations": 9,
+    "alert": {
+      "fingerprint": "NEG-05",
+      "source": "generic",
+      "service": "notifications",
+      "severity": "sev3",
+      "title": "notifications sends deferred, backlog growing",
+      "description": "Outbound email is being refused with 'SMTP 451 4.7.1 Daily sending quota exceeded, try again later'. Send volume today is normal for a weekday. The email provider dashboard shows the account at 100% of its daily quota, which was lowered last week by the provider after a billing plan change.",
+      "started_at": "2026-08-22T22:00:00Z",
+      "labels": {
+        "alertname": "NEG-05",
+        "negative_control": "true"
+      },
+      "metrics": {
+        "error_rate_before": 0.01,
+        "error_rate_after": 0.64,
+        "duration_minutes": 95
+      }
+    }
+  },
+  {
+    "incident_id": "NEG-06",
+    "negative": true,
+    "ground_truth_sha": null,
+    "ground_truth_subject": "No commit -- One node ran out of disk space.",
+    "cause": "One node ran out of disk space.",
+    "temptations": 8,
+    "alert": {
+      "fingerprint": "NEG-06",
+      "source": "generic",
+      "service": "cart-service",
+      "severity": "sev2",
+      "title": "cart-service 5xx from a subset of pods",
+      "description": "Every failing request is served by one of the two pods scheduled on node ip-10-0-3-17. Those pods log 'no space left on device' when writing their request log. The node's disk is at 100%; the other four nodes are below 40%. Pods on the other nodes serve the same traffic with no errors.",
+      "started_at": "2026-08-15T06:00:00Z",
+      "labels": {
+        "alertname": "NEG-06",
+        "negative_control": "true"
+      },
+      "metrics": {
+        "error_rate_before": 0.002,
+        "error_rate_after": 0.07,
+        "duration_minutes": 41
+      }
+    }
+  },
+  {
+    "incident_id": "NEG-07",
+    "negative": true,
+    "ground_truth_sha": null,
+    "ground_truth_subject": "No commit -- A networking fault in one cloud availability zone.",
+    "cause": "A networking fault in one cloud availability zone.",
+    "temptations": 9,
+    "alert": {
+      "fingerprint": "NEG-07",
+      "source": "generic",
+      "service": "ledger",
+      "severity": "sev2",
+      "title": "ledger write timeouts from one availability zone",
+      "description": "Write timeouts are confined to ledger pods in availability zone us-east-1b. Pods in 1a and 1c are healthy. The cloud provider's health dashboard reports 'increased packet loss' for a networking component in use1-az2, which maps to 1b in our account.",
+      "started_at": "2026-08-27T21:00:00Z",
+      "labels": {
+        "alertname": "NEG-07",
+        "negative_control": "true"
+      },
+      "metrics": {
+        "error_rate_before": 0.001,
+        "error_rate_after": 0.12,
+        "duration_minutes": 38
+      }
+    }
+  },
+  {
+    "incident_id": "NEG-08",
+    "negative": true,
+    "ground_truth_sha": null,
+    "ground_truth_subject": "No commit -- A third-party supplier feed started sending malformed data.",
+    "cause": "A third-party supplier feed started sending malformed data.",
+    "temptations": 4,
+    "alert": {
+      "fingerprint": "NEG-08",
+      "source": "generic",
+      "service": "inventory-api",
+      "severity": "sev3",
+      "title": "inventory sync job failing to parse the supplier stock feed",
+      "description": "The hourly stock sync fails with 'unexpected token < at position 0' when parsing the supplier's feed at feeds.supplier.example/stock.json. Fetching that URL by hand returns an HTML maintenance page instead of JSON. Other inventory-api endpoints are healthy.",
+      "started_at": "2026-08-10T15:00:00Z",
+      "labels": {
+        "alertname": "NEG-08",
+        "negative_control": "true"
+      },
+      "metrics": {
+        "error_rate_before": 0.0,
+        "error_rate_after": 0.05,
+        "duration_minutes": 70
+      }
+    }
+  }
+]
