@@ -205,8 +205,12 @@ rows and token cost.
 | agent, `claude-opus-5` | 18/20 (90%) | 20/20 (100%) | 20/20 | 0.608 | 1 | $3.00 |
 | agent, `claude-sonnet-5` (default) | *not yet measured* | 20/20 (100%) | 20/20 | 0.608 | *not yet measured* | — |
 
-The heuristic arm is deterministic and reproducible. The agent arm has not been run yet;
-run it and paste the result here rather than assuming one.
+The heuristic arm is deterministic and reproducible. The Opus 5 run predates two changes
+and should be read with both in mind: it scored the original INC-20, whose labelled cause
+could not produce its own symptom (the agent was marked wrong for tracing the real one, and
+the fixture has since been fixed), and it ran before conversation-history caching, when 44%
+of the bill was re-sending uncached history. The Sonnet 5 default has not been measured
+yet — run it and paste the result here rather than assuming one.
 
 ---
 
