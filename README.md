@@ -315,15 +315,15 @@ examples/          sample webhook payloads
 
 ## Repo setup
 
-Commits must be attributed to the repository owner. After a fresh clone:
+After a fresh clone, set the commit identity for this repo and enable the hook:
 
 ```bash
-git config user.name  "LiovanTas"
-git config user.email "islam.tasnimul11213@gmail.com"
+git config user.name  "Your Name"
+git config user.email "you@example.com"
 git config core.hooksPath .githooks
 ```
 
-`core.hooksPath` enables `.githooks/pre-commit`, which refuses any commit whose resolved
-author or committer email is not the expected one. Repo-local config alone is not enough:
+`.githooks/pre-commit` then refuses any commit whose resolved author or committer does not
+match this repo's configured `user.email`. Repo-local config alone is not enough:
 `GIT_AUTHOR_EMAIL` and `GIT_COMMITTER_EMAIL` environment variables silently override it,
 and IDEs, CI and agent tooling set them.
