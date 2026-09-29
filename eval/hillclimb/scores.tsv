@@ -1,1 +1,2 @@
 iter	variant	repeats	dev_top1	test_top1	wrong_unflagged	cost_per_incident	sec_per_incident	decision	spent_usd
+1	baseline	2	12.0	8.0	0.0	0.0454	36.3	BASELINE	1.81

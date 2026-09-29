@@ -1,0 +1,1023 @@
+{
+  "metrics": {
+    "dev": {
+      "n": 12,
+      "top1": 12,
+      "unflagged_wrong": 0,
+      "flagged_correct": 1,
+      "cost": 0.5817,
+      "cache_hit_rate": 0.704,
+      "model": "claude-sonnet-5",
+      "seconds_total": 474.93,
+      "tool_calls_mean": 5.0,
+      "sources": {
+        "agent": 12
+      },
+      "usage": {
+        "input_tokens": 66,
+        "output_tokens": 39614,
+        "cache_read_input_tokens": 148234,
+        "cache_creation_input_tokens": 62322,
+        "requests": 33
+      }
+    },
+    "test": {
+      "n": 8,
+      "top1": 8,
+      "unflagged_wrong": 0,
+      "flagged_correct": 0,
+      "cost": 0.2971,
+      "cache_hit_rate": 0.748,
+      "model": "claude-sonnet-5",
+      "seconds_total": 233.34,
+      "tool_calls_mean": 4.5,
+      "sources": {
+        "agent": 8
+      },
+      "usage": {
+        "input_tokens": 46,
+        "output_tokens": 19161,
+        "cache_read_input_tokens": 101098,
+        "cache_creation_input_tokens": 34054,
+        "requests": 23
+      }
+    }
+  },
+  "rows": {
+    "dev": [
+      {
+        "incident_id": "INC-03",
+        "service": "search-api",
+        "truth_sha": "dadcbe6bfa",
+        "truth_subject": "fix: disable search result caching while we debug stale facets",
+        "verdict_sha": "dadcbe6bfa",
+        "verdict_subject": "fix: disable search result caching while we debug stale facets",
+        "alert_title": "search-api origin load 11x, cache hit ratio at 2%",
+        "truth_files": [
+          "services/search-api/config.py"
+        ],
+        "truth_owners": [
+          "search-api"
+        ],
+        "cross_service": false,
+        "correct": true,
+        "truth_rank": 2,
+        "candidates": 10,
+        "confidence": 0.92,
+        "needs_human": false,
+        "source": "agent",
+        "tool_calls": 3,
+        "tools_used": [
+          "get_commit_diff",
+          "get_commit_diff",
+          "submit_diagnosis"
+        ],
+        "runbooks": [
+          "cache-degradation",
+          "rate-limiting-429s",
+          "retry-storms-and-timeouts",
+          "feature-flag-rollback",
+          "db-connection-pool-exhaustion"
+        ],
+        "runbooks_cited": [
+          "cache-degradation"
+        ],
+        "seconds": 18.38,
+        "usage": {
+          "input_tokens": 4,
+          "output_tokens": 1515,
+          "cache_read_input_tokens": 7364,
+          "cache_creation_input_tokens": 3113,
+          "requests": 2
+        },
+        "root_cause": "Setting CACHE_TTL_S to 0 in search-api config effectively disabled result caching, forcing every search request to bypass cache and hit inventory-api directly."
+      },
+      {
+        "incident_id": "INC-04",
+        "service": "payments-worker",
+        "truth_sha": "7a4d35f39f",
+        "truth_subject": "chore: reduce payments worker concurrency to ease ledger contention",
+        "verdict_sha": "7a4d35f39f",
+        "verdict_subject": "chore: reduce payments worker concurrency to ease ledger contention",
+        "alert_title": "payments-worker consumer lag 340k and climbing",
+        "truth_files": [
+          "services/payments-worker/config.py"
+        ],
+        "truth_owners": [
+          "payments-worker"
+        ],
+        "cross_service": false,
+        "correct": true,
+        "truth_rank": 2,
+        "candidates": 9,
+        "confidence": 0.82,
+        "needs_human": false,
+        "source": "agent",
+        "tool_calls": 5,
+        "tools_used": [
+          "get_commit_diff",
+          "get_commit_diff",
+          "get_commit_diff",
+          "search_runbooks",
+          "submit_diagnosis"
+        ],
+        "runbooks": [
+          "queue-lag-and-worker-saturation",
+          "checkout-5xx-triage",
+          "payment-duplicate-charges",
+          "db-connection-pool-exhaustion",
+          "rate-limiting-429s"
+        ],
+        "runbooks_cited": [
+          "queue-lag-and-worker-saturation"
+        ],
+        "seconds": 30.7,
+        "usage": {
+          "input_tokens": 6,
+          "output_tokens": 2309,
+          "cache_read_input_tokens": 13567,
+          "cache_creation_input_tokens": 4729,
+          "requests": 3
+        },
+        "root_cause": "A config change slashed payments-worker's concurrency from 24 to 4, dropping consumer throughput below the sustained message-production rate on payments.settle, so the queue backs up linearly while individual messages still process successfully (hence normal error rate)."
+      },
+      {
+        "incident_id": "INC-06",
+        "service": "checkout-api",
+        "truth_sha": "784953fc20",
+        "truth_subject": "perf: tighten default HTTP timeout across services",
+        "verdict_sha": "784953fc20",
+        "verdict_subject": "perf: tighten default HTTP timeout across services",
+        "alert_title": "checkout-api 504 gateway timeouts at 12%",
+        "truth_files": [
+          "libs/http_client.py"
+        ],
+        "truth_owners": [],
+        "cross_service": true,
+        "correct": true,
+        "truth_rank": 3,
+        "candidates": 9,
+        "confidence": 0.87,
+        "needs_human": false,
+        "source": "agent",
+        "tool_calls": 6,
+        "tools_used": [
+          "get_commit_diff",
+          "get_commit_diff",
+          "get_commit_diff",
+          "get_file_history",
+          "search_runbooks",
+          "submit_diagnosis"
+        ],
+        "runbooks": [
+          "checkout-5xx-triage",
+          "retry-storms-and-timeouts",
+          "slow-query-and-missing-index",
+          "rate-limiting-429s",
+          "queue-lag-and-worker-saturation"
+        ],
+        "runbooks_cited": [
+          "checkout-5xx-triage",
+          "retry-storms-and-timeouts"
+        ],
+        "seconds": 39.27,
+        "usage": {
+          "input_tokens": 6,
+          "output_tokens": 3246,
+          "cache_read_input_tokens": 14343,
+          "cache_creation_input_tokens": 5782,
+          "requests": 3
+        },
+        "root_cause": "A shared HTTP client library default timeout was cut 10x (3000ms\u2192300ms), so any caller not passing an explicit per-call override \u2014 including checkout-api's calls to payments-worker and inventory-api \u2014 now cancels the request client-side at ~300ms regardless of the callee's actual latency."
+      },
+      {
+        "incident_id": "INC-07",
+        "service": "web-frontend",
+        "truth_sha": "293ed00d0c",
+        "truth_subject": "chore(deps): bump @platform/serialization 1.9.4 -> 2.0.1",
+        "verdict_sha": "293ed00d0c",
+        "verdict_subject": "chore(deps): bump @platform/serialization 1.9.4 -> 2.0.1",
+        "alert_title": "web-frontend 500s on order confirmation render",
+        "truth_files": [
+          "packages/common/serialization.py",
+          "services/web-frontend/package-lock.json"
+        ],
+        "truth_owners": [
+          "web-frontend"
+        ],
+        "cross_service": false,
+        "correct": true,
+        "truth_rank": 3,
+        "candidates": 9,
+        "confidence": 0.65,
+        "needs_human": false,
+        "source": "agent",
+        "tool_calls": 8,
+        "tools_used": [
+          "get_commit_diff",
+          "get_commit_diff",
+          "get_commit_diff",
+          "search_runbooks",
+          "get_file_history",
+          "get_file_history",
+          "search_runbooks",
+          "submit_diagnosis"
+        ],
+        "runbooks": [
+          "checkout-5xx-triage",
+          "feature-flag-rollback",
+          "payment-duplicate-charges",
+          "slow-query-and-missing-index",
+          "oom-and-restart-loops"
+        ],
+        "runbooks_cited": [
+          "dependency-upgrade-failures",
+          "checkout-5xx-triage"
+        ],
+        "seconds": 119.32,
+        "usage": {
+          "input_tokens": 8,
+          "output_tokens": 10870,
+          "cache_read_input_tokens": 23992,
+          "cache_creation_input_tokens": 12620,
+          "requests": 4
+        },
+        "root_cause": "A routine-looking dependency bump silently flipped the shared serialization library's DECIMAL_AS_STRING default from True to False, changing how checkout-api encodes price/decimal fields in payloads consumed by web-frontend's price formatter, which still assumes the old numeric/string contract and calls .toFixed() on values that are now the wrong type."
+      },
+      {
+        "incident_id": "INC-09",
+        "service": "notifications",
+        "truth_sha": "335047da8a",
+        "truth_subject": "fix: correct notification rate limit units",
+        "verdict_sha": "335047da8a",
+        "verdict_subject": "fix: correct notification rate limit units",
+        "alert_title": "notifications 429 rate at 78%, delivery backlog growing",
+        "truth_files": [
+          "services/notifications/config.py"
+        ],
+        "truth_owners": [
+          "notifications"
+        ],
+        "cross_service": false,
+        "correct": true,
+        "truth_rank": 1,
+        "candidates": 9,
+        "confidence": 0.88,
+        "needs_human": false,
+        "source": "agent",
+        "tool_calls": 4,
+        "tools_used": [
+          "get_commit_diff",
+          "get_commit_diff",
+          "get_commit_diff",
+          "submit_diagnosis"
+        ],
+        "runbooks": [
+          "rate-limiting-429s",
+          "queue-lag-and-worker-saturation",
+          "checkout-5xx-triage",
+          "retry-storms-and-timeouts",
+          "db-connection-pool-exhaustion"
+        ],
+        "runbooks_cited": [
+          "rate-limiting-429s"
+        ],
+        "seconds": 25.24,
+        "usage": {
+          "input_tokens": 4,
+          "output_tokens": 2076,
+          "cache_read_input_tokens": 7191,
+          "cache_creation_input_tokens": 3417,
+          "requests": 2
+        },
+        "root_cause": "A config change intended to fix a units mismatch instead cut the notifications outbound rate limit by 100x (6000/min -> 60/min), causing the self-imposed limiter to reject 78% of normal-volume traffic with 429s."
+      },
+      {
+        "incident_id": "INC-10",
+        "service": "ledger",
+        "truth_sha": "bf312878d8",
+        "truth_subject": "fix: make idempotency keys unique per attempt",
+        "verdict_sha": "bf312878d8",
+        "verdict_subject": "fix: make idempotency keys unique per attempt",
+        "alert_title": "ledger reconciliation found 412 double-charged orders",
+        "truth_files": [
+          "packages/common/idempotency.py"
+        ],
+        "truth_owners": [],
+        "cross_service": true,
+        "correct": true,
+        "truth_rank": 3,
+        "candidates": 9,
+        "confidence": 0.85,
+        "needs_human": false,
+        "source": "agent",
+        "tool_calls": 4,
+        "tools_used": [
+          "get_commit_diff",
+          "get_commit_diff",
+          "search_runbooks",
+          "submit_diagnosis"
+        ],
+        "runbooks": [
+          "payment-duplicate-charges",
+          "checkout-5xx-triage",
+          "retry-storms-and-timeouts",
+          "oom-and-restart-loops",
+          "cache-degradation"
+        ],
+        "runbooks_cited": [
+          "payment-duplicate-charges"
+        ],
+        "seconds": 25.56,
+        "usage": {
+          "input_tokens": 4,
+          "output_tokens": 2061,
+          "cache_read_input_tokens": 7145,
+          "cache_creation_input_tokens": 3506,
+          "requests": 2
+        },
+        "root_cause": "Idempotency key derivation was changed to include attempt_id, so retries of the same logical charge no longer hash to the same key and the payment provider treats each retry as a brand-new charge instead of deduplicating it."
+      },
+      {
+        "incident_id": "INC-11",
+        "service": "checkout-api",
+        "truth_sha": "9c64608abd",
+        "truth_subject": "chore: flip new pricing engine default to on",
+        "verdict_sha": "9c64608abd",
+        "verdict_subject": "chore: flip new pricing engine default to on",
+        "alert_title": "checkout-api price mismatch errors on 22% of carts",
+        "truth_files": [
+          "deploy/checkout-api/values.yaml"
+        ],
+        "truth_owners": [
+          "checkout-api"
+        ],
+        "cross_service": false,
+        "correct": true,
+        "truth_rank": 1,
+        "candidates": 9,
+        "confidence": 0.78,
+        "needs_human": false,
+        "source": "agent",
+        "tool_calls": 6,
+        "tools_used": [
+          "get_commit_diff",
+          "get_commit_diff",
+          "search_runbooks",
+          "get_file_history",
+          "search_runbooks",
+          "submit_diagnosis"
+        ],
+        "runbooks": [
+          "checkout-5xx-triage",
+          "feature-flag-rollback",
+          "dependency-upgrade-failures",
+          "auth-401-spike",
+          "db-connection-pool-exhaustion"
+        ],
+        "runbooks_cited": [
+          "feature-flag-rollback",
+          "checkout-5xx-triage"
+        ],
+        "seconds": 39.47,
+        "usage": {
+          "input_tokens": 6,
+          "output_tokens": 3179,
+          "cache_read_input_tokens": 13307,
+          "cache_creation_input_tokens": 5424,
+          "requests": 3
+        },
+        "root_cause": "Flipping FEATURE_NEW_PRICING to true (config-only, no redeploy) switched all checkout traffic onto the new pricing engine, which miscalculates totals for carts with promotional items, producing quoted-price vs cart-total mismatches."
+      },
+      {
+        "incident_id": "INC-12",
+        "service": "cart-service",
+        "truth_sha": "cbb0f91cf5",
+        "truth_subject": "fix: make cart resilient to inventory blips",
+        "verdict_sha": "cbb0f91cf5",
+        "verdict_subject": "fix: make cart resilient to inventory blips",
+        "alert_title": "cart-service outbound request volume 7x inbound",
+        "truth_files": [
+          "services/cart-service/config.py"
+        ],
+        "truth_owners": [
+          "cart-service"
+        ],
+        "cross_service": false,
+        "correct": true,
+        "truth_rank": 1,
+        "candidates": 9,
+        "confidence": 0.92,
+        "needs_human": false,
+        "source": "agent",
+        "tool_calls": 3,
+        "tools_used": [
+          "get_commit_diff",
+          "search_runbooks",
+          "submit_diagnosis"
+        ],
+        "runbooks": [
+          "checkout-5xx-triage",
+          "retry-storms-and-timeouts",
+          "db-connection-pool-exhaustion",
+          "oom-and-restart-loops",
+          "slow-query-and-missing-index"
+        ],
+        "runbooks_cited": [
+          "retry-storms-and-timeouts"
+        ],
+        "seconds": 21.77,
+        "usage": {
+          "input_tokens": 4,
+          "output_tokens": 1858,
+          "cache_read_input_tokens": 7218,
+          "cache_creation_input_tokens": 3066,
+          "requests": 2
+        },
+        "root_cause": "cart-service's HTTP client to inventory-api was reconfigured to retry up to 6 times with zero backoff, so every client-facing request that hit a failing/slow inventory call fanned out into up to 6 immediate re-requests, producing the observed ~7x outbound/inbound amplification and saturating inventory-api."
+      },
+      {
+        "incident_id": "INC-14",
+        "service": "payments-worker",
+        "truth_sha": "d0c29dab6a",
+        "truth_subject": "db: drop legacy_ref now that the backfill is complete",
+        "verdict_sha": "d0c29dab6a",
+        "verdict_subject": "db: drop legacy_ref now that the backfill is complete",
+        "alert_title": "payments-worker failing 41% of settlements",
+        "truth_files": [
+          "db/migrations/payments/0012_drop_legacy_columns.sql"
+        ],
+        "truth_owners": [
+          "payments-worker"
+        ],
+        "cross_service": false,
+        "correct": true,
+        "truth_rank": 3,
+        "candidates": 9,
+        "confidence": 0.85,
+        "needs_human": false,
+        "source": "agent",
+        "tool_calls": 5,
+        "tools_used": [
+          "get_commit_diff",
+          "get_commit_diff",
+          "get_commit_diff",
+          "search_runbooks",
+          "submit_diagnosis"
+        ],
+        "runbooks": [
+          "oom-and-restart-loops",
+          "checkout-5xx-triage",
+          "payment-duplicate-charges",
+          "feature-flag-rollback",
+          "slow-query-and-missing-index"
+        ],
+        "runbooks_cited": [],
+        "seconds": 27.52,
+        "usage": {
+          "input_tokens": 6,
+          "output_tokens": 1967,
+          "cache_read_input_tokens": 13196,
+          "cache_creation_input_tokens": 4230,
+          "requests": 3
+        },
+        "root_cause": "A DB migration dropped the `payments.legacy_ref` column while payments-worker's still-deployed (two-day-old) code continues to SELECT/INSERT that column, so every settlement query against it throws 'column does not exist'; the 4-hour gap between migration and alert onset matches typical async migration rollout / connection-pool cycling before all worker instances hit the new schema."
+      },
+      {
+        "incident_id": "INC-15",
+        "service": "auth-gateway",
+        "truth_sha": "9d45e1e601",
+        "truth_subject": "fix: make the identity breaker more sensitive",
+        "verdict_sha": "9d45e1e601",
+        "verdict_subject": "fix: make the identity breaker more sensitive",
+        "alert_title": "auth-gateway circuit breaker open, 503s on token refresh",
+        "truth_files": [
+          "services/auth-gateway/config.py"
+        ],
+        "truth_owners": [
+          "auth-gateway"
+        ],
+        "cross_service": false,
+        "correct": true,
+        "truth_rank": 2,
+        "candidates": 10,
+        "confidence": 0.6,
+        "needs_human": true,
+        "source": "agent",
+        "tool_calls": 6,
+        "tools_used": [
+          "get_commit_diff",
+          "get_commit_diff",
+          "get_commit_diff",
+          "search_runbooks",
+          "get_file_history",
+          "submit_diagnosis"
+        ],
+        "runbooks": [
+          "checkout-5xx-triage",
+          "retry-storms-and-timeouts",
+          "rate-limiting-429s",
+          "oom-and-restart-loops",
+          "auth-401-spike"
+        ],
+        "runbooks_cited": [
+          "retry-storms-and-timeouts"
+        ],
+        "seconds": 69.47,
+        "usage": {
+          "input_tokens": 6,
+          "output_tokens": 6329,
+          "cache_read_input_tokens": 13465,
+          "cache_creation_input_tokens": 7138,
+          "requests": 3
+        },
+        "root_cause": "The identity-provider circuit breaker was reconfigured to trip after only 2 failures (down from 20) and reset after only 10s (down from 30s), so ordinary background noise from the IdP (its normal ~0.8% error rate) is now enough to trip the breaker repeatedly, and the short reset window lets it reopen almost as soon as it half-closes \u2014 producing sustained 503s with no actual upstream degradation."
+      },
+      {
+        "incident_id": "INC-18",
+        "service": "inventory-api",
+        "truth_sha": "cac4e7f5f6",
+        "truth_subject": "refactor: simplify inventory availability lookup",
+        "verdict_sha": "cac4e7f5f6",
+        "verdict_subject": "refactor: simplify inventory availability lookup",
+        "alert_title": "inventory-api query rate 40x, database at 96% CPU",
+        "truth_files": [
+          "services/inventory-api/store.py"
+        ],
+        "truth_owners": [
+          "inventory-api"
+        ],
+        "cross_service": false,
+        "correct": true,
+        "truth_rank": 2,
+        "candidates": 9,
+        "confidence": 0.88,
+        "needs_human": false,
+        "source": "agent",
+        "tool_calls": 5,
+        "tools_used": [
+          "get_commit_diff",
+          "get_commit_diff",
+          "get_commit_diff",
+          "search_runbooks",
+          "submit_diagnosis"
+        ],
+        "runbooks": [
+          "slow-query-and-missing-index",
+          "db-connection-pool-exhaustion",
+          "checkout-5xx-triage",
+          "queue-lag-and-worker-saturation",
+          "cache-degradation"
+        ],
+        "runbooks_cited": [
+          "slow-query-and-missing-index",
+          "db-connection-pool-exhaustion"
+        ],
+        "seconds": 25.38,
+        "usage": {
+          "input_tokens": 6,
+          "output_tokens": 1772,
+          "cache_read_input_tokens": 13473,
+          "cache_creation_input_tokens": 4476,
+          "requests": 3
+        },
+        "root_cause": "The `fetch_page` refactor replaced a single joined SELECT with a loop calling `fetch_one` per row, turning one paginated query into N identical tiny SELECTs per request (classic N+1), which multiplied query volume ~40x and saturated the DB with cheap-but-numerous queries."
+      },
+      {
+        "incident_id": "INC-19",
+        "service": "cart-service",
+        "truth_sha": "837b51cb39",
+        "truth_subject": "chore: bump cache key namespace for the new payload shape",
+        "verdict_sha": "837b51cb39",
+        "verdict_subject": "chore: bump cache key namespace for the new payload shape",
+        "alert_title": "cart-service cache hit ratio 0%, origin load 9x",
+        "truth_files": [
+          "libs/cache.py"
+        ],
+        "truth_owners": [],
+        "cross_service": true,
+        "correct": true,
+        "truth_rank": 3,
+        "candidates": 9,
+        "confidence": 0.88,
+        "needs_human": false,
+        "source": "agent",
+        "tool_calls": 5,
+        "tools_used": [
+          "get_commit_diff",
+          "get_commit_diff",
+          "get_commit_diff",
+          "search_runbooks",
+          "submit_diagnosis"
+        ],
+        "runbooks": [
+          "cache-degradation",
+          "checkout-5xx-triage",
+          "rate-limiting-429s",
+          "feature-flag-rollback",
+          "slow-query-and-missing-index"
+        ],
+        "runbooks_cited": [
+          "cache-degradation",
+          "checkout-5xx-triage"
+        ],
+        "seconds": 32.85,
+        "usage": {
+          "input_tokens": 6,
+          "output_tokens": 2432,
+          "cache_read_input_tokens": 13973,
+          "cache_creation_input_tokens": 4821,
+          "requests": 3
+        },
+        "root_cause": "A shared cache library's KEY_NAMESPACE constant was bumped (v3->v4), which simultaneously invalidated the entire warm cache set for every service consuming libs/cache.py, causing an instant cross-service drop in hit ratio."
+      }
+    ],
+    "test": [
+      {
+        "incident_id": "INC-01",
+        "service": "checkout-api",
+        "truth_sha": "c6b182face",
+        "truth_subject": "perf: right-size checkout db pool after connection audit",
+        "verdict_sha": "c6b182face",
+        "verdict_subject": "perf: right-size checkout db pool after connection audit",
+        "alert_title": "checkout-api 5xx rate above 8%",
+        "truth_files": [
+          "services/checkout-api/config.py"
+        ],
+        "truth_owners": [
+          "checkout-api"
+        ],
+        "cross_service": false,
+        "correct": true,
+        "truth_rank": 1,
+        "candidates": 4,
+        "confidence": 0.96,
+        "needs_human": false,
+        "source": "agent",
+        "tool_calls": 3,
+        "tools_used": [
+          "get_commit_diff",
+          "search_runbooks",
+          "submit_diagnosis"
+        ],
+        "runbooks": [
+          "checkout-5xx-triage",
+          "db-connection-pool-exhaustion",
+          "oom-and-restart-loops",
+          "auth-401-spike",
+          "slow-query-and-missing-index"
+        ],
+        "runbooks_cited": [
+          "db-connection-pool-exhaustion"
+        ],
+        "seconds": 18.02,
+        "usage": {
+          "input_tokens": 4,
+          "output_tokens": 1441,
+          "cache_read_input_tokens": 6700,
+          "cache_creation_input_tokens": 2331,
+          "requests": 2
+        },
+        "root_cause": "checkout-api's DB connection pool was resized from 50 to 5 (overflow unchanged at 20), so under normal concurrent load the pool+overflow saturates and requests block until the pool checkout timeout, surfacing as 5xx on /checkout."
+      },
+      {
+        "incident_id": "INC-02",
+        "service": "cart-service",
+        "truth_sha": "eafbf44182",
+        "truth_subject": "db: drop unused indexes flagged by the index audit",
+        "verdict_sha": "eafbf44182",
+        "verdict_subject": "db: drop unused indexes flagged by the index audit",
+        "alert_title": "cart-service p99 latency 4.2s (was 180ms)",
+        "truth_files": [
+          "db/migrations/inventory/0007_drop_stale_indexes.sql"
+        ],
+        "truth_owners": [
+          "inventory-api"
+        ],
+        "cross_service": true,
+        "correct": true,
+        "truth_rank": 3,
+        "candidates": 7,
+        "confidence": 0.72,
+        "needs_human": false,
+        "source": "agent",
+        "tool_calls": 6,
+        "tools_used": [
+          "get_commit_diff",
+          "get_commit_diff",
+          "search_runbooks",
+          "get_file_history",
+          "get_service_topology",
+          "submit_diagnosis"
+        ],
+        "runbooks": [
+          "slow-query-and-missing-index",
+          "retry-storms-and-timeouts",
+          "checkout-5xx-triage",
+          "db-connection-pool-exhaustion",
+          "dependency-upgrade-failures"
+        ],
+        "runbooks_cited": [
+          "slow-query-and-missing-index"
+        ],
+        "seconds": 51.76,
+        "usage": {
+          "input_tokens": 8,
+          "output_tokens": 4669,
+          "cache_read_input_tokens": 20609,
+          "cache_creation_input_tokens": 6142,
+          "requests": 4
+        },
+        "root_cause": "The migration in eafbf44182 dropped `idx_cart_items_cart_id`, the only index supporting the hot query `SELECT * FROM cart_items WHERE cart_id = $1` that backs GET /cart, forcing Postgres onto sequential scans of cart_items for every cart lookup."
+      },
+      {
+        "incident_id": "INC-05",
+        "service": "auth-gateway",
+        "truth_sha": "d62df2f6e2",
+        "truth_subject": "security: shorten session lifetime per the Q3 audit finding",
+        "verdict_sha": "d62df2f6e2",
+        "verdict_subject": "security: shorten session lifetime per the Q3 audit finding",
+        "alert_title": "auth-gateway 401 rate 31%, users logged out mid-session",
+        "truth_files": [
+          "services/auth-gateway/config.py"
+        ],
+        "truth_owners": [
+          "auth-gateway"
+        ],
+        "cross_service": false,
+        "correct": true,
+        "truth_rank": 2,
+        "candidates": 9,
+        "confidence": 0.85,
+        "needs_human": false,
+        "source": "agent",
+        "tool_calls": 4,
+        "tools_used": [
+          "get_commit_diff",
+          "get_commit_diff",
+          "search_runbooks",
+          "submit_diagnosis"
+        ],
+        "runbooks": [
+          "auth-401-spike",
+          "checkout-5xx-triage",
+          "rate-limiting-429s",
+          "db-connection-pool-exhaustion",
+          "feature-flag-rollback"
+        ],
+        "runbooks_cited": [
+          "auth-401-spike"
+        ],
+        "seconds": 24.09,
+        "usage": {
+          "input_tokens": 4,
+          "output_tokens": 2053,
+          "cache_read_input_tokens": 7276,
+          "cache_creation_input_tokens": 3672,
+          "requests": 2
+        },
+        "root_cause": "SESSION_TTL_S was cut from 86400s to 900s (15 minutes), so any token issued before the change (or older than 15 min under the new policy) is now rejected as expired at validation time, producing a hard cliff at ~15 minutes token age exactly as reported."
+      },
+      {
+        "incident_id": "INC-08",
+        "service": "inventory-api",
+        "truth_sha": "2e9dcd0d21",
+        "truth_subject": "chore: tighten inventory memory request after profiling",
+        "verdict_sha": "2e9dcd0d21",
+        "verdict_subject": "chore: tighten inventory memory request after profiling",
+        "alert_title": "inventory-api pods in OOMKill restart loop",
+        "truth_files": [
+          "deploy/inventory-api/values.yaml"
+        ],
+        "truth_owners": [
+          "inventory-api"
+        ],
+        "cross_service": false,
+        "correct": true,
+        "truth_rank": 1,
+        "candidates": 9,
+        "confidence": 0.9,
+        "needs_human": false,
+        "source": "agent",
+        "tool_calls": 4,
+        "tools_used": [
+          "get_commit_diff",
+          "get_commit_diff",
+          "search_runbooks",
+          "submit_diagnosis"
+        ],
+        "runbooks": [
+          "oom-and-restart-loops",
+          "rate-limiting-429s",
+          "cache-degradation",
+          "checkout-5xx-triage",
+          "feature-flag-rollback"
+        ],
+        "runbooks_cited": [
+          "oom-and-restart-loops"
+        ],
+        "seconds": 31.52,
+        "usage": {
+          "input_tokens": 6,
+          "output_tokens": 2448,
+          "cache_read_input_tokens": 13191,
+          "cache_creation_input_tokens": 4272,
+          "requests": 3
+        },
+        "root_cause": "The 13:00 deploy manifest change cut the inventory-api container memory limit from 1Gi to 256Mi while leaving the memory request at 512Mi (a request now exceeding the limit), so the pod is OOMKilled as soon as normal steady-state RSS exceeds 256Mi, restarts, climbs again, and repeats \u2014 the classic sawtooth restart loop."
+      },
+      {
+        "incident_id": "INC-13",
+        "service": "search-api",
+        "truth_sha": "4f744ecdff",
+        "truth_subject": "feat: return more results per search page",
+        "verdict_sha": "4f744ecdff",
+        "verdict_subject": "feat: return more results per search page",
+        "alert_title": "search-api p99 6.8s and memory pressure on all pods",
+        "truth_files": [
+          "services/search-api/config.py"
+        ],
+        "truth_owners": [
+          "search-api"
+        ],
+        "cross_service": false,
+        "correct": true,
+        "truth_rank": 1,
+        "candidates": 9,
+        "confidence": 0.85,
+        "needs_human": false,
+        "source": "agent",
+        "tool_calls": 5,
+        "tools_used": [
+          "get_commit_diff",
+          "get_commit_diff",
+          "get_commit_diff",
+          "search_runbooks",
+          "submit_diagnosis"
+        ],
+        "runbooks": [
+          "oom-and-restart-loops",
+          "auth-401-spike",
+          "rate-limiting-429s",
+          "cache-degradation",
+          "checkout-5xx-triage"
+        ],
+        "runbooks_cited": [
+          "oom-and-restart-loops"
+        ],
+        "seconds": 28.54,
+        "usage": {
+          "input_tokens": 6,
+          "output_tokens": 2034,
+          "cache_read_input_tokens": 13229,
+          "cache_creation_input_tokens": 4380,
+          "requests": 3
+        },
+        "root_cause": "A config change raised the default and max search page size 20x (25\u2192500 default, 100\u21921000 max), causing each search response to serialize/transmit ~20x more rows, which matches the alert's own '20x response size growth' and drives the p99 latency, egress saturation, and rising pod memory."
+      },
+      {
+        "incident_id": "INC-16",
+        "service": "checkout-api",
+        "truth_sha": "13c1a12088",
+        "truth_subject": "security: cap request body size on checkout",
+        "verdict_sha": "13c1a12088",
+        "verdict_subject": "security: cap request body size on checkout",
+        "alert_title": "checkout-api rejecting 17% of orders with 413",
+        "truth_files": [
+          "services/checkout-api/config.py"
+        ],
+        "truth_owners": [
+          "checkout-api"
+        ],
+        "cross_service": false,
+        "correct": true,
+        "truth_rank": 3,
+        "candidates": 9,
+        "confidence": 0.82,
+        "needs_human": false,
+        "source": "agent",
+        "tool_calls": 5,
+        "tools_used": [
+          "get_commit_diff",
+          "get_commit_diff",
+          "get_commit_diff",
+          "search_runbooks",
+          "submit_diagnosis"
+        ],
+        "runbooks": [
+          "checkout-5xx-triage",
+          "db-connection-pool-exhaustion",
+          "payment-duplicate-charges",
+          "slow-query-and-missing-index",
+          "oom-and-restart-loops"
+        ],
+        "runbooks_cited": [
+          "checkout-5xx-triage"
+        ],
+        "seconds": 35.57,
+        "usage": {
+          "input_tokens": 6,
+          "output_tokens": 2867,
+          "cache_read_input_tokens": 13622,
+          "cache_creation_input_tokens": 5340,
+          "requests": 3
+        },
+        "root_cause": "A config change slashed the checkout-api request body size cap from 2MB to 64KB, so any cart JSON payload exceeding 64KB (i.e., carts with roughly 12+ line items) is now rejected at the edge with 413 payload_too_large before it ever reaches business logic."
+      },
+      {
+        "incident_id": "INC-17",
+        "service": "web-frontend",
+        "truth_sha": "1d9d7abb4d",
+        "truth_subject": "chore: point assets at the v5 CDN bucket",
+        "verdict_sha": "1d9d7abb4d",
+        "verdict_subject": "chore: point assets at the v5 CDN bucket",
+        "alert_title": "web-frontend 404s on all static assets, pages render unstyled",
+        "truth_files": [
+          "deploy/web-frontend/values.yaml"
+        ],
+        "truth_owners": [
+          "web-frontend"
+        ],
+        "cross_service": false,
+        "correct": true,
+        "truth_rank": 1,
+        "candidates": 9,
+        "confidence": 0.88,
+        "needs_human": false,
+        "source": "agent",
+        "tool_calls": 4,
+        "tools_used": [
+          "get_commit_diff",
+          "get_commit_diff",
+          "search_runbooks",
+          "submit_diagnosis"
+        ],
+        "runbooks": [
+          "checkout-5xx-triage",
+          "feature-flag-rollback",
+          "auth-401-spike",
+          "slow-query-and-missing-index",
+          "retry-storms-and-timeouts"
+        ],
+        "runbooks_cited": [],
+        "seconds": 25.32,
+        "usage": {
+          "input_tokens": 6,
+          "output_tokens": 1742,
+          "cache_read_input_tokens": 13097,
+          "cache_creation_input_tokens": 3748,
+          "requests": 3
+        },
+        "root_cause": "The web-frontend ASSET_PREFIX env var was cut over to a v5 CDN bucket path before the built static assets (CSS/JS) were actually published to that bucket, so every asset request 404s while the HTML document and API traffic (unaffected by this var) continue to work normally."
+      },
+      {
+        "incident_id": "INC-20",
+        "service": "payments-worker",
+        "truth_sha": "5f723ff4a2",
+        "truth_subject": "perf: emit datetimes as epoch millis in shared serialization",
+        "verdict_sha": "5f723ff4a2",
+        "verdict_subject": "perf: emit datetimes as epoch millis in shared serialization",
+        "alert_title": "payments-worker settlements failing on timestamp validation, 28% rejected",
+        "truth_files": [
+          "packages/common/serialization.py"
+        ],
+        "truth_owners": [],
+        "cross_service": true,
+        "correct": true,
+        "truth_rank": 3,
+        "candidates": 9,
+        "confidence": 0.88,
+        "needs_human": false,
+        "source": "agent",
+        "tool_calls": 5,
+        "tools_used": [
+          "get_commit_diff",
+          "get_commit_diff",
+          "get_commit_diff",
+          "search_runbooks",
+          "submit_diagnosis"
+        ],
+        "runbooks": [
+          "queue-lag-and-worker-saturation",
+          "payment-duplicate-charges",
+          "oom-and-restart-loops",
+          "checkout-5xx-triage",
+          "rate-limiting-429s"
+        ],
+        "runbooks_cited": [
+          "checkout-5xx-triage",
+          "dependency-upgrade-failures"
+        ],
+        "seconds": 18.52,
+        "usage": {
+          "input_tokens": 6,
+          "output_tokens": 1907,
+          "cache_read_input_tokens": 13374,
+          "cache_creation_input_tokens": 4169,
+          "requests": 3
+        },
+        "root_cause": "A shared serialization library flipped DATETIME_FORMAT from \"iso8601\" to \"epoch_millis\", so payments-worker now emits settled_at (and every other timestamp field) as an integer instead of an ISO-8601 string, which the provider SDK's settlement validation rejects."
+      }
+    ]
+  }
+}

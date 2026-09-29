@@ -1,8 +1,23 @@
 {
   "created": "2026-09-29T15:43:43+00:00",
   "budget_usd": 10.0,
-  "spent_usd": 0.0,
+  "spent_usd": 1.814,
   "benchmark": "e8459f86b6ba7464",
   "default_model": "claude-sonnet-5",
-  "iterations": []
+  "iterations": [
+    {
+      "iter": 1,
+      "variant": "baseline",
+      "folder": "01-baseline",
+      "repeats": 2,
+      "target": null,
+      "dev_top1": 12.0,
+      "test_top1": 8.0,
+      "wrong_unflagged": 0.0,
+      "cost_per_incident": 0.0454,
+      "sec_per_incident": 36.3,
+      "decision": "BASELINE",
+      "ran_at": "2026-09-29T16:29:50+00:00"
+    }
+  ]
 }

@@ -99,6 +99,13 @@ with an *unmeasurable* warning, which means "can't tell", not "doesn't work".
 **Answering accuracy questions needs a harder benchmark** — which is why it's first in
 the backlog.
 
+**Update after iteration 1:** the Sonnet 5 baseline scored 20/20 on both repeats — 12/12 dev
+and 8/8 test each time, with zero wrong answers. Accuracy is now at the ceiling on *both*
+splits, and with no wrong answers there is nothing to calibrate against either. On this
+benchmark only cost and latency variants can produce a meaningful result. `opus-5`,
+`read-file` and `escalate-075` should not be run until the benchmark is harder: each can
+only come back 'unmeasurable' or lose, and every run costs money.
+
 Also note the split was drawn after one full run over all 20 incidents had already been
 inspected. The test split is held out from iteration decisions from here on; it was not
 held out from all prior observation.

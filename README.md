@@ -203,14 +203,24 @@ rows and token cost.
 | --- | --- | --- | --- | --- | --- | --- |
 | heuristic | 7/20 (35%) | 20/20 (100%) | 20/20 | 0.608 | 0 — defers on all 20 | $0.00 |
 | agent, `claude-opus-5` | 18/20 (90%) | 20/20 (100%) | 20/20 | 0.608 | 1 | $3.00 |
-| agent, `claude-sonnet-5` (default) | *not yet measured* | 20/20 (100%) | 20/20 | 0.608 | *not yet measured* | — |
+| agent, `claude-sonnet-5` (default) | **20/20 on both of 2 runs** | 20/20 (100%) | 20/20 | 0.608 | 0 | $0.90/run |
 
 The heuristic arm is deterministic and reproducible. The Opus 5 run predates two changes
 and should be read with both in mind: it scored the original INC-20, whose labelled cause
 could not produce its own symptom (the agent was marked wrong for tracing the real one, and
 the fixture has since been fixed), and it ran before conversation-history caching, when 44%
-of the bill was re-sending uncached history. The Sonnet 5 default has not been measured
-yet — run it and paste the result here rather than assuming one.
+of the bill was re-sending uncached history.
+
+The Sonnet 5 result is two independent runs of all 20 incidents, identical both times:
+median 29 seconds per incident, slowest 157s (INC-07, a dependency bump visible only in a
+lockfile, which it answered correctly but flagged for review at 62% confidence), 72% of
+input served from cache with no follow-up request missing it.
+
+**A perfect score means this benchmark is saturated.** It can no longer tell a better
+agent from a worse one on accuracy, so accuracy work needs a harder benchmark — see
+`eval/HILLCLIMB.md`. Two things make it easier than it looks: every incident has exactly
+one guilty commit, and INC-20's symptom was rewritten after a model run exposed that its
+original label was inconsistent, and the rewrite points quite directly at the cause.
 
 ---
 
