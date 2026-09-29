@@ -19,7 +19,7 @@ from typing import Any
 
 from ..models import Alert, CommitCandidate, Diagnosis, RunbookChunk, ToolCall
 from .prompts import SYSTEM_PROMPT, build_incident_prompt
-from .tools import TERMINAL_TOOL, TOOLS, ToolContext, dispatch
+from .tools import TERMINAL_TOOL, ToolContext, dispatch, tools_for
 
 log = logging.getLogger("incidentpilot.agent")
 
@@ -135,11 +135,16 @@ class DiagnosisAgent:
     """Runs one incident to a verdict."""
 
     def __init__(self, model: str, effort: str = "high", max_tokens: int = 16000,
-                 max_turns: int = 14, client: Any = None):
+                 max_turns: int = 14, client: Any = None, prefetch_diffs: int = 0,
+                 enable_read_file: bool = False, escalate_below: float = 0.0):
         self.model = model
         self.effort = effort
         self.max_tokens = max_tokens
         self.max_turns = max_turns
+        self.prefetch_diffs = max(0, prefetch_diffs)
+        self.escalate_below = escalate_below
+        # Fixed for the agent's lifetime, so every request it sends shares one cache prefix.
+        self.tools = tools_for(enable_read_file)
         self._use_fallbacks = True
         if client is not None:
             self.client = client
@@ -163,7 +168,7 @@ class DiagnosisAgent:
                 "text": SYSTEM_PROMPT,
                 "cache_control": {"type": "ephemeral"},
             }],
-            "tools": TOOLS,
+            "tools": self.tools,
             "messages": messages,
         }
 
@@ -185,11 +190,26 @@ class DiagnosisAgent:
         with self.client.messages.stream(**kwargs) as stream:
             return stream.get_final_message()
 
+    def _apply_escalation_policy(self, verdict: Diagnosis) -> Diagnosis:
+        """Operator policy layered on the model's own judgement: below the threshold, a
+        human reviews regardless of what the agent decided. Never lowers a flag."""
+        if self.escalate_below and verdict.confidence < self.escalate_below and not verdict.needs_human:
+            verdict.needs_human = True
+            verdict.reasoning += (
+                f" (Escalated by policy: confidence {verdict.confidence:.0%} is below the "
+                f"{self.escalate_below:.0%} review threshold.)"
+            )
+        return verdict
+
     # ---------------------------------------------------------------------- loop
 
     def run(self, ctx: ToolContext, runbooks: list[RunbookChunk], impact: dict,
             topology_summary: dict) -> tuple[Diagnosis, list[ToolCall], dict[str, int]]:
-        prompt = build_incident_prompt(ctx.alert, ctx.candidates, runbooks, impact, topology_summary)
+        prefetched: dict[str, str] = {}
+        for candidate in ctx.candidates[: self.prefetch_diffs]:
+            prefetched[candidate.sha] = dispatch("get_commit_diff", {"sha": candidate.sha}, ctx)
+        prompt = build_incident_prompt(ctx.alert, ctx.candidates, runbooks, impact,
+                                       topology_summary, prefetched=prefetched or None)
         messages: list[dict[str, Any]] = [{"role": "user", "content": prompt}]
         transcript: list[ToolCall] = []
         usage: dict[str, int] = {}
@@ -242,7 +262,7 @@ class DiagnosisAgent:
                 results.append({"type": "tool_result", "tool_use_id": block.id, "content": output})
 
             if verdict is not None:
-                return verdict, transcript, usage
+                return self._apply_escalation_policy(verdict), transcript, usage
 
             messages.append({"role": "user", "content": results})
 

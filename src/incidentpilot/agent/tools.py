@@ -181,6 +181,35 @@ TOOLS: list[dict[str, Any]] = [
 
 TERMINAL_TOOL = "submit_diagnosis"
 
+# Offered only when the `enable_read_file` variant is on, so the default tool list -- and
+# therefore the default cache prefix -- is unchanged.
+READ_FILE_TOOL: dict[str, Any] = {
+    "name": "read_file_at_commit",
+    "description": (
+        "Read an entire file as it existed at a given commit. A diff shows which lines "
+        "changed; this shows what they mean -- what a changed constant controls, which "
+        "code paths call a modified function, what a flag's other branch does. Use it when "
+        "a hunk alone does not tell you whether a change can produce the symptom."
+    ),
+    "input_schema": {
+        "type": "object",
+        "properties": {
+            "sha": {"type": "string", "description": "Commit SHA; the file is read as of this commit."},
+            "path": {"type": "string", "description": "Repo-relative file path."},
+        },
+        "required": ["sha", "path"],
+    },
+}
+
+
+def tools_for(enable_read_file: bool = False) -> list[dict[str, Any]]:
+    """The tool list for one agent configuration. Built once per agent so its serialized
+    form is byte-stable across every request that agent makes."""
+    if not enable_read_file:
+        return TOOLS
+    # Inserted before the terminal tool so submit_diagnosis stays last.
+    return [*TOOLS[:-1], READ_FILE_TOOL, TOOLS[-1]]
+
 
 @dataclass
 class ToolContext:
@@ -245,6 +274,9 @@ def _dispatch(name: str, args: dict[str, Any], ctx: ToolContext) -> str:
         found = collect_candidates(ctx.repo, probe, ctx.topology, ctx.keywords, lookback, limit)
         header = f"{len(found)} commit(s) in a {lookback:.0f}h window correlated against {service}:\n"
         return header + _fmt_candidates(found)
+
+    if name == "read_file_at_commit":
+        return ctx.repo.file_at(str(args["sha"]).strip(), str(args["path"]).strip())
 
     if name == "get_file_history":
         limit = max(1, min(int(args.get("limit", 8)), 30))

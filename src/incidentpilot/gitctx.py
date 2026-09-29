@@ -76,6 +76,13 @@ class GitRepo:
             out = out[:max_chars] + f"\n... [diff truncated at {max_chars} chars]"
         return out
 
+    def file_at(self, sha: str, path: str, max_chars: int = 8000) -> str:
+        """A whole file as it stood at `sha` -- the context a diff hunk leaves out."""
+        out = self._run("show", f"{sha}:{path}")
+        if len(out) > max_chars:
+            out = out[:max_chars] + f"\n... [file truncated at {max_chars} chars]"
+        return out
+
     def file_history(self, path: str, limit: int = 10) -> str:
         return self._run("log", f"-{limit}", "--pretty=format:%h %aI %an %s", "--", path)
 

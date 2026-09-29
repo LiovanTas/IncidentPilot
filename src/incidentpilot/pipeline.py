@@ -64,6 +64,9 @@ class IncidentPilot:
             self._agent = DiagnosisAgent(
                 model=self.config.model, effort=self.config.effort,
                 max_tokens=self.config.max_tokens, max_turns=self.config.max_agent_turns,
+                prefetch_diffs=self.config.prefetch_diffs,
+                enable_read_file=self.config.enable_read_file,
+                escalate_below=self.config.escalate_below,
             )
         except AgentUnavailable as exc:
             log.warning("agent unavailable, falling back to heuristic: %s", exc)

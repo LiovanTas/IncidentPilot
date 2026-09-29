@@ -47,7 +47,8 @@ candidates over exhaustive breadth."""
 
 
 def build_incident_prompt(alert: Alert, candidates: list[CommitCandidate],
-                          runbooks: list, impact: dict, topology_summary: dict) -> str:
+                          runbooks: list, impact: dict, topology_summary: dict,
+                          prefetched: dict[str, str] | None = None) -> str:
     """The first user turn: everything known before the agent starts investigating."""
     lines: list[str] = []
     lines.append("## Alert")
@@ -93,6 +94,19 @@ def build_incident_prompt(alert: Alert, candidates: list[CommitCandidate],
         lines.append("## Runbooks retrieved for the alert text")
         for rb in runbooks:
             lines.append(f"- {rb.runbook_id} :: {rb.heading} (score {rb.score})")
+
+    if prefetched:
+        lines.append("")
+        lines.append(f"## Diffs of the top {len(prefetched)} candidates, already fetched")
+        lines.append("These are exactly what get_commit_diff would return for them -- do not "
+                     "fetch them again. The ranking above does not tell you which is the cause; "
+                     "the diffs do.")
+        for sha, diff in prefetched.items():
+            lines.append("")
+            lines.append(f"### {sha[:10]}")
+            lines.append("```diff")
+            lines.append(diff)
+            lines.append("```")
 
     lines.append("")
     lines.append(

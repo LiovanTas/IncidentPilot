@@ -1,0 +1,30 @@
+{
+  "seed": 20260929,
+  "benchmark": "e8459f86b6ba7464",
+  "dev": [
+    "INC-03",
+    "INC-04",
+    "INC-06",
+    "INC-07",
+    "INC-09",
+    "INC-10",
+    "INC-11",
+    "INC-12",
+    "INC-14",
+    "INC-15",
+    "INC-18",
+    "INC-19"
+  ],
+  "test": [
+    "INC-01",
+    "INC-02",
+    "INC-05",
+    "INC-08",
+    "INC-13",
+    "INC-16",
+    "INC-17",
+    "INC-20"
+  ],
+  "stratified_on": "whether the true cause lives outside the alerting service",
+  "caveat": "This split was drawn after one full agent run over all 20 incidents had already been inspected, so the test split is held out from iteration decisions from here on -- it was not held out from all prior observation."
+}
