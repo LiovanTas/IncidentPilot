@@ -461,8 +461,8 @@
       "source": "generic",
       "service": "payments-worker",
       "severity": "sev1",
-      "title": "payments-worker rejecting amounts, 28% of settlements failing",
-      "description": "28% of settlements fail with 'invalid amount: expected string, got float' from the provider SDK. Failures affect only amounts with fractional cents after currency conversion. The worker's own code has not changed in three days.",
+      "title": "payments-worker settlements failing on timestamp validation, 28% rejected",
+      "description": "28% of settlements are rejected by the provider SDK with 'invalid field settled_at: expected ISO-8601 timestamp, got integer'. Amounts and every other field validate normally -- only timestamp fields are refused. The worker's own code has not changed in three days.",
       "started_at": "2026-08-29T16:00:00Z",
       "labels": {
         "alertname": "PaymentsAmountRejected",

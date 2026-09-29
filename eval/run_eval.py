@@ -213,11 +213,15 @@ def _incident_card(r: dict) -> list[str]:
             out.append(f"  - in {where}")
     out.append("")
 
+    abstained = r["verdict_sha"] is None
     if r["correct"]:
         out.append("**IncidentPilot blamed:** the same commit. **Correct.**")
+    elif abstained:
+        out.append("**IncidentPilot blamed:** nothing — it declined to name a commit and handed "
+                   "the incident to a human. Wrong in the sense that it did not solve the "
+                   "outage, but it did not send anyone chasing the wrong change either.")
     else:
-        blamed = r["verdict_subject"] or "(nothing)"
-        out.append(f"**IncidentPilot blamed:** {blamed}")
+        out.append(f"**IncidentPilot blamed:** {r['verdict_subject']}")
         out.append("")
         if r["truth_rank"]:
             out.append(f"**Did it at least shortlist the real cause?** Yes — it was "
@@ -269,9 +273,18 @@ def _arm_narrative(arm: str, summary: dict, cal: dict, rows: list[dict]) -> list
     misses = [r for r in rows if not r["correct"]]
     cross = [r for r in misses if r["cross_service"]]
     if cross:
-        out.append(f"- {len(cross)} of the {len(misses)} misses were changes made **outside the "
+        was = "was" if len(cross) == 1 else "were"
+        out.append(f"- {len(cross)} of the {len(misses)} misses {was} a change made **outside the "
                    f"service that alerted** — a shared library or another team's migration. Those "
                    f"are the ones a human loses hours to as well.")
+
+    abstentions = [r for r in rows if r["verdict_sha"] is None]
+    if abstentions:
+        ids = ", ".join(r["incident_id"] for r in abstentions)
+        out.append(f"- {len(abstentions)} of the {len(misses)} misses ({ids}) were not wrong "
+                   f"answers — it declined to name any commit and escalated. Counted against it "
+                   f"here, but that is the failure you want: nobody gets sent after the wrong "
+                   f"change.")
 
     danger = cal.get("unflagged_and_wrong", 0)
     if danger == 0 and cal.get("unflagged_n", 0) == 0:
@@ -279,7 +292,8 @@ def _arm_narrative(arm: str, summary: dict, cal: dict, rows: list[dict]) -> list
                    f"review, including the {cal.get('flagged_and_correct', 0)} it got right. Safe, "
                    f"but it means a human still checks all {n}.")
     elif danger:
-        out.append(f"- **{danger} wrong answers went out without a warning flag.** That is the "
+        noun = "answer" if danger == 1 else "answers"
+        out.append(f"- **{danger} wrong {noun} went out without a warning flag.** That is the "
                    f"expensive failure: an engineer acts on it at 3am and loses the time anyway.")
     else:
         out.append("- Every answer it stood behind was correct.")

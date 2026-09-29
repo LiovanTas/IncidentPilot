@@ -1060,11 +1060,18 @@ INCIDENTS: list[dict] = [
         "onset": _onset(463),
         "service": "payments-worker",
         "severity": "sev1",
-        "title": "payments-worker rejecting amounts, 28% of settlements failing",
+        # NOTE: the original symptom for this incident was "invalid amount: expected string,
+        # got float", which is produced by DECIMAL_AS_STRING flipping to False in INC-07 --
+        # not by this incident's labelled cause, which only touches datetime encoding. The
+        # agent caught the inconsistency, traced the mechanism to INC-07's commit, and was
+        # marked wrong for being right. The symptom now describes what this cause actually
+        # does. See eval/results/ for the run that surfaced it.
+        "title": "payments-worker settlements failing on timestamp validation, 28% rejected",
         "description": (
-            "28% of settlements fail with 'invalid amount: expected string, got float' from "
-            "the provider SDK. Failures affect only amounts with fractional cents after "
-            "currency conversion. The worker's own code has not changed in three days."
+            "28% of settlements are rejected by the provider SDK with 'invalid field "
+            "settled_at: expected ISO-8601 timestamp, got integer'. Amounts and every other "
+            "field validate normally -- only timestamp fields are refused. The worker's own "
+            "code has not changed in three days."
         ),
         "metrics": {"error_rate_before": 0.003, "error_rate_after": 0.28, "duration_minutes": 43},
         "labels": {"alertname": "PaymentsAmountRejected", "team": "payments"},
