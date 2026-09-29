@@ -105,3 +105,30 @@ def test_zero_cache_reads_across_a_run_is_reported():
     working = {"n": 20, "total_usage": {"input_tokens": 50_000, "cache_read_input_tokens": 450_000}}
     assert "not working" in run_eval.caching_problem(broken)
     assert run_eval.caching_problem(working) is None
+
+
+def _resp(read, created=0):
+    return SimpleNamespace(usage=SimpleNamespace(
+        input_tokens=10, output_tokens=100,
+        cache_read_input_tokens=read, cache_creation_input_tokens=created))
+
+
+def test_first_request_may_miss_but_followups_must_read():
+    from incidentpilot.agent.loop import _accumulate
+    usage: dict = {}
+    _accumulate(usage, _resp(read=0, created=4000))    # cold cache: fine
+    _accumulate(usage, _resp(read=4000, created=900))  # reads the prefix: fine
+    assert usage["requests"] == 2 and usage.get("uncached_followups", 0) == 0
+    _accumulate(usage, _resp(read=0, created=5000))    # follow-up read nothing: a miss
+    assert usage["uncached_followups"] == 1
+
+
+def test_partial_cache_misses_are_reported_even_when_the_total_looks_healthy():
+    summary = {"n": 20, "total_usage": {"input_tokens": 50, "cache_read_input_tokens": 400_000,
+                                        "requests": 90, "uncached_followups": 3}}
+    assert "partially missed" in run_eval.caching_problem(summary)
+
+
+def test_opus_5_5_cache_reads_bill_at_a_twentieth():
+    price = price_for("claude-opus-5-5")
+    assert price.input == 4.00 and price.cache_read == pytest.approx(price.input * 0.05)

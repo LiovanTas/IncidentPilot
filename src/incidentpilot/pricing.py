@@ -1,8 +1,13 @@
 """Per-model token prices, so cost reports stay correct when the model changes.
 
 USD per million tokens, Anthropic first-party list prices. A cache read bills at a tenth
-of the input rate and a five-minute cache write at 1.25x; Claude Fable 5.1 reads are
-priced separately.
+of the input rate and a five-minute cache write at 1.25x, except where a model is priced
+separately: Claude Opus 5.5 reads bill at 0.05x, and Claude Fable 5.1 reads at $0.25/MTok.
+
+Minimum cacheable prefix, per the prompt-caching docs: 512 tokens on Opus 5.5, Opus 5 and
+Sonnet 5.5; 1,024 on Sonnet 5; 4,096 on Haiku 4.5. IncidentPilot's tools + system prefix
+is ~1,750 tokens, so on Haiku that breakpoint would not cache -- the conversation-history
+breakpoint still would, once the first diff pushes the prompt past 4,096.
 """
 
 from __future__ import annotations
@@ -24,6 +29,7 @@ def _standard(input_rate: float, output_rate: float) -> Price:
 
 PRICES: dict[str, Price] = {
     "claude-fable-5-1": Price(10.00, 50.00, 0.25, 12.50),
+    "claude-opus-5-5": Price(4.00, 20.00, 0.20, 5.00),
     "claude-opus-5": _standard(5.00, 25.00),
     "claude-opus-4-8": _standard(5.00, 25.00),
     "claude-sonnet-5": _standard(2.00, 10.00),

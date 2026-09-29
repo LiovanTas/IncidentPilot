@@ -44,6 +44,14 @@ def _accumulate(usage: dict[str, int], response: Any) -> None:
         if isinstance(value, int):
             usage[field] = usage.get(field, 0) + value
 
+    # Every request after the first in one conversation re-sends a prefix the previous
+    # request just cached, so it must read something. One that reads nothing is a
+    # partial miss that a whole-run total would hide: something in the prefix changed,
+    # or the conversation outgrew the 20-block lookback window.
+    usage["requests"] = usage.get("requests", 0) + 1
+    if usage["requests"] > 1 and not getattr(src, "cache_read_input_tokens", 0):
+        usage["uncached_followups"] = usage.get("uncached_followups", 0) + 1
+
 
 def _diagnosis_from_tool_input(payload: dict[str, Any]) -> Diagnosis:
     sha = str(payload.get("offending_sha") or "").strip()

@@ -156,6 +156,12 @@ def caching_problem(summary: dict) -> str | None:
         return ("prompt caching is not working: zero cache reads across "
                 f"{summary['n']} incidents. Either the cached prefix is below this model's "
                 "minimum cacheable size, or something in it changes between requests.")
+    misses = usage.get("uncached_followups", 0)
+    if misses:
+        return (f"prompt caching partially missed: {misses} of "
+                f"{usage.get('requests', 0)} requests were follow-ups in a conversation that "
+                "read nothing from cache. Every follow-up should, so something in the prefix "
+                "changed mid-conversation or the history outgrew the 20-block lookback.")
     return None
 
 
