@@ -83,6 +83,70 @@ def cmd_serve(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_demo(args: argparse.Namespace) -> int:
+    import threading
+    import webbrowser
+
+    import uvicorn
+
+    from .demo import scenarios as scenario_mod
+    from .demo.workspace import ensure_demo_repo, repo_available
+
+    if scenario_mod.needs_demo_repo():
+        print("preparing the demo repository...", flush=True)
+        ensure_demo_repo()
+    url = f"http://{args.host}:{args.port}/demo"
+    config = load_config()
+    print(f"\nIncidentPilot demo: {url}")
+    print(f"live runs: {'on, ' + config.model if config.has_anthropic_key else 'off (no ANTHROPIC_API_KEY) -- replays only'}")
+    missing = sorted({s.repo for s in scenario_mod.load(None)
+                      if s.repo != "demo" and not repo_available(s.repo)})
+    if missing:
+        print(f"no local clone of {', '.join(missing)}: those incidents replay only "
+              "(py -3.13 eval/realworld/build.py fetches them)")
+    print("Ctrl+C to stop.\n", flush=True)
+    if not args.no_browser:
+        threading.Timer(1.5, webbrowser.open, args=(url,)).start()
+    uvicorn.run("incidentpilot.server:app", host=args.host, port=args.port, log_level="warning")
+    return 0
+
+
+def cmd_demo_record(args: argparse.Namespace) -> int:
+    from .demo import scenarios as scenario_mod
+    from .demo.runs import RunManager
+    from .demo.workspace import ensure_demo_repo
+
+    config = load_config()
+    if not config.has_anthropic_key:
+        print("ANTHROPIC_API_KEY is not set in this terminal; recording needs live runs.",
+              file=sys.stderr)
+        return 1
+    demo_repo = ensure_demo_repo() if scenario_mod.needs_demo_repo() else None
+    chosen = scenario_mod.load(demo_repo)
+    if args.scenario:
+        chosen = tuple(s for s in chosen if s.id in set(args.scenario))
+        unknown = set(args.scenario) - {s.id for s in chosen}
+        if unknown:
+            print(f"unknown scenario(s): {', '.join(sorted(unknown))}", file=sys.stderr)
+            return 1
+    manager = RunManager()
+    failures = 0
+    total = 0.0
+    for scenario in chosen:
+        print(f"recording {scenario.id:14} {scenario.title}", flush=True)
+        try:
+            path, done = manager.record(scenario)
+        except Exception as exc:
+            failures += 1
+            print(f"  failed: {exc}", file=sys.stderr)
+            continue
+        total += done.get("cost_usd") or 0.0
+        print(f"  {done['duration_s']}s, {done['tool_calls']} tool calls, "
+              f"${(done.get('cost_usd') or 0):.3f} -> {path.name}", flush=True)
+    print(f"\n{len(chosen) - failures}/{len(chosen)} recorded, ${total:.2f} total")
+    return 1 if failures else 0
+
+
 def cmd_doctor(args: argparse.Namespace) -> int:
     config = load_config()
     print(f"repo            : {config.repo_path}  (exists: {(config.repo_path / '.git').exists()})")
@@ -122,6 +186,17 @@ def build_parser() -> argparse.ArgumentParser:
     p_serve.add_argument("--port", type=int, default=8080)
     p_serve.add_argument("--reload", action="store_true")
     p_serve.set_defaults(func=cmd_serve)
+
+    p_demo = sub.add_parser("demo", help="start the demo page and open it in a browser")
+    p_demo.add_argument("--host", default="127.0.0.1")
+    p_demo.add_argument("--port", type=int, default=8765)
+    p_demo.add_argument("--no-browser", action="store_true")
+    p_demo.set_defaults(func=cmd_demo)
+
+    p_record = sub.add_parser("demo-record",
+                              help="run demo incidents live and save them as replays")
+    p_record.add_argument("scenario", nargs="*", help="scenario ids (default: all)")
+    p_record.set_defaults(func=cmd_demo_record)
 
     p_doctor = sub.add_parser("doctor", help="show resolved configuration")
     p_doctor.set_defaults(func=cmd_doctor)

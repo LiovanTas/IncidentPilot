@@ -85,22 +85,23 @@ ALERT_PAYLOAD = {
 }
 
 
-def git(*args: str, env_extra: dict | None = None) -> str:
+def git(*args: str, env_extra: dict | None = None, repo: Path | None = None) -> str:
     import os
 
-    env = {**os.environ, "GIT_CONFIG_NOSYSTEM": "1", "HOME": str(REPO)}
+    repo = repo or REPO
+    env = {**os.environ, "GIT_CONFIG_NOSYSTEM": "1", "HOME": str(repo)}
     if env_extra:
         env.update(env_extra)
-    proc = subprocess.run(["git", "-C", str(REPO), *args], capture_output=True, text=True,
+    proc = subprocess.run(["git", "-C", str(repo), *args], capture_output=True, text=True,
                           env=env, encoding="utf-8", errors="replace")
     if proc.returncode != 0:
         raise RuntimeError(f"git {' '.join(args)}\n{proc.stdout}\n{proc.stderr}")
     return proc.stdout.strip()
 
 
-def apply(spec: dict) -> None:
+def apply(spec: dict, repo: Path | None = None) -> None:
     for rel, find, replace in spec["edits"]:
-        path = REPO / rel
+        path = (repo or REPO) / rel
         text = path.read_text(encoding="utf-8")
         if find not in text:
             raise SystemExit(
@@ -111,15 +112,30 @@ def apply(spec: dict) -> None:
         path.write_text(text.replace(find, replace, 1), encoding="utf-8", newline="\n")
 
 
-def commit(spec: dict) -> str:
+def commit(spec: dict, repo: Path | None = None) -> str:
     stamp = spec["at"].isoformat()
     email = spec["author"].lower().replace(" ", ".") + "@checkout-platform.dev"
     env = {"GIT_AUTHOR_NAME": spec["author"], "GIT_AUTHOR_EMAIL": email,
            "GIT_AUTHOR_DATE": stamp, "GIT_COMMITTER_NAME": spec["author"],
            "GIT_COMMITTER_EMAIL": email, "GIT_COMMITTER_DATE": stamp}
-    git("add", "-A", env_extra=env)
-    git("commit", "-q", "--no-gpg-sign", "-m", spec["message"], env_extra=env)
-    return git("rev-parse", "HEAD", env_extra=env)
+    git("add", "-A", env_extra=env, repo=repo)
+    git("commit", "-q", "--no-gpg-sign", "-m", spec["message"], env_extra=env, repo=repo)
+    return git("rev-parse", "HEAD", env_extra=env, repo=repo)
+
+
+def plant(repo: Path, verbose: bool = False) -> str:
+    """Commit the bug and its two decoys into `repo` in time order; return the bug's SHA."""
+    cause_sha = ""
+    for spec in sorted([CAUSE, *DECOYS], key=lambda s: s["at"]):
+        apply(spec, repo)
+        sha = commit(spec, repo)
+        if spec is CAUSE:
+            cause_sha = sha
+        if verbose:
+            role = "THE BUG " if spec is CAUSE else "innocent"
+            print(f"  [{role}] {sha[:10]}  {spec['at'].strftime('%b %d %H:%M')}  "
+                  f"{spec['message'].splitlines()[0]}")
+    return cause_sha
 
 
 def reset() -> int:
@@ -160,16 +176,7 @@ def main() -> int:
 
     git("tag", TAG)  # so --reset can get back exactly here
 
-    specs = sorted([CAUSE, *DECOYS], key=lambda s: s["at"])
-    cause_sha = ""
-    for spec in specs:
-        apply(spec)
-        sha = commit(spec)
-        role = "THE BUG " if spec is CAUSE else "innocent"
-        if spec is CAUSE:
-            cause_sha = sha
-        print(f"  [{role}] {sha[:10]}  {spec['at'].strftime('%b %d %H:%M')}  "
-              f"{spec['message'].splitlines()[0]}")
+    cause_sha = plant(REPO, verbose=True)
 
     ALERT.write_text(json.dumps(ALERT_PAYLOAD, indent=2), encoding="utf-8")
 

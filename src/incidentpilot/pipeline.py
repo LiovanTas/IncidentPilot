@@ -5,7 +5,7 @@ from __future__ import annotations
 import logging
 from datetime import timedelta
 from pathlib import Path
-from typing import Any
+from typing import Any, Callable
 
 from . import report as report_mod
 from . import slack as slack_mod
@@ -68,6 +68,7 @@ class IncidentPilot:
                 prefetch_diffs=self.config.prefetch_diffs,
                 enable_read_file=self.config.enable_read_file,
                 escalate_below=self.config.escalate_below,
+                show_reasoning=self.config.show_reasoning,
             )
         except AgentUnavailable as exc:
             log.warning("agent unavailable, falling back to heuristic: %s", exc)
@@ -90,10 +91,16 @@ class IncidentPilot:
 
     # --------------------------------------------------------------------- main
 
-    def handle(self, alert: Alert, use_agent: bool = True) -> IncidentResult:
+    def handle(self, alert: Alert, use_agent: bool = True,
+               on_event: Callable[[dict[str, Any]], None] | None = None) -> IncidentResult:
+        """Diagnose one alert. `on_event`, when given, receives every stage as it completes
+        -- alert, shortlist, runbooks, impact, the agent's steps, the verdict -- for callers
+        that show the investigation live. It changes nothing about the result."""
+        emit = on_event or (lambda event: None)
         started = utcnow()
         incident_id = make_incident_id(alert)
         log.info("%s: %s", incident_id, alert.summary_line)
+        emit({"type": "alert", "incident_id": incident_id, "alert": alert.to_dict()})
 
         # Every git query for this incident sees the repository as it stood when the alert
         # fired. Live, that is HEAD. Replaying a past incident, anything later -- a revert,
@@ -108,12 +115,19 @@ class IncidentPilot:
         runbooks = self.index.search(self._runbook_query(alert), top_k=self.config.top_k)
         impact = estimate_impact(alert, self.topology)
 
+        ranker = heuristic_diagnosis(alert, candidates, runbooks)
+        emit({"type": "candidates", "lookback_hours": self.config.lookback_hours,
+              "candidates": [c.to_dict() for c in candidates],
+              "ranker_pick": ranker.offending_sha})
+        emit({"type": "runbooks", "runbooks": [r.to_dict() for r in runbooks]})
+        emit({"type": "impact", "impact": impact.to_dict()})
+
         tool_calls: list = []
         usage: dict[str, int] = {}
         agent = self._get_agent() if use_agent else None
 
         if agent is None:
-            diagnosis = heuristic_diagnosis(alert, candidates, runbooks)
+            diagnosis = ranker
         else:
             ctx = ToolContext(
                 alert=alert, repo=repo, index=self.index, topology=self.topology,
@@ -122,7 +136,8 @@ class IncidentPilot:
             )
             try:
                 diagnosis, tool_calls, usage = agent.run(
-                    ctx, runbooks, impact.to_dict(), self._topology_summary(alert.service)
+                    ctx, runbooks, impact.to_dict(), self._topology_summary(alert.service),
+                    on_event=on_event,
                 )
             except Exception as exc:
                 # A bad key or a revoked token will fail identically on every incident.
@@ -138,6 +153,7 @@ class IncidentPilot:
                 diagnosis.needs_human = True
                 diagnosis.reasoning = f"Agent error ({type(exc).__name__}: {exc}). " + diagnosis.reasoning
 
+        emit({"type": "verdict", "diagnosis": diagnosis.to_dict()})
         return IncidentResult(
             incident_id=incident_id, alert=alert, candidates=candidates, runbooks=runbooks,
             diagnosis=diagnosis, impact=impact, tool_calls=tool_calls,

@@ -133,6 +133,46 @@ background task — Alertmanager retries anything that does not answer fast. Fet
 report with `GET /incidents/{incident_id}`, and check `GET /readyz` for the resolved
 config, corpus size and whether the agent is enabled.
 
+### The demo
+
+```bash
+incidentpilot demo
+```
+
+This opens a page at `http://127.0.0.1:8765/demo` built for walking someone through a
+run: pick an incident, press **Run investigation**, and watch the ranker's shortlist
+fill a board while the agent reads diffs, rules each commit out or in, and lands on a
+verdict with the impact estimate, the Slack brief and the resolution report. The known
+answer is checked against the verdict at the end.
+
+The incidents are seven real regressions from the real-world suite, in moby, grafana,
+prometheus and golang/go. Each was reverted upstream, and the revert names the commit it
+undid, so the known answer comes from the maintainers, not from us. The ranker alone puts
+the culprit first on two of them; on RW-go-05 it is not in the shortlist at all, and the
+agent has to go and find it. These repositories have no service map, so the page shows
+the repository and the suspect count instead of a made-up users-affected figure. Live runs
+and recording need the local clones (`py -3.13 eval/realworld/build.py`); replays don't.
+
+**Replay** is the default. It plays back a recorded run of the real agent with its
+original timing, so it needs no key, network or spend, and the page says when and with
+which model it was recorded. Record them once (about $0.05 per incident):
+
+```bash
+export ANTHROPIC_API_KEY=sk-ant-...
+incidentpilot demo-record            # all seven, or name ids: demo-record RW-moby-03 RW-go-05
+```
+
+**Live** runs Claude for real and is enabled when `ANTHROPIC_API_KEY` is set in the
+terminal that started the demo.
+
+Replay speed is 1×, 2×, 4× or Instant (skip straight to the result). Deep links set
+everything up front, handy for a screen share:
+
+```
+/demo?incident=RW-moby-03&mode=replay&speed=2&autorun=1
+/demo?incident=RW-go-05&speed=0&autorun=1&tab=report    # tab=slack|report
+```
+
 ---
 
 ## The eval
@@ -368,7 +408,8 @@ src/incidentpilot/
   report.py        markdown resolution report
   pipeline.py      orchestration
   server.py        FastAPI webhook receiver
-  cli.py           index / search / replay / serve / doctor
+  demo/            the /demo page: curated scenarios, live runs, recorded replays
+  cli.py           index / search / replay / serve / doctor / demo / demo-record
 eval/
   scenarios.py           the corpus: baseline tree + 20 incidents with decoys
   build_fixture_repo.py  materializes it as a real git repo

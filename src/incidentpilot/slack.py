@@ -23,7 +23,7 @@ SEVERITY_EMOJI = {"sev1": ":rotating_light:", "sev2": ":warning:", "sev3": ":lar
 
 def _confidence_bar(confidence: float) -> str:
     filled = max(0, min(5, round(confidence * 5)))
-    return "█" * filled + "░" * (5 - filled)
+    return "▰" * filled + "▱" * (5 - filled)
 
 
 def _truncate(text: str, limit: int = 280) -> str:

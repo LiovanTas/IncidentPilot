@@ -27,6 +27,9 @@ incidentpilot = "incidentpilot.cli:main"
 [tool.setuptools.packages.find]
 where = ["src"]
 
+[tool.setuptools.package-data]
+incidentpilot = ["demo/static/*", "demo/static/fonts/*", "demo/recordings/*.json"]
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["src"]

@@ -12,9 +12,12 @@ from pathlib import Path
 from typing import Any
 
 from fastapi import BackgroundTasks, FastAPI, Header, HTTPException, Request
-from fastapi.responses import JSONResponse, PlainTextResponse
+from fastapi.responses import JSONResponse, PlainTextResponse, RedirectResponse
+from fastapi.staticfiles import StaticFiles
 
 from .config import load_config
+from .demo.routes import STATIC as DEMO_STATIC
+from .demo.routes import router as demo_router
 from .ingest import normalize
 from .models import Alert, make_incident_id
 from .pipeline import IncidentPilot
@@ -40,6 +43,13 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(title="IncidentPilot", version="0.1.0", lifespan=lifespan)
+app.include_router(demo_router)
+app.mount("/demo/static", StaticFiles(directory=DEMO_STATIC), name="demo-static")
+
+
+@app.get("/", include_in_schema=False)
+async def root() -> RedirectResponse:
+    return RedirectResponse("/demo")
 
 
 def _authorize(authorization: str | None) -> None:

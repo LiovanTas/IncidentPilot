@@ -61,6 +61,9 @@ class Config:
     enable_read_file: bool = _env_bool("INCIDENTPILOT_ENABLE_READ_FILE", False)
     # Force human review whenever the agent's own confidence is below this. 0 disables.
     escalate_below: float = _env_float("INCIDENTPILOT_ESCALATE_BELOW", 0.0)
+    # Ask the API for readable summaries of the model's reasoning. Visibility only: the
+    # model thinks, and is billed, the same either way. The demo turns it on.
+    show_reasoning: bool = _env_bool("INCIDENTPILOT_SHOW_REASONING", False)
 
     # --- Repo under investigation ---
     repo_path: Path = _env_path("INCIDENTPILOT_REPO", ROOT / "eval/fixtures/repo")

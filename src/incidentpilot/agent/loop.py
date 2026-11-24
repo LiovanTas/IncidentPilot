@@ -15,7 +15,7 @@ from __future__ import annotations
 import json
 import logging
 import time
-from typing import Any
+from typing import Any, Callable
 
 from ..models import Alert, CommitCandidate, Diagnosis, RunbookChunk, ToolCall
 from .prompts import SYSTEM_PROMPT, build_incident_prompt
@@ -148,9 +148,11 @@ class DiagnosisAgent:
 
     def __init__(self, model: str, effort: str = "high", max_tokens: int = 16000,
                  max_turns: int = 14, client: Any = None, prefetch_diffs: int = 0,
-                 enable_read_file: bool = False, escalate_below: float = 0.0):
+                 enable_read_file: bool = False, escalate_below: float = 0.0,
+                 show_reasoning: bool = False):
         self.model = model
         self.effort = effort
+        self.show_reasoning = show_reasoning
         self.max_tokens = max_tokens
         self.max_turns = max_turns
         self.prefetch_diffs = max(0, prefetch_diffs)
@@ -179,10 +181,13 @@ class DiagnosisAgent:
         #   read so far -- so turn N+1 reads everything up to turn N from cache and pays
         #   full price only for what is new. Without it, that history was re-billed at the
         #   full input rate on every turn, 44% of the cost of the last full run.
+        thinking: dict[str, Any] = {"type": "adaptive"}
+        if self.show_reasoning:
+            thinking["display"] = "summarized"
         return {
             "model": self.model,
             "max_tokens": self.max_tokens,
-            "thinking": {"type": "adaptive"},
+            "thinking": thinking,
             "output_config": {"effort": self.effort},
             "cache_control": {"type": "ephemeral"},
             "system": [{
@@ -226,7 +231,12 @@ class DiagnosisAgent:
     # ---------------------------------------------------------------------- loop
 
     def run(self, ctx: ToolContext, runbooks: list[RunbookChunk], impact: dict,
-            topology_summary: dict) -> tuple[Diagnosis, list[ToolCall], dict[str, int]]:
+            topology_summary: dict, on_event: Callable[[dict[str, Any]], None] | None = None,
+            ) -> tuple[Diagnosis, list[ToolCall], dict[str, int]]:
+        """Investigate to a verdict. `on_event`, when given, receives each step as it
+        happens -- reasoning summaries, notes, tool calls and their results -- so a caller
+        can show the investigation live. It never changes what the agent does."""
+        emit = on_event or (lambda event: None)
         prefetched: dict[str, str] = {}
         for candidate in ctx.candidates[: self.prefetch_diffs]:
             prefetched[candidate.sha] = dispatch("get_commit_diff", {"sha": candidate.sha}, ctx)
@@ -237,8 +247,15 @@ class DiagnosisAgent:
         usage: dict[str, int] = {}
 
         for turn in range(self.max_turns):
+            emit({"type": "thinking_started", "turn": turn + 1})
             response = self._create(messages)
             _accumulate(usage, response)
+            for block in response.content:
+                kind = getattr(block, "type", None)
+                if kind == "thinking" and getattr(block, "thinking", ""):
+                    emit({"type": "reasoning", "turn": turn + 1, "text": block.thinking})
+                elif kind == "text" and getattr(block, "text", "").strip():
+                    emit({"type": "note", "turn": turn + 1, "text": block.text.strip()})
 
             if getattr(response, "stop_reason", None) == "refusal":
                 details = getattr(response, "stop_details", None)
@@ -274,9 +291,13 @@ class DiagnosisAgent:
                                     "content": "Diagnosis recorded. Investigation closed."})
                     continue
 
+                step = len(transcript) + 1
+                emit({"type": "tool_start", "step": step, "name": block.name, "args": args})
                 started = time.perf_counter()
                 output = dispatch(block.name, args, ctx)
                 elapsed = int((time.perf_counter() - started) * 1000)
+                emit({"type": "tool_result", "step": step, "name": block.name, "args": args,
+                      "output": output[:6000], "ms": elapsed})
                 transcript.append(ToolCall(
                     name=block.name, arguments=args,
                     result_preview=output[:280].replace("\n", " "), duration_ms=elapsed,

@@ -1,0 +1,170 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-23T00:00:00Z",
+  "title": "Design System: IncidentPilot",
+  "extensions": {
+    "colorMeta": {
+      "delay-amber": { "role": "primary", "displayName": "Delay Amber", "canonical": "#FFB000", "tonalRamp": ["#2B1E00", "#4D3500", "#7A5400", "#A06E00", "#D49200", "#FFB000", "#FFC23D", "#FFE6A6"] },
+      "amber-hover": { "role": "primary", "displayName": "Amber, hover", "canonical": "#FFC23D", "tonalRamp": ["#2E2205", "#523D0A", "#7F5F10", "#AD8216", "#DCA51D", "#FFC23D", "#FFD478", "#FFEAB8"] },
+      "amber-ink": { "role": "primary", "displayName": "Amber Ink", "canonical": "#1A1300", "tonalRamp": ["#1A1300", "#2E2300", "#4A3800", "#6B5200", "#8F6E00", "#B38A10", "#D9B860", "#F5E6BF"] },
+      "cancel-red": { "role": "secondary", "displayName": "Cancel Red", "canonical": "#B00020", "tonalRamp": ["#2A0A10", "#4A0712", "#700318", "#B00020", "#D42B43", "#FF5A6E", "#FF97A4", "#FFD6DB"] },
+      "cancel-red-text": { "role": "secondary", "displayName": "Cancel Red, lifted", "canonical": "#FF5A6E", "tonalRamp": ["#2A0A10", "#4A0712", "#700318", "#B00020", "#D42B43", "#FF5A6E", "#FF97A4", "#FFD6DB"] },
+      "diff-green-text": { "role": "tertiary", "displayName": "Diff Green", "canonical": "#7FD99A", "tonalRamp": ["#0E2415", "#174024", "#245E36", "#357F4A", "#4FA466", "#7FD99A", "#AEE8BF", "#DDF6E4"] },
+      "flap-black": { "role": "neutral", "displayName": "Flap Black", "canonical": "#0B0B0D", "tonalRamp": ["#0B0B0D", "#121315", "#17181B", "#1C1D20", "#222428", "#2A2D31", "#34373C", "#3A3D42"] },
+      "flap-cell": { "role": "neutral", "displayName": "Flap Cell", "canonical": "#17181B", "tonalRamp": ["#0B0B0D", "#121315", "#17181B", "#1C1D20", "#222428", "#2A2D31", "#34373C", "#3A3D42"] },
+      "frame-steel": { "role": "neutral", "displayName": "Frame Steel", "canonical": "#2A2D31", "tonalRamp": ["#0B0B0D", "#17181B", "#222428", "#2A2D31", "#34373C", "#5B5E63", "#8D9095", "#A7AAAF"] },
+      "frame-deep": { "role": "neutral", "displayName": "Frame Deep", "canonical": "#222428", "tonalRamp": ["#0B0B0D", "#17181B", "#222428", "#2A2D31", "#34373C", "#5B5E63", "#8D9095", "#A7AAAF"] },
+      "rule-line": { "role": "neutral", "displayName": "Rule Line", "canonical": "#34373C", "tonalRamp": ["#0B0B0D", "#17181B", "#222428", "#2A2D31", "#34373C", "#5B5E63", "#8D9095", "#A7AAAF"] },
+      "steel-mid": { "role": "neutral", "displayName": "Steel Mid", "canonical": "#5B5E63", "tonalRamp": ["#17181B", "#2A2D31", "#3A3D42", "#5B5E63", "#73767B", "#8D9095", "#A7AAAF", "#D7D8DA"] },
+      "steel-light": { "role": "neutral", "displayName": "Steel Light", "canonical": "#A7AAAF", "tonalRamp": ["#17181B", "#2A2D31", "#3A3D42", "#5B5E63", "#73767B", "#8D9095", "#A7AAAF", "#D7D8DA"] },
+      "unlit-grey": { "role": "neutral", "displayName": "Unlit Grey", "canonical": "#8C9095", "tonalRamp": ["#17181B", "#2A2D31", "#3A3D42", "#5B5E63", "#73767B", "#8C9095", "#A7AAAF", "#D7D8DA"] },
+      "letter-white": { "role": "neutral", "displayName": "Letter White", "canonical": "#F2F2F2", "tonalRamp": ["#5B5E63", "#8D9095", "#A7AAAF", "#C9CBCE", "#D7D8DA", "#E2E3E5", "#F2F2F2", "#FAFAFA"] }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "The alert title on the alert board, and stat values." },
+      "flap": { "displayName": "Flap", "purpose": "Every split-flap character; sm 15px in 15x24 cells, lg 32px in 30x46 cells." },
+      "headline": { "displayName": "Headline", "purpose": "The probable-cause sentence in the verdict; the one large sentence." },
+      "title": { "displayName": "Title", "purpose": "Board headings, the Run button, tabs (15px)." },
+      "body": { "displayName": "Body", "purpose": "Reasoning and description prose, 72-78ch max, tabular figures." },
+      "label": { "displayName": "Label", "purpose": "Field labels for data and table column heads, steel light, uppercase." },
+      "mono": { "displayName": "Mono", "purpose": "Diffs, rollback commands and inline code only." }
+    },
+    "shadows": [
+      { "name": "mounted-panel", "value": "0 2px 6px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.05)", "purpose": "Every frame panel sitting on the steel bezel." },
+      { "name": "primary-button", "value": "0 2px 4px rgba(0,0,0,.4)", "purpose": "The Run button only; removed when disabled." }
+    ],
+    "motion": [
+      { "name": "ease", "value": "cubic-bezier(0.16, 1, 0.3, 1)", "purpose": "All state easing: flap flips, diff drawer, hover backgrounds." },
+      { "name": "flap-flip", "value": "85ms rotateX(0 -> -80deg -> 0), brightness 1 -> .55 -> 1", "purpose": "One flip of a flap character." },
+      { "name": "flap-cascade", "value": "2-3 random intermediate characters per cell, 75ms per tick, 22ms stagger per cell left to right", "purpose": "Signature motion on every flap change. Instant under prefers-reduced-motion." },
+      { "name": "lamp-pulse", "value": "1.1s ease-in-out infinite, opacity 1 -> .35", "purpose": "Live and thinking lamps. Off under reduced motion." },
+      { "name": "diff-drawer", "value": "grid-template-rows 0fr -> 1fr, 350ms", "purpose": "The row being read opens its diff, then closes to one line." },
+      { "name": "hover-bg", "value": "background 200-250ms", "purpose": "Incident list and suspect row hover/state tint." }
+    ],
+    "breakpoints": [
+      { "name": "log-below", "value": "1240px" },
+      { "name": "single-column", "value": "1000px" },
+      { "name": "phone", "value": "820px" }
+    ],
+    "texture": {
+      "brushed-steel": "body background: inline SVG data-URI feTurbulence fractalNoise baseFrequency 0.0015 0.9, numOctaves 2, seed 7, alpha 0.09, over linear-gradient(160deg, #A7AAAF, #8D9095 35%, #5B5E63 85%). No raster."
+    },
+    "openOpportunities": [
+      "Hinge pins on flap cells (not built)",
+      "A large flap headline (not built)",
+      "Flap tiles for the stat numbers (not built)",
+      "A lit bezel frame (not built)"
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Run investigation: the one amber action on the screen.",
+      "html": "<button class=\"ds-run\"><span>Run investigation</span><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><path d=\"M5 3l6 5-6 5\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.2\" stroke-linecap=\"square\"/></svg></button>",
+      "css": ".ds-run { display: inline-flex; align-items: center; gap: 12px; padding: 13px 20px; border: 0; border-radius: 0; background: #FFB000; color: #1A1300; font-family: 'Sofia Sans Condensed', 'Arial Narrow', sans-serif; font-weight: 700; font-size: 17px; letter-spacing: 0.14em; text-transform: uppercase; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,.4); transition: transform .15s cubic-bezier(0.16,1,0.3,1), background .15s cubic-bezier(0.16,1,0.3,1); } .ds-run svg { width: 16px; height: 16px; } .ds-run:hover { background: #FFC23D; } .ds-run:active { transform: translateY(1px); } .ds-run:focus-visible { outline: 2px solid #FFB000; outline-offset: 2px; } .ds-run:disabled { background: #5B5E63; color: #1C1D20; box-shadow: none; cursor: not-allowed; }"
+    },
+    {
+      "name": "Mode Switch",
+      "kind": "nav",
+      "refersTo": "mode-switch-on",
+      "description": "Replay/Live radiogroup; Replay first and checked by default.",
+      "html": "<div class=\"ds-switch\" role=\"radiogroup\"><button role=\"radio\" aria-checked=\"true\">Replay</button><button role=\"radio\" aria-checked=\"false\">Live</button></div>",
+      "css": ".ds-switch { display: grid; grid-template-columns: 1fr 1fr; gap: 3px; padding: 3px; width: 230px; background: #0B0B0D; border: 1px solid #5B5E63; } .ds-switch button { padding: 9px 0; border: 0; background: transparent; font-family: 'Sofia Sans Condensed', 'Arial Narrow', sans-serif; font-weight: 600; font-size: 15px; letter-spacing: 0.14em; text-transform: uppercase; color: #A7AAAF; cursor: pointer; } .ds-switch button[aria-checked='true'] { background: #F2F2F2; color: #0B0B0D; } .ds-switch button:focus-visible { outline: 2px solid #FFB000; outline-offset: 2px; }"
+    },
+    {
+      "name": "Speed Select",
+      "kind": "input",
+      "refersTo": "select",
+      "description": "Square flap-black select in condensed caps.",
+      "html": "<select class=\"ds-select\"><option>1x · as recorded</option><option>2x</option><option>Instant · skip to the result</option></select>",
+      "css": ".ds-select { width: 230px; padding: 8px 10px; background: #0B0B0D; color: #F2F2F2; border: 1px solid #5B5E63; border-radius: 0; font-family: 'Sofia Sans Condensed', 'Arial Narrow', sans-serif; font-size: 15px; letter-spacing: 0.06em; text-transform: uppercase; } .ds-select:focus-visible { outline: 2px solid #FFB000; outline-offset: 2px; }"
+    },
+    {
+      "name": "Incident List Item",
+      "kind": "nav",
+      "refersTo": "incident-item",
+      "description": "Rail incident entry; current one goes flap-black with an amber border.",
+      "html": "<div class=\"ds-incidents\"><button class=\"ds-incident\" aria-current=\"true\"><span class=\"ds-incident-title\">Checkout-api 504 gateway timeouts at 12%</span><span class=\"ds-incident-suite\">Synthetic · <b>INC-06</b></span></button><button class=\"ds-incident\"><span class=\"ds-incident-title\">Cart-service p99 latency 4.2s</span><span class=\"ds-incident-suite\">Synthetic · <b>INC-02</b> · no replay</span></button></div>",
+      "css": ".ds-incidents { display: flex; flex-direction: column; gap: 4px; width: 230px; } .ds-incident { display: flex; flex-direction: column; gap: 2px; padding: 5px 10px; text-align: left; background: #222428; color: #F2F2F2; border: 1px solid transparent; cursor: pointer; transition: background .2s cubic-bezier(0.16,1,0.3,1), border-color .2s cubic-bezier(0.16,1,0.3,1); } .ds-incident:hover { background: #1B1D20; } .ds-incident[aria-current='true'] { background: #0B0B0D; border-color: #FFB000; } .ds-incident:focus-visible { outline: 2px solid #FFB000; outline-offset: 2px; } .ds-incident-title { font-family: 'Sofia Sans Condensed', 'Arial Narrow', sans-serif; font-weight: 600; font-size: 14px; line-height: 1.15; letter-spacing: 0.05em; text-transform: uppercase; } .ds-incident-suite { font-family: 'Sofia Sans', 'Segoe UI', sans-serif; font-size: 12px; color: #A7AAAF; } .ds-incident-suite b { color: #F2F2F2; font-weight: 600; }"
+    },
+    {
+      "name": "Run Chip",
+      "kind": "chip",
+      "refersTo": "chip",
+      "description": "Labels the run: a replay says it is a recording, with date and stand-in flag.",
+      "html": "<span class=\"ds-chip\">Replay · recorded 23 Nov 2026</span> <span class=\"ds-chip ds-chip-live\">Live</span>",
+      "css": ".ds-chip { display: inline-flex; align-items: center; gap: 8px; padding: 3px 9px; border: 1px solid #5B5E63; font-family: 'Sofia Sans Condensed', 'Arial Narrow', sans-serif; font-weight: 600; font-size: 13px; letter-spacing: 0.14em; text-transform: uppercase; color: #A7AAAF; white-space: nowrap; } .ds-chip-live { border-color: #FFB000; color: #FFB000; }"
+    },
+    {
+      "name": "Split-Flap Display",
+      "kind": "custom",
+      "refersTo": "flap-cell",
+      "description": "Signature atom: fixed character cells with a mid-height seam; tones white, amber, red, unlit; SEV variant on red fill.",
+      "html": "<div class=\"ds-flaps\"><span class=\"ds-flap ds-sev\"><span class=\"ds-cell\"><span>S</span></span><span class=\"ds-cell\"><span>E</span></span><span class=\"ds-cell\"><span>V</span></span><span class=\"ds-cell\"><span>1</span></span></span><span class=\"ds-flap ds-amber\"><span class=\"ds-lamp\"></span><span class=\"ds-cell\"><span>I</span></span><span class=\"ds-cell\"><span>D</span></span><span class=\"ds-cell\"><span>E</span></span><span class=\"ds-cell\"><span>N</span></span><span class=\"ds-cell\"><span>T</span></span></span><span class=\"ds-flap ds-red\"><span class=\"ds-cell\"><span>R</span></span><span class=\"ds-cell\"><span>U</span></span><span class=\"ds-cell\"><span>L</span></span><span class=\"ds-cell\"><span>E</span></span><span class=\"ds-cell\"><span>D</span></span></span></div>",
+      "css": ".ds-flaps { display: flex; flex-direction: column; gap: 10px; padding: 12px; background: #0B0B0D; } .ds-flap { display: inline-flex; align-items: center; gap: 2px; } .ds-cell { position: relative; width: 19px; height: 30px; display: grid; place-items: center; background: linear-gradient(#17181B 0 49%, #121315 51% 100%); border-radius: 2px; overflow: hidden; } .ds-cell::after { content: ''; position: absolute; inset: 50% 0 auto; border-top: 1px solid #000; } .ds-cell span { font-family: 'Sofia Sans Condensed', 'Arial Narrow', sans-serif; font-weight: 600; font-size: 20px; line-height: 1; text-transform: uppercase; color: #F2F2F2; animation: ds-flap .3s cubic-bezier(0.16,1,0.3,1) 2; } .ds-amber .ds-cell span { color: #FFB000; } .ds-red .ds-cell span { color: #FF5A6E; } .ds-sev { gap: 0; } .ds-sev .ds-cell { background: #B00020; } .ds-sev .ds-cell::after { border-color: rgba(0,0,0,.35); } .ds-lamp { width: 10px; height: 10px; margin-right: 6px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #FFE6A6, #FFB000 55%, #A06E00); animation: ds-lamp 1.1s ease-in-out infinite; } @keyframes ds-flap { 0% { transform: rotateX(0); filter: brightness(1); } 50% { transform: rotateX(-80deg); filter: brightness(.55); } 100% { transform: rotateX(0); filter: brightness(1); } } @keyframes ds-lamp { 50% { opacity: .35; } } @media (prefers-reduced-motion: reduce) { .ds-cell span, .ds-lamp { animation: none; } }"
+    },
+    {
+      "name": "Suspect Row States",
+      "kind": "custom",
+      "refersTo": "board-body",
+      "description": "Change text on the suspects board: identified amber on a warm tint, ruled out red and struck through, unread grey.",
+      "html": "<div class=\"ds-board\"><div class=\"ds-row ds-ruled\">Fix: add circuit breaker around the inventory call</div><div class=\"ds-row ds-identified\">Perf: tighten default HTTP timeout across services</div><div class=\"ds-row ds-reading\">Chore: reduce payments worker concurrency</div><div class=\"ds-row ds-unread\">Fix: tighten JWT clock leeway</div></div>",
+      "css": ".ds-board { display: flex; flex-direction: column; gap: 4px; padding: 6px 10px 10px; background: #0B0B0D; width: 420px; } .ds-row { padding: 8px; font-family: 'Sofia Sans Condensed', 'Arial Narrow', sans-serif; font-weight: 600; font-size: 16px; line-height: 1.2; letter-spacing: 0.05em; text-transform: uppercase; color: #F2F2F2; transition: background .25s cubic-bezier(0.16,1,0.3,1); } .ds-ruled { color: #FF5A6E; text-decoration: line-through; text-decoration-thickness: 2px; } .ds-identified { background: #1F1806; color: #FFB000; } .ds-reading { background: #1B1A14; outline: 2px solid #FFB000; outline-offset: -2px; } .ds-unread { color: #8C9095; }"
+    },
+    {
+      "name": "Board Panel",
+      "kind": "card",
+      "refersTo": "board-panel",
+      "description": "Steel frame panel with a caps board head over a flap-black body.",
+      "html": "<section class=\"ds-panel\"><header class=\"ds-head\"><h2>Suspect commits</h2><p>9 commits shortlisted from the 72 hours before the alert</p></header><div class=\"ds-body\">Board content</div></section>",
+      "css": ".ds-panel { width: 520px; background: #2A2D31; border: 1px solid #3A3D42; box-shadow: 0 2px 6px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.05); color: #F2F2F2; } .ds-head { display: flex; align-items: baseline; gap: 14px; padding: 14px 18px 12px; border-bottom: 1px solid #34373C; } .ds-head h2 { margin: 0; font-family: 'Sofia Sans Condensed', 'Arial Narrow', sans-serif; font-weight: 600; font-size: 17px; letter-spacing: 0.14em; text-transform: uppercase; } .ds-head p { margin: 0; font-family: 'Sofia Sans', 'Segoe UI', sans-serif; font-size: 14px; color: #A7AAAF; } .ds-body { padding: 18px; background: #0B0B0D; font-family: 'Sofia Sans', 'Segoe UI', sans-serif; color: #A7AAAF; }"
+    },
+    {
+      "name": "Result Tabs",
+      "kind": "nav",
+      "refersTo": "board-panel",
+      "description": "Verdict / Slack brief / Resolution report; amber underline on the selected tab.",
+      "html": "<div class=\"ds-tabs\" role=\"tablist\"><button role=\"tab\" aria-selected=\"true\">Verdict</button><button role=\"tab\" aria-selected=\"false\">Slack brief</button><button role=\"tab\" aria-selected=\"false\">Resolution report</button></div>",
+      "css": ".ds-tabs { display: flex; gap: 2px; padding: 0 18px; background: #2A2D31; border-bottom: 1px solid #34373C; } .ds-tabs button { padding: 11px 14px 10px; border: 0; border-bottom: 2px solid transparent; background: none; font-family: 'Sofia Sans Condensed', 'Arial Narrow', sans-serif; font-weight: 600; font-size: 15px; letter-spacing: 0.14em; text-transform: uppercase; color: #A7AAAF; cursor: pointer; } .ds-tabs button:hover { color: #F2F2F2; } .ds-tabs button[aria-selected='true'] { color: #F2F2F2; border-bottom-color: #FFB000; } .ds-tabs button:focus-visible { outline: 2px solid #FFB000; outline-offset: 2px; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Departure Board",
+    "overview": "The investigation plays out on a concourse split-flap board. Suspect commits are departures, ranked by score; as the agent reads each diff, the row's status flaps over to IDENTIFIED under an amber lamp or to RULED OUT in red, struck through and left on the board. Everything sits on steel: dark frame panels set into a brushed-steel bezel, with flap-black boards inside them built from fixed character cells split by a hairline seam at mid-height. Information is read the way a traveller reads a board: condensed capitals, wide tracking, tabular figures, one row per thing.\n\nThe surface is an Operate tool, driven live by a presenter over a screen share at 1440x900 and read by an audience through compressed video. That sets the density and the contrast: large condensed caps, letter white on near-black, no meaning carried by colour alone (ruled-out rows are struck through as well as red; identified rows carry a lamp as well as amber). Replay is the default mode and every recording says it is a recording, in the mode switch, the run chip, the run note and the rail foot.\n\nMotion has one grammar. Flaps flap; lamps pulse; the diff drawer opens and closes. Nothing else moves. The board refuses the category default of a dark dashboard of cards and charts, and the agent-as-chat-transcript.",
+    "keyCharacteristics": [
+      "Split-flap cells are the system's atom: severity, the elapsed clock, commit hashes, statuses, the probable cause and confidence all render as flaps.",
+      "Steel frame, flap-black board, letter white: three material layers, no others.",
+      "Amber is the agent's colour and the board's lamp; red is cancellation.",
+      "Condensed caps for anything the board would print; plain sans for sentences a person reads; mono only for code.",
+      "Square corners everywhere except the 2px flap cell.",
+      "No shipping rasters: the brushed steel is inline SVG fractal noise over a gradient."
+    ],
+    "rules": [
+      { "name": "The One Lamp Rule", "body": "Amber marks the agent and what it is doing (reading, identifying, reasoning, a match), the lamps, the primary action, and where focus or selection currently sits. It never decorates a heading, a border at rest, or a neutral control.", "section": "colors" },
+      { "name": "The Never Removed Rule", "body": "A ruled-out suspect stays on the board in red with its change text struck through. Red plus strike-through, never red alone, and never a disappearing row.", "section": "colors" },
+      { "name": "The Board Prints Caps Rule", "body": "If the board would print it (a title, status, hash, field name, column head, button), it is Sofia Sans Condensed uppercase with tracking. If a person or the agent wrote it as a sentence, it is Sofia Sans in sentence case.", "section": "typography" },
+      { "name": "The Mono Is For Code Rule", "body": "JetBrains Mono appears only where the content is code: diffs, the git revert line, inline identifiers. Never for numbers or labels; numbers get tabular figures in the sans faces.", "section": "typography" },
+      { "name": "The Plate Rule", "body": "Only panels and the primary action cast a shadow, and only a short soft one. Nothing floats, glows or blurs.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do render any status, hash, clock or verdict value that changes as a split-flap display, and let it cascade per cell (2-3 intermediate characters, 75ms ticks, 22ms stagger).",
+      "Do set every flap instantly and stop lamp pulses under prefers-reduced-motion.",
+      "Do keep a ruled-out row on the board in cancel-red-text with a 2px strike-through.",
+      "Do pair every colour signal with a second channel: strike-through, lamp, label or text.",
+      "Do label every replay as a recording, with its date and model, in the run chip, run note and rail foot; mark stand-ins as stand-ins.",
+      "Do keep amber for the agent, lamps, the primary action, and focus or current selection.",
+      "Do draw textures as inline SVG; the brushed steel is feTurbulence noise in a data URI.",
+      "Do size type for a compressed 1440x900 screen share: labels and metadata at 12-13px in caps or steel light, prose at 15-16px."
+    ],
+    "donts": [
+      "Don't build the board out of rounded cards, charts or a chat transcript of the agent.",
+      "Don't remove a ruled-out suspect, or mark it with red alone.",
+      "Don't use amber for decoration, resting borders or headings.",
+      "Don't animate anything other than flaps, lamps and the diff drawer (short background-colour easing on hover and row state aside): no fades, slides or parallax.",
+      "Don't use JetBrains Mono outside code.",
+      "Don't ship raster textures or images in the demo."
+    ]
+  }
+}
