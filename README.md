@@ -153,9 +153,17 @@ agent has to go and find it. These repositories have no service map, so the page
 the repository and the suspect count instead of a made-up users-affected figure. Live runs
 and recording need the local clones (`py -3.13 eval/realworld/build.py`); replays don't.
 
-**Replay** is the default. It plays back a recorded run of the real agent with its
-original timing, so it needs no key, network or spend, and the page says when and with
-which model it was recorded. Record them once (about $0.05 per incident):
+**Replay** is the default. It plays back a recorded run with its original timing, so it
+needs no key, network or spend, and the page says when and with which model it was
+recorded.
+
+The replays that ship are **stand-ins**, built by `eval/demo_standins.py` with no API key.
+Everything in them ran for real — the shortlist, the ranking, every diff and file history
+the agent reads — except the model: its reasoning and choices are scripted, written knowing
+the answer. They show what an investigation looks like, not how well the agent does, and
+the page says so on the replay chip, the run footer, the Slack brief and the known-answer
+box, which reads "Scripted" instead of claiming a match. To replace them with real runs
+(about $0.05 per incident):
 
 ```bash
 export ANTHROPIC_API_KEY=sk-ant-...

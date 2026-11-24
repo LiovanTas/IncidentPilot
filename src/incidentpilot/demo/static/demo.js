@@ -782,11 +782,16 @@ function onAnswer(event) {
   if (!box) return;
   const kids = [el("p", { class: "label", style: "margin:0", text: "Known answer" })];
   let result;
-  if (event.matched === true) result = ["check", event.suite === "negative" ? "Correct · no commit" : "Match"];
+  if (event.scripted) result = ["dash", "Scripted"];
+  else if (event.matched === true) result = ["check", event.suite === "negative" ? "Correct · no commit" : "Match"];
   else if (event.matched === false) result = ["cross", "Different"];
   else result = ["dash", "Not available"];
-  box.className = `answer ${event.matched === true ? "match" : event.matched === false ? "miss" : ""}`;
+  box.className = event.scripted ? "answer"
+    : `answer ${event.matched === true ? "match" : event.matched === false ? "miss" : ""}`;
   kids.push(el("div", { class: "answer-result" }, svgIcon(result[0]), result[1]));
+  if (event.scripted) {
+    kids.push(el("p", { text: "This run is a stand-in, written knowing the answer below, so agreeing with it proves nothing. A real recording replaces it." }));
+  }
   if (event.suite === "negative") {
     kids.push(el("p", { text: "Nothing in the code caused this alert. The right answer is to name no commit." }));
   } else if (event.sha) {

@@ -1,0 +1,839 @@
+{
+ "schema": 1,
+ "scenario": "RW-grafana-01",
+ "recorded_at": "2026-11-24T12:00:00+00:00",
+ "model": "claude-sonnet-5 (SCRIPTED STAND-IN)",
+ "stand_in": true,
+ "events": [
+  {
+   "type": "start",
+   "mode": "live",
+   "speed": 1.0,
+   "scenario": {
+    "id": "RW-grafana-01",
+    "title": "Won't compile on 32-bit systems",
+    "hook": "Grafana stopped compiling on 32-bit systems. The report names a library, not a commit.",
+    "suite": "realworld",
+    "source": "reverted upstream in grafana",
+    "repo": "grafana",
+    "alert": {
+     "fingerprint": "grafana-30771f25bf",
+     "source": "generic",
+     "service": "grafana",
+     "severity": "sev2",
+     "title": "Goavro doesn't compile on 32-bit systems.",
+     "description": "Goavro doesn't compile on 32-bit systems.",
+     "started_at": "2019-12-06T12:10:07Z",
+     "labels": {
+      "repo": "grafana"
+     },
+     "metrics": {}
+    },
+    "answer_subject": "Modules: Add goavro dependency for extensions (#20920)"
+   },
+   "seq": 0,
+   "t": 0.0
+  },
+  {
+   "type": "alert",
+   "incident_id": "INC-20191206-b34375",
+   "alert": {
+    "fingerprint": "grafana-30771f25bf",
+    "source": "generic",
+    "service": "grafana",
+    "severity": "sev2",
+    "title": "Goavro doesn't compile on 32-bit systems.",
+    "description": "Goavro doesn't compile on 32-bit systems.",
+    "started_at": "2019-12-06T12:10:07Z",
+    "labels": {
+     "repo": "grafana"
+    },
+    "metrics": {},
+    "runbook_hints": []
+   },
+   "seq": 1,
+   "t": 0.001
+  },
+  {
+   "type": "candidates",
+   "lookback_hours": 72.0,
+   "candidates": [
+    {
+     "sha": "413be3a6a0549c211677943ef5e77c67ff39049f",
+     "author": "Emil Tullstedt",
+     "authored_at": "2019-12-06T09:33:19Z",
+     "subject": "Modules: Add goavro dependency for extensions (#20920)",
+     "body": "",
+     "files": [
+      "go.mod",
+      "go.sum",
+      "pkg/extensions/main.go",
+      "vendor/github.com/golang/snappy/.gitignore",
+      "vendor/github.com/golang/snappy/AUTHORS",
+      "vendor/github.com/golang/snappy/CONTRIBUTORS",
+      "vendor/github.com/golang/snappy/LICENSE",
+      "vendor/github.com/golang/snappy/README",
+      "vendor/github.com/golang/snappy/decode.go",
+      "vendor/github.com/golang/snappy/decode_amd64.go",
+      "vendor/github.com/golang/snappy/decode_amd64.s",
+      "vendor/github.com/golang/snappy/decode_other.go",
+      "vendor/github.com/golang/snappy/encode.go",
+      "vendor/github.com/golang/snappy/encode_amd64.go",
+      "vendor/github.com/golang/snappy/encode_amd64.s",
+      "vendor/github.com/golang/snappy/encode_other.go",
+      "vendor/github.com/golang/snappy/go.mod",
+      "vendor/github.com/golang/snappy/snappy.go",
+      "vendor/github.com/linkedin/goavro/.gitignore",
+      "vendor/github.com/linkedin/goavro/AUTHORS",
+      "vendor/github.com/linkedin/goavro/Gopkg.lock",
+      "vendor/github.com/linkedin/goavro/Gopkg.toml",
+      "vendor/github.com/linkedin/goavro/LICENSE",
+      "vendor/github.com/linkedin/goavro/README.md",
+      "vendor/github.com/linkedin/goavro/array.go",
+      "vendor/github.com/linkedin/goavro/binaryReader.go",
+      "vendor/github.com/linkedin/goavro/boolean.go",
+      "vendor/github.com/linkedin/goavro/bytes.go",
+      "vendor/github.com/linkedin/goavro/codec.go",
+      "vendor/github.com/linkedin/goavro/doc.go",
+      "vendor/github.com/linkedin/goavro/enum.go",
+      "vendor/github.com/linkedin/goavro/fixed.go",
+      "vendor/github.com/linkedin/goavro/floatingPoint.go",
+      "vendor/github.com/linkedin/goavro/integer.go",
+      "vendor/github.com/linkedin/goavro/map.go",
+      "vendor/github.com/linkedin/goavro/name.go",
+      "vendor/github.com/linkedin/goavro/null.go",
+      "vendor/github.com/linkedin/goavro/ocf.go",
+      "vendor/github.com/linkedin/goavro/ocf_reader.go",
+      "vendor/github.com/linkedin/goavro/ocf_writer.go",
+      "vendor/github.com/linkedin/goavro/record.go",
+      "vendor/github.com/linkedin/goavro/text.go",
+      "vendor/github.com/linkedin/goavro/union.go",
+      "vendor/modules.txt"
+     ],
+     "insertions": 6822,
+     "deletions": 4,
+     "services": [],
+     "score": 0.4264,
+     "signals": {
+      "recency": 0.7213,
+      "ownership": 0.0,
+      "keyword": 0.2857,
+      "risk": 1.0
+     },
+     "rationale": [
+      "landed 2.6h before onset",
+      "alert terms present in commit: goavro",
+      "risk class: concurrency, dependency, auth; large diff (6826 lines)"
+     ],
+     "landed_at": "2019-12-06T09:33:19Z",
+     "short_sha": "413be3a6a0",
+     "churn": 6826
+    },
+    {
+     "sha": "047abc87c2ff3864f2e17b9fa107ca00bf411569",
+     "author": "Erik Sundell",
+     "authored_at": "2019-12-06T09:24:34Z",
+     "subject": "UI: Segment Input (#20904)",
+     "body": "* Add input segment",
+     "files": [
+      "packages/grafana-ui/src/components/Segment/Segment.tsx",
+      "packages/grafana-ui/src/components/Segment/SegmentAsync.tsx",
+      "packages/grafana-ui/src/components/Segment/SegmentInput.story.tsx",
+      "packages/grafana-ui/src/components/Segment/SegmentInput.tsx",
+      "packages/grafana-ui/src/components/Segment/index.ts",
+      "packages/grafana-ui/src/components/Segment/types.ts",
+      "packages/grafana-ui/src/components/index.ts"
+     ],
+     "insertions": 83,
+     "deletions": 4,
+     "services": [],
+     "score": 0.3991,
+     "signals": {
+      "recency": 0.7083,
+      "ownership": 0.0,
+      "keyword": 0.2857,
+      "risk": 0.844
+     },
+     "rationale": [
+      "landed 2.8h before onset",
+      "alert terms present in commit: grafana",
+      "risk class: query"
+     ],
+     "landed_at": "2019-12-06T09:24:34Z",
+     "short_sha": "047abc87c2",
+     "churn": 87
+    },
+    {
+     "sha": "6f468c670a7657b5daf38d62f7e44a4553727fd8",
+     "author": "Erik Sundell",
+     "authored_at": "2019-12-06T10:50:45Z",
+     "subject": "UI: Segment Input change (#20925)",
+     "body": "* Add input segment",
+     "files": [
+      "packages/grafana-ui/src/components/Segment/SegmentInput.tsx"
+     ],
+     "insertions": 17,
+     "deletions": 6,
+     "services": [],
+     "score": 0.3347,
+     "signals": {
+      "recency": 0.8476,
+      "ownership": 0.0,
+      "keyword": 0.2857,
+      "risk": 0.1362
+     },
+     "rationale": [
+      "landed 79m before onset",
+      "alert terms present in commit: grafana"
+     ],
+     "landed_at": "2019-12-06T10:50:45Z",
+     "short_sha": "6f468c670a",
+     "churn": 23
+    },
+    {
+     "sha": "ced13da889b890540fe5d4865fc50fbf04730952",
+     "author": "Shavonn Brown",
+     "authored_at": "2019-12-06T07:57:06Z",
+     "subject": "InfluxDB: Use new datasource update option funcs (#20907)",
+     "body": "",
+     "files": [
+      "public/app/plugins/datasource/influxdb/components/ConfigEditor.tsx"
+     ],
+     "insertions": 25,
+     "deletions": 47,
+     "services": [],
+     "score": 0.3099,
+     "signals": {
+      "recency": 0.5903,
+      "ownership": 0.0,
+      "keyword": 0.0,
+      "risk": 0.8857
+     },
+     "rationale": [
+      "landed 4.2h before onset",
+      "risk class: config"
+     ],
+     "landed_at": "2019-12-06T07:57:05Z",
+     "short_sha": "ced13da889",
+     "churn": 72
+    },
+    {
+     "sha": "1d2a7a2c375f6b02e94096c351ffd67e795c4308",
+     "author": "Diana Payton",
+     "authored_at": "2019-12-06T11:04:29Z",
+     "subject": "Docs: Update debian.md (#20910)",
+     "body": "Minor edits",
+     "files": [
+      "docs/sources/installation/debian.md"
+     ],
+     "insertions": 5,
+     "deletions": 11,
+     "services": [],
+     "score": 0.2797,
+     "signals": {
+      "recency": 0.8722,
+      "ownership": 0.0,
+      "keyword": 0.0,
+      "risk": 0.1204
+     },
+     "rationale": [
+      "landed 66m before onset"
+     ],
+     "landed_at": "2019-12-06T11:04:29Z",
+     "short_sha": "1d2a7a2c37",
+     "churn": 16
+    },
+    {
+     "sha": "2a44cbd13754a26a82435440a8ddb1c2d5fe0245",
+     "author": "Torkel \u00d6degaard",
+     "authored_at": "2019-12-06T08:03:14Z",
+     "subject": "AngularPanels: Check for digest cycle on root scope (#20919)",
+     "body": "",
+     "files": [
+      "public/app/features/panel/metrics_panel_ctrl.ts"
+     ],
+     "insertions": 1,
+     "deletions": 1,
+     "services": [],
+     "score": 0.2739,
+     "signals": {
+      "recency": 0.5979,
+      "ownership": 0.0,
+      "keyword": 0.0,
+      "risk": 0.6301
+     },
+     "rationale": [
+      "landed 4.1h before onset",
+      "risk class: auth"
+     ],
+     "landed_at": "2019-12-06T08:03:14Z",
+     "short_sha": "2a44cbd137",
+     "churn": 2
+    },
+    {
+     "sha": "a533e006229ff0b95a87d54016595dfb3a7c718c",
+     "author": "Erik Sundell",
+     "authored_at": "2019-12-06T08:59:33Z",
+     "subject": "Remove escaping of \\ ( ) characters (#20915)",
+     "body": "",
+     "files": [
+      "pkg/tsdb/cloudwatch/metric_data_query_builder.go",
+      "pkg/tsdb/cloudwatch/metric_data_query_builder_test.go"
+     ],
+     "insertions": 4,
+     "deletions": 24,
+     "services": [],
+     "score": 0.2234,
+     "signals": {
+      "recency": 0.6723,
+      "ownership": 0.0,
+      "keyword": 0.0,
+      "risk": 0.1447
+     },
+     "rationale": [
+      "landed 3.2h before onset"
+     ],
+     "landed_at": "2019-12-06T08:59:33Z",
+     "short_sha": "a533e00622",
+     "churn": 28
+    },
+    {
+     "sha": "cbd81ffeb88af2ee4c3627541a673dcb1a18d56b",
+     "author": "Robby Milo",
+     "authored_at": "2019-12-05T12:09:57Z",
+     "subject": "Docs: update content to work with website repo (#20693)",
+     "body": "Updates the docs to work with the website repo - mainly",
+     "files": [
+      ".circleci/config.yml",
+      "docs/sources/_index.md",
+      "docs/sources/administration/image_rendering.md",
+      "docs/sources/administration/provisioning.md",
+      "docs/sources/alerting/rules.md",
+      "docs/sources/archive.md",
+      "docs/sources/auth/auth-proxy.md",
+      "docs/sources/auth/enhanced_ldap.md",
+      "docs/sources/auth/generic-oauth.md",
+      "docs/sources/auth/github.md",
+      "docs/sources/auth/gitlab.md",
+      "docs/sources/auth/google.md",
+      "docs/sources/auth/ldap.md",
+      "docs/sources/auth/overview.md",
+      "docs/sources/auth/saml.md",
+      "docs/sources/auth/team-sync.md",
+      "docs/sources/enterprise/_index.md",
+      "docs/sources/features/_index.md",
+      "docs/sources/features/datasources/azuremonitor.md",
+      "docs/sources/features/datasources/cloudwatch.md",
+      "docs/sources/features/datasources/elasticsearch.md",
+      "docs/sources/features/datasources/graphite.md",
+      "docs/sources/features/datasources/influxdb.md",
+      "docs/sources/features/datasources/loki.md",
+      "docs/sources/features/datasources/mssql.md",
+      "docs/sources/features/datasources/mysql.md",
+      "docs/sources/features/datasources/opentsdb.md",
+      "docs/sources/features/datasources/postgres.md",
+      "docs/sources/features/datasources/prometheus.md",
+      "docs/sources/features/datasources/stackdriver.md",
+      "docs/sources/features/explore/index.md",
+      "docs/sources/features/panels/graph.md",
+      "docs/sources/features/panels/heatmap.md",
+      "docs/sources/features/panels/logs.md",
+      "docs/sources/features/panels/singlestat.md",
+      "docs/sources/features/panels/table_panel.md",
+      "docs/sources/features/reporting.md",
+      "docs/sources/guides/basic_concepts.md",
+      "docs/sources/guides/getting_started.md",
+      "docs/sources/guides/timeseries.md",
+      "docs/sources/guides/whats-new-in-v4-6.md",
+      "docs/sources/guides/whats-new-in-v6-3.md",
+      "docs/sources/guides/whats-new-in-v6-4.md",
+      "docs/sources/guides/whats-new-in-v6-5.md",
+      "docs/sources/http_api/_index.md",
+      "docs/sources/http_api/alerting.md",
+      "docs/sources/http_api/auth.md",
+      "docs/sources/http_api/datasource_permissions.md",
+      "docs/sources/http_api/external_group_sync.md",
+      "docs/sources/installation/_index.md",
+      "docs/sources/installation/configuration.md",
+      "docs/sources/installation/debian.md",
+      "docs/sources/installation/docker.md",
+      "docs/sources/installation/mac.md",
+      "docs/sources/installation/requirements.md",
+      "docs/sources/installation/rpm.md",
+      "docs/sources/installation/security.md",
+      "docs/sources/installation/troubleshooting.md",
+      "docs/sources/installation/upgrading.md",
+      "docs/sources/installation/windows.md",
+      "docs/sources/menu.yaml",
+      "docs/sources/permissions/datasource_permissions.md",
+      "docs/sources/permissions/organization_roles.md",
+      "docs/sources/permissions/overview.md",
+      "docs/sources/project/building_from_source.md",
+      "docs/sources/reference/annotations.md",
+      "docs/sources/reference/share_panel.md",
+      "docs/sources/reference/templating.md",
+      "docs/sources/reference/timerange.md",
+      "docs/sources/tutorials/_index.md",
+      "docs/sources/tutorials/api_org_token_howto.md",
+      "docs/sources/tutorials/ha_setup.md",
+      "docs/sources/tutorials/hubot_howto.md"
+     ],
+     "insertions": 507,
+     "deletions": 197,
+     "services": [],
+     "score": 0.2227,
+     "signals": {
+      "recency": 0.0498,
+      "ownership": 0.0,
+      "keyword": 0.2857,
+      "risk": 0.9848
+     },
+     "rationale": [
+      "landed 24.0h before onset",
+      "alert terms present in commit: repo",
+      "risk class: config, dependency, query, auth; large diff (704 lines)"
+     ],
+     "landed_at": "2019-12-05T12:09:57Z",
+     "short_sha": "cbd81ffeb8",
+     "churn": 704
+    },
+    {
+     "sha": "178bb1d3abbf45c62203cb1bff054bb474a9b4c2",
+     "author": "Dominik Prokop",
+     "authored_at": "2019-12-05T07:30:39Z",
+     "subject": "Echo: mechanism for collecting custom events lazily (#20365)",
+     "body": "* Introduce Echo for collecting frontend metrics",
+     "files": [
+      "package.json",
+      "packages/grafana-runtime/src/index.ts",
+      "packages/grafana-runtime/src/services/EchoSrv.ts",
+      "packages/grafana-runtime/src/services/index.ts",
+      "packages/grafana-runtime/src/types/analytics.ts",
+      "packages/grafana-runtime/src/types/index.ts",
+      "packages/grafana-runtime/src/utils/analytics.ts",
+      "packages/grafana-ui/src/themes/_variables.dark.scss.tmpl.ts",
+      "public/app/app.ts",
+      "public/app/core/components/sidemenu/BottomNavLinks.test.tsx",
+      "public/app/core/services/context_srv.ts",
+      "public/app/core/services/echo/Echo.ts",
+      "public/app/core/services/echo/EchoSrv.ts",
+      "public/app/core/services/echo/backends/PerformanceBackend.ts",
+      "public/app/features/dashboard/state/PanelQueryRunner.test.ts",
+      "public/app/features/dashboard/state/analyticsProcessor.ts",
+      "public/app/features/dashboard/state/runRequest.test.ts",
+      "public/app/features/dashboard/state/runRequest.ts",
+      "public/app/index.ts",
+      "public/app/routes/GrafanaCtrl.ts",
+      "public/views/index-template.html",
+      "scripts/webpack/webpack.dev.js",
+      "scripts/webpack/webpack.prod.js",
+      "yarn.lock"
+     ],
+     "insertions": 649,
+     "deletions": 260,
+     "services": [],
+     "score": 0.2177,
+     "signals": {
+      "recency": 0.0278,
+      "ownership": 0.0,
+      "keyword": 0.2857,
+      "risk": 0.9959
+     },
+     "rationale": [
+      "landed 28.7h before onset",
+      "alert terms present in commit: grafana",
+      "risk class: concurrency, dependency, query; large diff (909 lines)"
+     ],
+     "landed_at": "2019-12-05T07:30:39Z",
+     "short_sha": "178bb1d3ab",
+     "churn": 909
+    },
+    {
+     "sha": "880fbcb09a5ab1a63f69811db8a94ba76ac7bf0f",
+     "author": "kay delaney",
+     "authored_at": "2019-12-05T09:04:03Z",
+     "subject": "Chore/Tech debt: Remove (most) instances of $q angular service use (#20668)",
+     "body": "* Chore/Tech debt: Remove (most) instances of $q angular service use",
+     "files": [
+      "public/app/core/components/form_dropdown/form_dropdown.ts",
+      "public/app/core/directives/metric_segment.ts",
+      "public/app/core/directives/value_select_dropdown.ts",
+      "public/app/core/services/search_srv.ts",
+      "public/app/core/specs/search_srv.test.ts",
+      "public/app/core/specs/value_select_dropdown.test.ts",
+      "public/app/features/alerting/AlertTabCtrl.ts",
+      "public/app/features/annotations/annotations_srv.ts",
+      "public/app/features/annotations/specs/annotations_srv.test.ts",
+      "public/app/features/dashboard/components/AdHocFilters/AdHocFiltersCtrl.ts",
+      "public/app/features/dashboard/components/DashLinks/DashLinksContainerCtrl.ts",
+      "public/app/features/dashboard/components/VersionHistory/HistoryListCtrl.test.ts",
+      "public/app/features/dashboard/components/VersionHistory/HistoryListCtrl.ts",
+      "public/app/features/dashboard/services/DashboardLoaderSrv.ts",
+      "public/app/features/dashboard/services/UnsavedChangesSrv.ts",
+      "public/app/features/manage-dashboards/services/ValidationSrv.ts",
+      "public/app/features/panel/metrics_panel_ctrl.ts",
+      "public/app/features/plugins/datasource_srv.ts",
+      "public/app/features/plugins/plugin_component.ts",
+      "public/app/features/plugins/plugin_page_ctrl.ts",
+      "public/app/features/plugins/specs/datasource_srv.test.ts",
+      "public/app/plugins/datasource/cloudwatch/components/QueryEditor.test.tsx",
+      "public/app/plugins/datasource/cloudwatch/datasource.ts",
+      "public/app/plugins/datasource/cloudwatch/query_parameter_ctrl.ts",
+      "public/app/plugins/datasource/cloudwatch/specs/datasource.test.ts",
+      "public/app/plugins/datasource/elasticsearch/bucket_agg.ts",
+      "public/app/plugins/datasource/elasticsearch/datasource.ts",
+      "public/app/plugins/datasource/elasticsearch/metric_agg.ts",
+      "public/app/plugins/datasource/elasticsearch/specs/datasource.test.ts",
+      "public/app/plugins/datasource/grafana-azure-monitor-datasource/app_insights/app_insights_datasource.test.ts",
+      "public/app/plugins/datasource/grafana-azure-monitor-datasource/azure_log_analytics/azure_log_analytics_datasource.test.ts",
+      "public/app/plugins/datasource/grafana-azure-monitor-datasource/azure_monitor/azure_monitor_datasource.test.ts",
+      "public/app/plugins/datasource/grafana-azure-monitor-datasource/datasource.ts",
+      "public/app/plugins/datasource/grafana-azure-monitor-datasource/query_ctrl.test.ts",
+      "public/app/plugins/datasource/grafana/datasource.ts",
+      "public/app/plugins/datasource/grafana/specs/datasource.test.ts",
+      "public/app/plugins/datasource/graphite/datasource.ts",
+      "public/app/plugins/datasource/graphite/specs/datasource.test.ts",
+      "public/app/plugins/datasource/influxdb/datasource.ts",
+      "public/app/plugins/datasource/influxdb/query_ctrl.ts",
+      "public/app/plugins/datasource/influxdb/specs/datasource.test.ts",
+      "public/app/plugins/datasource/influxdb/specs/query_ctrl.test.ts",
+      "public/app/plugins/datasource/mssql/datasource.ts",
+      "public/app/plugins/datasource/mssql/response_parser.ts",
+      "public/app/plugins/datasource/mssql/specs/datasource.test.ts",
+      "public/app/plugins/datasource/mysql/datasource.ts",
+      "public/app/plugins/datasource/mysql/query_ctrl.ts",
+      "public/app/plugins/datasource/mysql/response_parser.ts",
+      "public/app/plugins/datasource/mysql/specs/datasource.test.ts",
+      "public/app/plugins/datasource/opentsdb/datasource.ts",
+      "public/app/plugins/datasource/opentsdb/specs/datasource.test.ts",
+      "public/app/plugins/datasource/postgres/datasource.ts",
+      "public/app/plugins/datasource/postgres/query_ctrl.ts",
+      "public/app/plugins/datasource/postgres/response_parser.ts",
+      "public/app/plugins/datasource/postgres/specs/datasource.test.ts",
+      "public/app/plugins/panel/table/column_options.ts",
+      "public/app/plugins/panel/table/editor.ts",
+      "public/test/specs/helpers.ts"
+     ],
+     "insertions": 322,
+     "deletions": 469,
+     "services": [],
+     "score": 0.2111,
+     "signals": {
+      "recency": 0.0338,
+      "ownership": 0.0,
+      "keyword": 0.2857,
+      "risk": 0.9398
+     },
+     "rationale": [
+      "landed 27.1h before onset",
+      "alert terms present in commit: grafana",
+      "risk class: query; large diff (791 lines)"
+     ],
+     "landed_at": "2019-12-05T09:04:03Z",
+     "short_sha": "880fbcb09a",
+     "churn": 791
+    },
+    {
+     "sha": "2098b9eb449afbbe6a3a1bfaca5e1c9ffbeaa76d",
+     "author": "Shavonn Brown",
+     "authored_at": "2019-12-04T19:35:53Z",
+     "subject": "Azure Monitor: Standardize Config Editor Implementation (#20455)",
+     "body": "* initial changes - removal from state, remove anon functions, reset secrets empty",
+     "files": [
+      "packages/grafana-data/src/types/datasource.ts",
+      "public/app/plugins/datasource/grafana-azure-monitor-datasource/azure_monitor/response_parser.ts",
+      "public/app/plugins/datasource/grafana-azure-monitor-datasource/components/AnalyticsConfig.test.tsx",
+      "public/app/plugins/datasource/grafana-azure-monitor-datasource/components/AnalyticsConfig.tsx",
+      "public/app/plugins/datasource/grafana-azure-monitor-datasource/components/AzureCredentialsForm.test.tsx",
+      "public/app/plugins/datasource/grafana-azure-monitor-datasource/components/AzureCredentialsForm.tsx",
+      "public/app/plugins/datasource/grafana-azure-monitor-datasource/components/ConfigEditor.test.tsx",
+      "public/app/plugins/datasource/grafana-azure-monitor-datasource/components/ConfigEditor.tsx",
+      "public/app/plugins/datasource/grafana-azure-monitor-datasource/components/InsightsConfig.test.tsx",
+      "public/app/plugins/datasource/grafana-azure-monitor-datasource/components/InsightsConfig.tsx",
+      "public/app/plugins/datasource/grafana-azure-monitor-datasource/components/MonitorConfig.tsx",
+      "public/app/plugins/datasource/grafana-azure-monitor-datasource/components/__snapshots__/AzureCredentialsForm.test.tsx.snap",
+      "public/app/plugins/datasource/grafana-azure-monitor-datasource/components/__snapshots__/ConfigEditor.test.tsx.snap",
+      "public/app/plugins/datasource/grafana-azure-monitor-datasource/components/__snapshots__/InsightsConfig.test.tsx.snap",
+      "public/app/plugins/datasource/grafana-azure-monitor-datasource/types.ts"
+     ],
+     "insertions": 361,
+     "deletions": 484,
+     "services": [],
+     "score": 0.2108,
+     "signals": {
+      "recency": 0.0063,
+      "ownership": 0.0,
+      "keyword": 0.2857,
+      "risk": 0.9927
+     },
+     "rationale": [
+      "landed 40.6h before onset",
+      "alert terms present in commit: grafana",
+      "risk class: config; large diff (845 lines)"
+     ],
+     "landed_at": "2019-12-04T19:35:53Z",
+     "short_sha": "2098b9eb44",
+     "churn": 845
+    },
+    {
+     "sha": "a093fbb51af7793488cbbe718e3967efdf06af67",
+     "author": "kay delaney",
+     "authored_at": "2019-12-03T21:47:20Z",
+     "subject": "Migration: Migrate org switcher to react (#19607)",
+     "body": "* Migration: Migrate org switcher to react",
+     "files": [
+      "packages/grafana-data/src/types/index.ts",
+      "packages/grafana-data/src/types/orgs.ts",
+      "packages/grafana-ui/src/components/Modal/Modal.tsx",
+      "public/app/core/components/OrgSwitcher.tsx",
+      "public/app/core/components/org_switcher.ts",
+      "public/app/core/components/sidemenu/BottomNavLinks.tsx",
+      "public/app/core/components/sidemenu/__snapshots__/BottomNavLinks.test.tsx.snap",
+      "public/app/core/core.ts",
+      "public/app/core/specs/OrgSwitcher.test.tsx",
+      "public/app/core/specs/org_switcher.test.ts",
+      "public/app/features/dashboard/components/Inspector/PanelInspector.tsx",
+      "public/sass/components/_modals.scss"
+     ],
+     "insertions": 216,
+     "deletions": 165,
+     "services": [],
+     "score": 0.2101,
+     "signals": {
+      "recency": 0.0004,
+      "ownership": 0.0,
+      "keyword": 0.2857,
+      "risk": 1.0
+     },
+     "rationale": [
+      "landed 62.4h before onset",
+      "alert terms present in commit: grafana",
+      "risk class: migration, query; large diff (381 lines)"
+     ],
+     "landed_at": "2019-12-03T21:47:19Z",
+     "short_sha": "a093fbb51a",
+     "churn": 381
+    }
+   ],
+   "ranker_pick": "413be3a6a0549c211677943ef5e77c67ff39049f",
+   "seq": 2,
+   "t": 0.506
+  },
+  {
+   "type": "runbooks",
+   "runbooks": [],
+   "seq": 3,
+   "t": 0.506
+  },
+  {
+   "type": "impact",
+   "impact": {
+    "affected_users_low": 0,
+    "affected_users_point": 0,
+    "affected_users_high": 0,
+    "failed_requests": 432000,
+    "duration_minutes": 720.0,
+    "error_budget_burn_pct": 166.67,
+    "blast_radius": [
+     "grafana"
+    ],
+    "method": "no error-rate metric on the alert; assumed 10% from sev2; 100 rps x 720m sustained; reach 0 distinct users over that window (saturating toward 0/day, which is the hard ceiling); P(user hit) = 1-(1-delta)^20.0 = 87.8%; dependents contribute only their non-overlapping users, capped at 0",
+    "confidence": "low"
+   },
+   "seq": 4,
+   "t": 0.506
+  },
+  {
+   "type": "thinking_started",
+   "turn": 1,
+   "seq": 5,
+   "t": 0.507
+  },
+  {
+   "type": "reasoning",
+   "turn": 1,
+   "text": "The report names goavro. Only one commit in the window brings goavro in, and it is also the ranker's top pick. Reading it to see what it adds.",
+   "seq": 6,
+   "t": 3.153
+  },
+  {
+   "type": "tool_start",
+   "step": 1,
+   "name": "get_commit_diff",
+   "args": {
+    "sha": "413be3a6a0"
+   },
+   "seq": 7,
+   "t": 3.153
+  },
+  {
+   "type": "tool_result",
+   "step": 1,
+   "name": "get_commit_diff",
+   "args": {
+    "sha": "413be3a6a0"
+   },
+   "output": "commit 413be3a6a0549c211677943ef5e77c67ff39049f\nAuthor: Emil Tullstedt <emil.tullstedt@grafana.com>\nDate:   Fri Dec 6 10:33:19 2019 +0100\n\n    Modules: Add goavro dependency for extensions (#20920)\n---\n go.mod                                             |   2 +\n go.sum                                             |   9 +-\n pkg/extensions/main.go                             |   1 +\n vendor/github.com/golang/snappy/.gitignore         |  16 +\n vendor/github.com/golang/snappy/AUTHORS            |  15 +\n vendor/github.com/golang/snappy/CONTRIBUTORS       |  37 ++\n vendor/github.com/golang/snappy/LICENSE            |  27 +\n vendor/github.com/golang/snappy/README             | 107 +++\n vendor/github.com/golang/snappy/decode.go          | 237 +++++++\n vendor/github.com/golang/snappy/decode_amd64.go    |  14 +\n vendor/github.com/golang/snappy/decode_amd64.s     | 490 ++++++++++++++\n vendor/github.com/golang/snappy/decode_other.go    | 101 +++\n vendor/github.com/golang/snappy/encode.go          | 285 ++++++++\n vendor/github.com/golang/snappy/encode_amd64.go    |  29 +\n vendor/github.com/golang/snappy/encode_amd64.s     | 730 +++++++++++++++++++++\n vendor/github.com/golang/snappy/encode_other.go    | 238 +++++++\n vendor/github.com/golang/snappy/go.mod             |   1 +\n vendor/github.com/golang/snappy/snappy.go          |  98 +++\n vendor/github.com/linkedin/goavro/.gitignore       |   1 +\n vendor/github.com/linkedin/goavro/AUTHORS          |  38 ++\n vendor/github.com/linkedin/goavro/Gopkg.lock       |  21 +\n vendor/github.com/linkedin/goavro/Gopkg.toml       |  30 +\n vendor/github.com/linkedin/goavro/LICENSE          | 201 ++++++\n vendor/github.com/linkedin/goavro/README.md        | 424 ++++++++++++\n vendor/github.com/linkedin/goavro/array.go         | 226 +++++++\n vendor/github.com/linkedin/goavro/binaryReader.go  | 160 +++++\n vendor/github.com/linkedin/goavro/boolean.go       |  72 ++\n vendor/github.com/linkedin/goavro/bytes.go         | 369 +++++++++++\n vendor/github.com/linkedin/goavro/codec.go         | 442 +++++++++++++\n vendor/github.com/linkedin/goavro/doc.go           |  68 ++\n vendor/github.com/linkedin/goavro/enum.go          | 105 +++\n vendor/github.com/linkedin/goavro/fixed.go         |  81 +++\n vendor/github.com/linkedin/goavro/floatingPoint.go | 293 +++++++++\n vendor/github.com/linkedin/goavro/integer.go       | 199 ++++++\n vendor/github.com/linkedin/goavro/map.go           | 307 +++++++++\n vendor/github.com/linkedin/goavro/name.go          | 143 ++++\n vendor/github.com/linkedin/goavro/null.go          |  45 ++\n vendor/github.com/linkedin/goavro/ocf.go           | 240 +++++++\n vendor/github.com/linkedin/goavro/ocf_reader.go    | 263 ++++++++\n vendor/github.com/linkedin/goavro/ocf_writer.go    | 253 +++++++\n vendor/github.com/linkedin/goavro/record.go        | 185 ++++++\n vendor/github.com/linkedin/goavro/text.go          |  41 ++\n vendor/github.com/linkedin/goavro/union.go         | 178 +++++\n vendor/modules.txt                                 |   4 +\n 44 files changed, 6822 insertions(+), 4 deletions(-)\n\ndiff --git a/go.mod b/go.mod\nindex db248e8717..2f11e0515b 100644\n--- a/go.mod\n+++ b/go.mod\n@@ -42,6 +42,7 @@ require (\n \tgithub.com/klauspost/compress v1.4.1 // indirect\n \tgithub.com/klauspost/cpuid v1.2.0 // indirect\n \tgithub.com/lib/pq v1.2.0\n+\tgithub.com/linkedin/goavro v2.1.0+incompatible\n \tgithub.com/mattn/go-isatty v0.0.10\n \tgithub.com/mattn/go-sqlite3 v1.11.0\n \tgithub.com/opentracing/opentracing-go v1.1.0\n@@ -75,6 +76,7 @@ require (\n \tgopkg.in/asn1-ber.v1 v1.0.0-20181015200546-f715ec2f112d // indirect\n \tgopkg.in/ini.v1 v1.46.0\n \tgopkg.in/ldap.v3 v3.0.2\n+\tgopkg.in/linkedin/goavro.v1 v1.0.5 // indirect\n \tgopkg.in/macaron.v1 v1.3.4\n \tgopkg.in/mail.v2 v2.3.1\n \tgopkg.in/redis.v5 v5.2.9\ndiff --git a/go.sum b/go.sum\nindex 62fb51b3db..5b5c1fefe0 100644\n--- a/go.sum\n+++ b/go.sum\n@@ -97,6 +97,7 @@ github.com/golang/protobuf v1.3.1/go.mod h1:6lQm79b+lXiMfvg/cZm0SGofjICqVBUtrP5y\n github.com/golang/protobuf v1.3.2 h1:6nsPYzhq5kReh6QImI3k5qWzO4PEbvbIW2cwSfR/6xs=\n github.com/golang/protobuf v1.3.2/go.mod h1:6lQm79b+lXiMfvg/cZm0SGofjICqVBUtrP5yJMmIC1U=\n github.com/golang/snappy v0.0.0-20180518054509-2e65f85255db/go.mod h1:/XxbfmMg8lxefKM7IXC3fBNl/7bRcc72aCRzEWrmP2Q=\n+github.com/golang/snappy v0.0.1 h1:Qgr9rKW7uDUkrbSmQeiDsGa8SjGyCOGtuasMWwvp2P4=\n github.com/golang/snappy v0.0.1/go.mod h1:/XxbfmMg8lxefKM7IXC3fBNl/7bRcc72aCRzEWrmP2Q=\n github.com/google/flatbuffers v1.11.0 h1:O7CEyB8Cb3/DmtxODGtLHcEvpr81Jm5qLg/hsHnxA2A=\n github.com/google/flatbuffers v1.11.0/go.mod h1:1AeVuKshWv4vARoZatz6mlQ0JxURH0Kv5+zNeJKJCa8=\n@@ -113,10 +114,6 @@ github.com/gosimple/slug v1.4.2 h1:jDmprx3q/9Lfk4FkGZtvzDQ9Cj9eAmsjzeQGp24PeiQ=\n github.com/gosimple/slug v1.4.2/go.mod h1:ER78kgg1Mv0NQGlXiDe57DpCyfbNywXXZ9mIorhxAf0=\n github.com/grafana/grafana-plugin-model v0.0.0-20190930120109-1fc953a61fb4 h1:SPdxCL9BChFTlyi0Khv64vdCW4TMna8+sxL7+Chx+Ag=\n github.com/grafana/grafana-plugin-model v0.0.0-20190930120109-1fc953a61fb4/go.mod h1:nc0XxBzjeGcrMltCDw269LoWF9S8ibhgxolCdA1R8To=\n-github.com/grafana/grafana-plugin-sdk-go v0.2.0 h1:MgcTjCuzIkZcjb/2vCPK1RvLEHfRnQtFK7AF0W3SQm0=\n-github.com/grafana/grafana-plugin-sdk-go v0.2.0/go.mod h1:yA268OaX+C71ubT39tyACEfFwyhEzS1kbEVHUCgkKS8=\n-github.com/grafana/grafana-plugin-sdk-go v0.3.1-0.20191125180836-d77f6ffe8e05 h1:COdehD2bs2CJ3zrGAOueGrqCOaCG/M9aYiO4y+J4MUk=\n-github.com/grafana/grafana-plugin-sdk-go v0.3.1-0.20191125180836-d77f6ffe8e05/go.mod h1:yA268OaX+C71ubT39tyACEfFwyhEzS1kbEVHUCgkKS8=\n github.com/grafana/grafana-plugin-sdk-go v0.4.0 h1:bypT7gwGL9i584JEUQ1twcLxoUPO/60XW3VM8VYndYI=\n github.com/grafana/grafana-plugin-sdk-go v0.4.0/go.mod h1:yA268OaX+C71ubT39tyACEfFwyhEzS1kbEVHUCgkKS8=\n github.com/hashicorp/go-hclog v0.0.0-20180709165350-ff2cf002a8dd/go.mod h1:9bjs9uLqI8l75knNv3lV1kA55veR+WUPSiKIWcQHudI=\n@@ -167,6 +164,8 @@ github.com/lib/pq v1.0.0 h1:X5PMW56eZitiTeO7tKzZxFCSpbFZJtkMMooicw2us9A=\n github.com/lib/pq v1.0.0/go.mod h1:5WUZQaWbwv1U+lTReE5YruASi9Al49XbQIvNi/34Woo=\n githu",
+   "ms": 260,
+   "seq": 8,
+   "t": 3.414
+  },
+  {
+   "type": "thinking_started",
+   "turn": 2,
+   "seq": 9,
+   "t": 3.414
+  },
+  {
+   "type": "reasoning",
+   "turn": 2,
+   "text": "It vendors github.com/linkedin/goavro and golang/snappy and imports goavro from pkg/extensions/main.go, so every Grafana build now compiles it. Checking the runner-up so the verdict doesn't just echo the ranker.",
+   "seq": 10,
+   "t": 6.374
+  },
+  {
+   "type": "tool_start",
+   "step": 2,
+   "name": "get_commit_diff",
+   "args": {
+    "sha": "047abc87c2"
+   },
+   "seq": 11,
+   "t": 6.374
+  },
+  {
+   "type": "tool_result",
+   "step": 2,
+   "name": "get_commit_diff",
+   "args": {
+    "sha": "047abc87c2"
+   },
+   "output": "commit 047abc87c2ff3864f2e17b9fa107ca00bf411569\nAuthor: Erik Sundell <erik.sundell@grafana.com>\nDate:   Fri Dec 6 10:24:34 2019 +0100\n\n    UI: Segment Input (#20904)\n    \n    * Add input segment\n    \n    * Rename story\n    \n    * Cleanup\n    \n    * Fix lint error\n    \n    * More cleanup\n    \n    * Export ui component\n    \n    * Use measure text util\n---\n .../grafana-ui/src/components/Segment/Segment.tsx  |  2 +\n .../src/components/Segment/SegmentAsync.tsx        |  2 +\n .../src/components/Segment/SegmentInput.story.tsx  | 29 +++++++++++++\n .../src/components/Segment/SegmentInput.tsx        | 48 ++++++++++++++++++++++\n .../grafana-ui/src/components/Segment/index.ts     |  1 +\n .../grafana-ui/src/components/Segment/types.ts     |  3 --\n packages/grafana-ui/src/components/index.ts        |  2 +-\n 7 files changed, 83 insertions(+), 4 deletions(-)\n\ndiff --git a/packages/grafana-ui/src/components/Segment/Segment.tsx b/packages/grafana-ui/src/components/Segment/Segment.tsx\nindex 6aa78bd483..fbdf617ad2 100644\n--- a/packages/grafana-ui/src/components/Segment/Segment.tsx\n+++ b/packages/grafana-ui/src/components/Segment/Segment.tsx\n@@ -4,6 +4,8 @@ import { SelectableValue } from '@grafana/data';\n import { SegmentSelect, useExpandableLabel, SegmentProps } from './';\n \n export interface SegmentSyncProps<T> extends SegmentProps<T> {\n+  value?: SelectableValue<T>;\n+  onChange: (item: SelectableValue<T>) => void;\n   options: Array<SelectableValue<T>>;\n }\n \ndiff --git a/packages/grafana-ui/src/components/Segment/SegmentAsync.tsx b/packages/grafana-ui/src/components/Segment/SegmentAsync.tsx\nindex ed595e3d6c..2dd849bc25 100644\n--- a/packages/grafana-ui/src/components/Segment/SegmentAsync.tsx\n+++ b/packages/grafana-ui/src/components/Segment/SegmentAsync.tsx\n@@ -5,7 +5,9 @@ import { SelectableValue } from '@grafana/data';\n import { useExpandableLabel, SegmentProps } from '.';\n \n export interface SegmentAsyncProps<T> extends SegmentProps<T> {\n+  value?: SelectableValue<T>;\n   loadOptions: (query?: string) => Promise<Array<SelectableValue<T>>>;\n+  onChange: (item: SelectableValue<T>) => void;\n }\n \n export function SegmentAsync<T>({\ndiff --git a/packages/grafana-ui/src/components/Segment/SegmentInput.story.tsx b/packages/grafana-ui/src/components/Segment/SegmentInput.story.tsx\nnew file mode 100644\nindex 0000000000..afe9b8060d\n--- /dev/null\n+++ b/packages/grafana-ui/src/components/Segment/SegmentInput.story.tsx\n@@ -0,0 +1,29 @@\n+import React from 'react';\n+import { storiesOf } from '@storybook/react';\n+import { action } from '@storybook/addon-actions';\n+const SegmentStories = storiesOf('UI/Segment/SegmentInput', module);\n+import { SegmentInput } from '.';\n+import { UseState } from '../../utils/storybook/UseState';\n+\n+SegmentStories.add('Segment Input', () => {\n+  return (\n+    <UseState initialState={'some text'}>\n+      {(value, updateValue) => (\n+        <>\n+          <div className=\"gf-form-inline\">\n+            <div className=\"gf-form\">\n+              <span className=\"gf-form-label width-8 query-keyword\">Segment Name</span>\n+            </div>\n+            <SegmentInput\n+              value={value}\n+              onChange={text => {\n+                updateValue(text as string);\n+                action('Segment value changed')(text);\n+              }}\n+            />\n+          </div>\n+        </>\n+      )}\n+    </UseState>\n+  );\n+});\ndiff --git a/packages/grafana-ui/src/components/Segment/SegmentInput.tsx b/packages/grafana-ui/src/components/Segment/SegmentInput.tsx\nnew file mode 100644\nindex 0000000000..ebc026ff0e\n--- /dev/null\n+++ b/packages/grafana-ui/src/components/Segment/SegmentInput.tsx\n@@ -0,0 +1,48 @@\n+import React, { useRef, useState } from 'react';\n+import { cx, css } from 'emotion';\n+import useClickAway from 'react-use/lib/useClickAway';\n+import { measureText } from '../../utils/measureText';\n+import { useExpandableLabel, SegmentProps } from '.';\n+\n+export interface SegmentInputProps<T> extends SegmentProps<T> {\n+  value: string | number;\n+  onChange: (text: string | number) => void;\n+}\n+\n+const FONT_SIZE = 14;\n+\n+export function SegmentInput<T>({\n+  value,\n+  onChange,\n+  Component,\n+  className,\n+}: React.PropsWithChildren<SegmentInputProps<T>>) {\n+  const ref = useRef(null);\n+  const [inputWidth, setInputWidth] = useState<number>(measureText(value.toString(), FONT_SIZE).width);\n+  const [Label, , expanded, setExpanded] = useExpandableLabel(false);\n+  useClickAway(ref, () => setExpanded(false));\n+\n+  if (!expanded) {\n+    return <Label Component={Component || <a className={cx('gf-form-label', 'query-part', className)}>{value}</a>} />;\n+  }\n+\n+  const inputWidthStyle = css`\n+    width: ${Math.max(inputWidth + 20, 32)}px;\n+  `;\n+\n+  return (\n+    <input\n+      ref={ref}\n+      autoFocus\n+      className={cx(`gf-form gf-form-input`, inputWidthStyle)}\n+      value={value}\n+      onChange={item => {\n+        const { width } = measureText(item.target.value, FONT_SIZE);\n+        setInputWidth(width);\n+        onChange(item.target.value);\n+      }}\n+      onBlur={() => setExpanded(false)}\n+      onKeyDown={e => [13, 27].includes(e.keyCode) && setExpanded(false)}\n+    />\n+  );\n+}\ndiff --git a/packages/grafana-ui/src/components/Segment/index.ts b/packages/grafana-ui/src/components/Segment/index.ts\nindex c502a917cc..040d96f361 100644\n--- a/packages/grafana-ui/src/components/Segment/index.ts\n+++ b/packages/grafana-ui/src/components/Segment/index.ts\n@@ -1,5 +1,6 @@\n export { Segment } from './Segment';\n export { SegmentAsync } from './SegmentAsync';\n export { SegmentSelect } from './SegmentSelect';\n+export { SegmentInput } from './SegmentInput';\n export { SegmentProps } from './types';\n export { useExpandableLabel } from './useExpandableLabel';\ndiff --git a/packages/grafana-ui/src/components/Segment/types.ts b/packages/grafana-ui/src/components/Segment/types.ts\nindex 16eab6ceb5..2a565b3721 100644\n--- a/packages/grafana-ui/src/components/Segment/types.ts\n+++ b/packages/grafana-ui/src/components/Segment/types",
+   "ms": 284,
+   "seq": 12,
+   "t": 6.659
+  },
+  {
+   "type": "thinking_started",
+   "turn": 3,
+   "seq": 13,
+   "t": 6.659
+  },
+  {
+   "type": "verdict",
+   "diagnosis": {
+    "root_cause": "413be3a6a0 vendors github.com/linkedin/goavro and imports it from pkg/extensions/main.go, so every Grafana build now compiles goavro, which does not build for 32-bit targets.",
+    "offending_sha": "413be3a6a0549c211677943ef5e77c67ff39049f",
+    "confidence": 0.9,
+    "reasoning": "The report names the library. This is the only commit in the window that adds it, and the import in pkg/extensions puts it in every build. The runner-up is a TypeScript UI change and can't affect Go compilation.",
+    "evidence": [
+     "413be3a6a0 adds vendor/github.com/linkedin/goavro and an import in pkg/extensions/main.go",
+     "go.mod gains the goavro requirement in the same commit",
+     "047abc87c2 only touches packages/grafana-ui TypeScript"
+    ],
+    "ruled_out": [
+     "047abc87c2: UI-only TypeScript change"
+    ],
+    "runbook_ids": [],
+    "remediation": [
+     "Revert 413be3a6a0",
+     "Gate the goavro import behind a build tag that excludes 32-bit targets"
+    ],
+    "rollback_command": "git revert --no-edit 413be3a6a0",
+    "needs_human": false,
+    "source": "agent"
+   },
+   "seq": 14,
+   "t": 8.659
+  },
+  {
+   "type": "done",
+   "model": "claude-sonnet-5 (SCRIPTED STAND-IN)",
+   "duration_s": 8.7,
+   "tool_calls": 3,
+   "usage": null,
+   "cost_usd": null,
+   "source": "agent",
+   "slack": [
+    {
+     "type": "header",
+     "text": {
+      "type": "plain_text",
+      "text": ":warning: INC-20191206-b34375 \u00b7 grafana"
+     }
+    },
+    {
+     "type": "section",
+     "text": {
+      "type": "mrkdwn",
+      "text": "*Goavro doesn't compile on 32-bit systems.*\nGoavro doesn't compile on 32-bit systems."
+     }
+    },
+    {
+     "type": "section",
+     "fields": [
+      {
+       "type": "mrkdwn",
+       "text": "*Severity*\nSEV2"
+      },
+      {
+       "type": "mrkdwn",
+       "text": "*Started*\n<!date^1575634207^{time_secs}|2019-12-06T12:10:07+00:00>"
+      },
+      {
+       "type": "mrkdwn",
+       "text": "*Users affected*\n~0 (0\u20130)"
+      },
+      {
+       "type": "mrkdwn",
+       "text": "*Error budget*\n166.67% of 30-day budget"
+      }
+     ]
+    },
+    {
+     "type": "divider"
+    },
+    {
+     "type": "section",
+     "text": {
+      "type": "mrkdwn",
+      "text": "*Suspected root cause* \u2014 confidence \u25b0\u25b0\u25b0\u25b0\u25b1 90%\n413be3a6a0 vendors github.com/linkedin/goavro and imports it from pkg/extensions/main.go, so every Grafana build now compiles goavro, which does not build for 32-bit targets.\n\n*Offending commit:* `413be3a6a0`\nThe report names the library. This is the only commit in the window that adds it, and the import in pkg/extensions puts it in every build. The runner-up is a TypeScript UI change and can't affect Go compilation."
+     }
+    },
+    {
+     "type": "section",
+     "text": {
+      "type": "mrkdwn",
+      "text": "*Evidence*\n\u2022 413be3a6a0 adds vendor/github.com/linkedin/goavro and an import in pkg/extensions/main.go\n\u2022 go.mod gains the goavro requirement in the same commit\n\u2022 047abc87c2 only touches packages/grafana-ui TypeScript"
+     }
+    },
+    {
+     "type": "section",
+     "text": {
+      "type": "mrkdwn",
+      "text": "*Recommended actions*\n1. Revert 413be3a6a0\n2. Gate the goavro import behind a build tag that excludes 32-bit targets"
+     }
+    },
+    {
+     "type": "section",
+     "text": {
+      "type": "mrkdwn",
+      "text": "*Rollback*\n```git revert --no-edit 413be3a6a0```"
+     }
+    },
+    {
+     "type": "context",
+     "elements": [
+      {
+       "type": "mrkdwn",
+       "text": "3 tool calls \u00b7 8.7s to diagnosis \u00b7 12 commits correlated \u00b7 source: scripted stand-in"
+      }
+     ]
+    }
+   ],
+   "report_md": "# INC-20191206-b34375 \u2014 grafana: Goavro doesn't compile on 32-bit systems.\n\n**SEV2** \u00b7 **DIAGNOSED** \u00b7 fired 2019-12-06T12:10:07+00:00 \u00b7 diagnosed in 8.7s (3 tool calls)\n\n## Summary\n\n413be3a6a0 vendors github.com/linkedin/goavro and imports it from pkg/extensions/main.go, so every Grafana build now compiles goavro, which does not build for 32-bit targets.\n\n**Offending commit:** `413be3a6a0` \u00b7 **Confidence:** 90% (high)\n\n## Impact\n\n| Metric | Value |\n| --- | --- |\n| Users affected | ~0 (0\u20130) |\n| Failed requests | 432,000 |\n| Duration | 720 min |\n| Error budget burned | 166.67% of the 30-day budget |\n| Blast radius | grafana |\n| Estimate confidence | low |\n\n_Method: no error-rate metric on the alert; assumed 10% from sev2; 100 rps x 720m sustained; reach 0 distinct users over that window (saturating toward 0/day, which is the hard ceiling); P(user hit) = 1-(1-delta)^20.0 = 87.8%; dependents contribute only their non-overlapping users, capped at 0_\n\n## Root-cause analysis\n\nThe report names the library. This is the only commit in the window that adds it, and the import in pkg/extensions puts it in every build. The runner-up is a TypeScript UI change and can't affect Go compilation.\n\n### Evidence\n\n- 413be3a6a0 adds vendor/github.com/linkedin/goavro and an import in pkg/extensions/main.go\n- go.mod gains the goavro requirement in the same commit\n- 047abc87c2 only touches packages/grafana-ui TypeScript\n\n### Candidates ruled out\n\n- 047abc87c2: UI-only TypeScript change\n\n## Correlated commits\n\n| # | Commit | Authored | Author | Score | Subject |\n| --- | --- | --- | --- | --- | --- |\n| 1 | `413be3a6a0` \u2b05\ufe0e | 2019-12-06 10:33 | Emil Tullstedt | 0.4264 | Modules: Add goavro dependency for extensions (#20920) |\n| 2 | `047abc87c2` | 2019-12-06 10:24 | Erik Sundell | 0.3991 | UI: Segment Input (#20904) |\n| 3 | `6f468c670a` | 2019-12-06 11:50 | Erik Sundell | 0.3347 | UI: Segment Input change (#20925) |\n| 4 | `ced13da889` | 2019-12-06 02:57 | Shavonn Brown | 0.3099 | InfluxDB: Use new datasource update option funcs (#20907) |\n| 5 | `1d2a7a2c37` | 2019-12-06 03:04 | Diana Payton | 0.2797 | Docs: Update debian.md (#20910) |\n| 6 | `2a44cbd137` | 2019-12-06 09:03 | Torkel \u00d6degaard | 0.2739 | AngularPanels: Check for digest cycle on root scope (#20919) |\n| 7 | `a533e00622` | 2019-12-06 09:59 | Erik Sundell | 0.2234 | Remove escaping of \\ ( ) characters (#20915) |\n| 8 | `cbd81ffeb8` | 2019-12-05 13:09 | Robby Milo | 0.2227 | Docs: update content to work with website repo (#20693) |\n| 9 | `178bb1d3ab` | 2019-12-05 08:30 | Dominik Prokop | 0.2177 | Echo: mechanism for collecting custom events lazily (#20365) |\n| 10 | `880fbcb09a` | 2019-12-05 09:04 | kay delaney | 0.2111 | Chore/Tech debt: Remove (most) instances of $q angular service use (#2 |\n\n## Remediation\n\n1. Revert 413be3a6a0\n2. Gate the goavro import behind a build tag that excludes 32-bit targets\n\n```bash\ngit revert --no-edit 413be3a6a0\n```\n\n## Investigation trace\n\n| Step | Tool | Arguments | Result |\n| --- | --- | --- | --- |\n| 1 | `get_commit_diff` (260ms) | `{\"sha\": \"413be3a6a0\"}` | commit 413be3a6a0549c211677943ef5e77c67ff39049f Author: Emil Tullstedt <emil.tul |\n| 2 | `get_commit_diff` (284ms) | `{\"sha\": \"047abc87c2\"}` | commit 047abc87c2ff3864f2e17b9fa107ca00bf411569 Author: Erik Sundell <erik.sunde |\n| 3 | `submit_diagnosis` (0ms) | `{\"offending_sha\": \"413be3a6a0549c211677943ef5e77c67ff39049f\", \"runbook_ids\": [],` | verdict recorded |\n\n## Cost\n\ncache creation input tokens: 0 \u00b7 cache read input tokens: 0 \u00b7 input tokens: 0 \u00b7 output tokens: 0 \u00b7 requests: 3 \u00b7 uncached followups: 2\n\n---\n\n_Generated by IncidentPilot \u00b7 diagnosis source: agent_",
+   "seq": 15,
+   "t": 8.659
+  }
+ ]
+}

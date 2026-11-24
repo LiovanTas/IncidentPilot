@@ -1,0 +1,684 @@
+{
+ "schema": 1,
+ "scenario": "RW-prometheus-01",
+ "recorded_at": "2026-11-24T12:00:00+00:00",
+ "model": "claude-sonnet-5 (SCRIPTED STAND-IN)",
+ "stand_in": true,
+ "events": [
+  {
+   "type": "start",
+   "mode": "live",
+   "speed": 1.0,
+   "scenario": {
+    "id": "RW-prometheus-01",
+    "title": "Build fails on macOS",
+    "hook": "Prometheus history from 2013: the build broke on macOS, and the report is a pasted build log.",
+    "suite": "realworld",
+    "source": "reverted upstream in prometheus",
+    "repo": "prometheus",
+    "alert": {
+     "fingerprint": "prometheus-9c8112a053",
+     "source": "generic",
+     "service": "prometheus",
+     "severity": "sev2",
+     "title": "Not only do we know this to produce problematic artifacts, it refuses",
+     "description": "Not only do we know this to produce problematic artifacts, it refuses\nto build on Mac OS X.\nTMPDIR=/tmp GOROOT=/Users/mattproud/Development/go/src/github.com/prometheus/prometheus/.build/root/go GOPATH=/Users/mattproud/Development/go/src/github.com/prometheus/prometheus/.build/root/gopath /Users/mattproud/Development/go/src/github.com/prometheus/prometheus/.build/root/go/bin/go build -o prometheus -ldflags \" -X main.buildVersion -X main.buildBranch refactor/storage/modify-append-signature -X main.buildUser mattproud.local -X main.buildDate -11:15:49 -X main.goVersion 1.1 -X main.leveldbVersion 1.12.0 -X main.protobufVersion 2.5.0 -X main.snappyVersion 1.1.0 -linkmode external -extldflags '-lstdc++ -lpthread -static /Users/mattproud/Development/go/src/github.com/prometheus/prometheus/.build/root/lib/libleveldb.a /Users/mattproud/Development/go/src/github.com/prometheus/prometheus/.build/root/lib/libsnappy.a'\" .\n# _/Users/mattproud/Development/go/src/github.com/prometheus/prometheus",
+     "started_at": "2013-08-15T08:19:44Z",
+     "labels": {
+      "repo": "prometheus"
+     },
+     "metrics": {}
+    },
+    "answer_subject": "Add flags to build prometheus statically"
+   },
+   "seq": 0,
+   "t": 0.0
+  },
+  {
+   "type": "alert",
+   "incident_id": "INC-20130815-b29f1b",
+   "alert": {
+    "fingerprint": "prometheus-9c8112a053",
+    "source": "generic",
+    "service": "prometheus",
+    "severity": "sev2",
+    "title": "Not only do we know this to produce problematic artifacts, it refuses",
+    "description": "Not only do we know this to produce problematic artifacts, it refuses\nto build on Mac OS X.\nTMPDIR=/tmp GOROOT=/Users/mattproud/Development/go/src/github.com/prometheus/prometheus/.build/root/go GOPATH=/Users/mattproud/Development/go/src/github.com/prometheus/prometheus/.build/root/gopath /Users/mattproud/Development/go/src/github.com/prometheus/prometheus/.build/root/go/bin/go build -o prometheus -ldflags \" -X main.buildVersion -X main.buildBranch refactor/storage/modify-append-signature -X main.buildUser mattproud.local -X main.buildDate -11:15:49 -X main.goVersion 1.1 -X main.leveldbVersion 1.12.0 -X main.protobufVersion 2.5.0 -X main.snappyVersion 1.1.0 -linkmode external -extldflags '-lstdc++ -lpthread -static /Users/mattproud/Development/go/src/github.com/prometheus/prometheus/.build/root/lib/libleveldb.a /Users/mattproud/Development/go/src/github.com/prometheus/prometheus/.build/root/lib/libsnappy.a'\" .\n# _/Users/mattproud/Development/go/src/github.com/prometheus/prometheus",
+    "started_at": "2013-08-15T08:19:44Z",
+    "labels": {
+     "repo": "prometheus"
+    },
+    "metrics": {},
+    "runbook_hints": []
+   },
+   "seq": 1,
+   "t": 0.0
+  },
+  {
+   "type": "candidates",
+   "lookback_hours": 72.0,
+   "candidates": [
+    {
+     "sha": "0e9e3e068d7e164a0069240cf54cbddc53abbe22",
+     "author": "Johannes 'fish' Ziemke",
+     "authored_at": "2013-08-12T14:18:07Z",
+     "subject": "Add flags to build prometheus statically",
+     "body": "Change-Id: I8fc883247e0657d26aa8ca6f24315fb9217277f3",
+     "files": [
+      ".gitignore",
+      "Makefile",
+      "Makefile.INCLUDE"
+     ],
+     "insertions": 10,
+     "deletions": 1,
+     "services": [],
+     "score": 0.1925,
+     "signals": {
+      "recency": 0.1522,
+      "ownership": 0.0,
+      "keyword": 0.125,
+      "risk": 0.8041
+     },
+     "rationale": [
+      "landed 15.1h before onset",
+      "alert terms present in commit: build, prometheus, static",
+      "risk class: config"
+     ],
+     "landed_at": "2013-08-14T17:16:00Z",
+     "short_sha": "0e9e3e068d",
+     "churn": 11
+    },
+    {
+     "sha": "aa5d251f8d04db541222da85b114648c3d66fbba",
+     "author": "Julius Volz",
+     "authored_at": "2013-08-12T15:18:02Z",
+     "subject": "Use github.com/golang/glog for all logging.",
+     "body": "",
+     "files": [
+      "main.go",
+      "notification/notification.go",
+      "retrieval/target.go",
+      "retrieval/target_provider.go",
+      "retrieval/targetmanager.go",
+      "retrieval/targetpool.go",
+      "rules/ast/ast.go",
+      "rules/ast/query_analyzer.go",
+      "rules/load.go",
+      "rules/manager.go",
+      "storage/metric/curator.go",
+      "storage/metric/frontier.go",
+      "storage/metric/index.go",
+      "storage/metric/leveldb.go",
+      "storage/metric/processor.go",
+      "storage/metric/processor_test.go",
+      "storage/metric/samplekey.go",
+      "storage/metric/stochastic_test.go",
+      "storage/metric/tiered.go",
+      "storage/metric/watermark.go",
+      "storage/raw/index/leveldb/leveldb.go",
+      "tools/dumper/main.go",
+      "tools/pruner/main.go",
+      "tools/rule_checker/main.go",
+      "web/api/query.go",
+      "web/blob/blob.go",
+      "web/web.go"
+     ],
+     "insertions": 117,
+     "deletions": 112,
+     "services": [],
+     "score": 0.1767,
+     "signals": {
+      "recency": 0.0003,
+      "ownership": 0.0,
+      "keyword": 0.2083,
+      "risk": 0.886
+     },
+     "rationale": [
+      "landed 64.4h before onset",
+      "alert terms present in commit: com, github, main, not, storage",
+      "risk class: query"
+     ],
+     "landed_at": "2013-08-12T15:54:36Z",
+     "short_sha": "aa5d251f8d",
+     "churn": 229
+    },
+    {
+     "sha": "3b970c513395bf46e2a8ddcc982986a71483c3b7",
+     "author": "Julius Volz",
+     "authored_at": "2013-08-09T17:32:55Z",
+     "subject": "Add variable interpolation to notification messages.",
+     "body": "This includes required refactorings to enable replacing the http client (for",
+     "files": [
+      "main.go",
+      "notification/notification.go",
+      "notification/notification_test.go",
+      "retrieval/target.go",
+      "retrieval/target_test.go",
+      "rules/manager.go",
+      "utility/deadline_client.go"
+     ],
+     "insertions": 204,
+     "deletions": 36,
+     "services": [],
+     "score": 0.1745,
+     "signals": {
+      "recency": 0.0002,
+      "ownership": 0.0,
+      "keyword": 0.125,
+      "risk": 0.988
+     },
+     "rationale": [
+      "landed 69.1h before onset",
+      "alert terms present in commit: main, not, refactor",
+      "risk class: timeouts"
+     ],
+     "landed_at": "2013-08-12T11:14:26Z",
+     "short_sha": "3b970c5133",
+     "churn": 240
+    },
+    {
+     "sha": "acf91f38bd6c9d2dbe0a48d9f6503f754ca2a4b0",
+     "author": "Matt T. Proud",
+     "authored_at": "2013-08-13T16:08:02Z",
+     "subject": "Build layered indexers.",
+     "body": "The indexers will be extracted in a short while and wrapped accordingly with",
+     "files": [
+      "storage/metric/index.go"
+     ],
+     "insertions": 197,
+     "deletions": 0,
+     "services": [],
+     "score": 0.1722,
+     "signals": {
+      "recency": 0.0761,
+      "ownership": 0.0,
+      "keyword": 0.0833,
+      "risk": 0.8794
+     },
+     "rationale": [
+      "landed 20.6h before onset",
+      "alert terms present in commit: build, storage",
+      "risk class: query"
+     ],
+     "landed_at": "2013-08-14T11:43:11Z",
+     "short_sha": "acf91f38bd",
+     "churn": 197
+    },
+    {
+     "sha": "aaaf3367d6efec03852561ba451c4ff2769ddae3",
+     "author": "Matt T. Proud",
+     "authored_at": "2013-08-14T16:52:55Z",
+     "subject": "Include forgotten imports.",
+     "body": "This fixes the build.",
+     "files": [
+      "storage/metric/index.go"
+     ],
+     "insertions": 2,
+     "deletions": 0,
+     "services": [],
+     "score": 0.163,
+     "signals": {
+      "recency": 0.145,
+      "ownership": 0.0,
+      "keyword": 0.0833,
+      "risk": 0.6801
+     },
+     "rationale": [
+      "landed 15.4h before onset",
+      "alert terms present in commit: build, storage",
+      "risk class: query"
+     ],
+     "landed_at": "2013-08-14T16:52:55Z",
+     "short_sha": "aaaf3367d6",
+     "churn": 2
+    },
+    {
+     "sha": "a5141e4d0a7b7a2644d4dc35acfb9cca831c8768",
+     "author": "Matt T. Proud",
+     "authored_at": "2013-08-10T15:02:28Z",
+     "subject": "Depointerize storage conf. and chain ingester.",
+     "body": "The storage builders need to work with the assumption that they have",
+     "files": [
+      "notification/notification.go",
+      "retrieval/target.go",
+      "retrieval/target_test.go",
+      "storage/metric/index.go",
+      "storage/metric/leveldb.go",
+      "storage/metric/processor_test.go",
+      "storage/metric/watermark.go",
+      "storage/raw/index/leveldb/leveldb.go",
+      "storage/raw/leveldb/leveldb.go",
+      "storage/raw/leveldb/test/fixtures.go"
+     ],
+     "insertions": 53,
+     "deletions": 45,
+     "services": [],
+     "score": 0.1537,
+     "signals": {
+      "recency": 0.0003,
+      "ownership": 0.0,
+      "keyword": 0.125,
+      "risk": 0.8491
+     },
+     "rationale": [
+      "landed 65.0h before onset",
+      "alert terms present in commit: build, not, storage",
+      "risk class: query"
+     ],
+     "landed_at": "2013-08-12T15:17:03Z",
+     "short_sha": "a5141e4d0a",
+     "churn": 98
+    },
+    {
+     "sha": "0003027dcede5c5c0568e4138b365f4a6b579a29",
+     "author": "Julius Volz",
+     "authored_at": "2013-08-12T16:22:48Z",
+     "subject": "Add needed trailing spaces in logs.",
+     "body": "",
+     "files": [
+      "main.go",
+      "notification/notification.go",
+      "retrieval/target.go",
+      "retrieval/target_provider.go",
+      "retrieval/targetpool.go",
+      "rules/ast/ast.go",
+      "storage/metric/leveldb.go",
+      "tools/dumper/main.go",
+      "tools/pruner/main.go",
+      "web/api/query.go",
+      "web/blob/blob.go",
+      "web/web.go"
+     ],
+     "insertions": 29,
+     "deletions": 29,
+     "services": [],
+     "score": 0.1503,
+     "signals": {
+      "recency": 0.0003,
+      "ownership": 0.0,
+      "keyword": 0.125,
+      "risk": 0.8263
+     },
+     "rationale": [
+      "landed 63.9h before onset",
+      "alert terms present in commit: main, not, storage",
+      "risk class: query"
+     ],
+     "landed_at": "2013-08-12T16:22:48Z",
+     "short_sha": "0003027dce",
+     "churn": 58
+    },
+    {
+     "sha": "d69b85e6c942874006f46373f3e5fb471c5081f5",
+     "author": "Julius Volz",
+     "authored_at": "2013-08-13T14:14:18Z",
+     "subject": "Add global label support via Ingesters.",
+     "body": "",
+     "files": [
+      "config/config.go",
+      "main.go",
+      "retrieval/helpers_test.go",
+      "retrieval/ingester.go",
+      "retrieval/target.go",
+      "retrieval/target_test.go",
+      "retrieval/targetmanager.go",
+      "retrieval/targetmanager_test.go",
+      "retrieval/targetpool.go",
+      "retrieval/targetpool_test.go"
+     ],
+     "insertions": 125,
+     "deletions": 63,
+     "services": [],
+     "score": 0.1496,
+     "signals": {
+      "recency": 0.0058,
+      "ownership": 0.0,
+      "keyword": 0.0417,
+      "risk": 0.9274
+     },
+     "rationale": [
+      "landed 41.1h before onset",
+      "alert terms present in commit: main",
+      "risk class: config"
+     ],
+     "landed_at": "2013-08-13T15:11:18Z",
+     "short_sha": "d69b85e6c9",
+     "churn": 188
+    },
+    {
+     "sha": "c7052ede27b2027b2aa0e7a7108a5a9d2bd7da53",
+     "author": "Julius Volz",
+     "authored_at": "2013-08-14T17:23:28Z",
+     "subject": "Tarball build rule fixups.",
+     "body": "Change-Id: Idc4db7e20cd705901ea9ad39a0f7269bbb5572b7",
+     "files": [
+      "Makefile"
+     ],
+     "insertions": 2,
+     "deletions": 1,
+     "services": [],
+     "score": 0.0623,
+     "signals": {
+      "recency": 0.1546,
+      "ownership": 0.0,
+      "keyword": 0.0417,
+      "risk": 0.0477
+     },
+     "rationale": [
+      "landed 14.9h before onset",
+      "alert terms present in commit: build"
+     ],
+     "landed_at": "2013-08-14T17:23:28Z",
+     "short_sha": "c7052ede27",
+     "churn": 3
+    },
+    {
+     "sha": "972e856d9b1e375e0a554ae07f801149dcf196f6",
+     "author": "Matt T. Proud",
+     "authored_at": "2013-08-13T15:19:13Z",
+     "subject": "Kill the curation state channel.",
+     "body": "The use of the channels for curation state were always unidiomatic.",
+     "files": [
+      "main.go",
+      "storage/metric/curator.go",
+      "storage/metric/processor_test.go",
+      "web/status.go",
+      "web/web.go"
+     ],
+     "insertions": 45,
+     "deletions": 55,
+     "services": [],
+     "score": 0.0493,
+     "signals": {
+      "recency": 0.006,
+      "ownership": 0.0,
+      "keyword": 0.0833,
+      "risk": 0.2
+     },
+     "rationale": [
+      "landed 41.0h before onset",
+      "alert terms present in commit: main, storage"
+     ],
+     "landed_at": "2013-08-13T15:20:22Z",
+     "short_sha": "972e856d9b",
+     "churn": 100
+    },
+    {
+     "sha": "ecf0ee8f398606e1f0e40cf02bb17410f7df4c03",
+     "author": "Julius Volz",
+     "authored_at": "2013-08-09T16:09:44Z",
+     "subject": "Transfer alerting rule and Prometheus URL to alertmanager.",
+     "body": "",
+     "files": [
+      "main.go",
+      "notification/notification.go",
+      "web/web.go"
+     ],
+     "insertions": 25,
+     "deletions": 6,
+     "services": [],
+     "score": 0.0487,
+     "signals": {
+      "recency": 0.0002,
+      "ownership": 0.0,
+      "keyword": 0.125,
+      "risk": 0.1491
+     },
+     "rationale": [
+      "landed 70.2h before onset",
+      "alert terms present in commit: main, not, prometheus"
+     ],
+     "landed_at": "2013-08-12T10:10:17Z",
+     "short_sha": "ecf0ee8f39",
+     "churn": 31
+    },
+    {
+     "sha": "305662bfdd40bc48077f5441b066ed59b60f3ee7",
+     "author": "Julius Volz",
+     "authored_at": "2013-08-14T10:36:55Z",
+     "subject": "Handle SIGTERM in addition to SIGINT.",
+     "body": "Change-Id: I9c91ec7e2b9026b9eb152b98a6986f2bf773eb03",
+     "files": [
+      "main.go"
+     ],
+     "insertions": 3,
+     "deletions": 2,
+     "services": [],
+     "score": 0.0393,
+     "signals": {
+      "recency": 0.067,
+      "ownership": 0.0,
+      "keyword": 0.0417,
+      "risk": 0.0699
+     },
+     "rationale": [
+      "landed 21.6h before onset",
+      "alert terms present in commit: main"
+     ],
+     "landed_at": "2013-08-14T10:42:19Z",
+     "short_sha": "305662bfdd",
+     "churn": 5
+    }
+   ],
+   "ranker_pick": "0e9e3e068d7e164a0069240cf54cbddc53abbe22",
+   "seq": 2,
+   "t": 1.506
+  },
+  {
+   "type": "runbooks",
+   "runbooks": [],
+   "seq": 3,
+   "t": 1.506
+  },
+  {
+   "type": "impact",
+   "impact": {
+    "affected_users_low": 0,
+    "affected_users_point": 0,
+    "affected_users_high": 0,
+    "failed_requests": 432000,
+    "duration_minutes": 720.0,
+    "error_budget_burn_pct": 166.67,
+    "blast_radius": [
+     "prometheus"
+    ],
+    "method": "no error-rate metric on the alert; assumed 10% from sev2; 100 rps x 720m sustained; reach 0 distinct users over that window (saturating toward 0/day, which is the hard ceiling); P(user hit) = 1-(1-delta)^20.0 = 87.8%; dependents contribute only their non-overlapping users, capped at 0",
+    "confidence": "low"
+   },
+   "seq": 4,
+   "t": 1.506
+  },
+  {
+   "type": "thinking_started",
+   "turn": 1,
+   "seq": 5,
+   "t": 1.506
+  },
+  {
+   "type": "reasoning",
+   "turn": 1,
+   "text": "The report says the build refuses to work on Mac OS X and pastes a go build command with -ldflags. The ranker's top pick changes build flags in Makefile.INCLUDE.",
+   "seq": 6,
+   "t": 4.239
+  },
+  {
+   "type": "tool_start",
+   "step": 1,
+   "name": "get_commit_diff",
+   "args": {
+    "sha": "0e9e3e068d"
+   },
+   "seq": 7,
+   "t": 4.239
+  },
+  {
+   "type": "tool_result",
+   "step": 1,
+   "name": "get_commit_diff",
+   "args": {
+    "sha": "0e9e3e068d"
+   },
+   "output": "commit 0e9e3e068d7e164a0069240cf54cbddc53abbe22\nAuthor: Johannes 'fish' Ziemke <github@freigeist.org>\nDate:   Mon Aug 12 16:18:07 2013 +0200\n\n    Add flags to build prometheus statically\n    \n    Change-Id: I8fc883247e0657d26aa8ca6f24315fb9217277f3\n---\n .gitignore       | 1 +\n Makefile         | 5 +++++\n Makefile.INCLUDE | 5 ++++-\n 3 files changed, 10 insertions(+), 1 deletion(-)\n\ndiff --git a/.gitignore b/.gitignore\nindex 16bfed94aa..24dd88eb21 100644\n--- a/.gitignore\n+++ b/.gitignore\n@@ -9,6 +9,7 @@\n *.pyc\n *.rej\n *.so\n+*.tar.gz\n *~\n .*.swp\n .DS_Store\ndiff --git a/Makefile b/Makefile\nindex 77f8f4d8f3..fb26ceef19 100644\n--- a/Makefile\n+++ b/Makefile\n@@ -34,6 +34,11 @@ build: config dependencies model preparation tools web\n docker: build\n \tdocker build -t prometheus:$(REV) .\n \n+tarball: build prometheus-$(REV).tar.gz\n+\n+prometheus-$(REV).tar.gz:\n+\ttar -czf prometheus-$(REV).tar.gz prometheus\n+\n $(BUILD_PATH)/cache/$(GOPKG):\n \tcurl -o $@ http://go.googlecode.com/files/$(GOPKG)\n \ndiff --git a/Makefile.INCLUDE b/Makefile.INCLUDE\nindex 1200bd0048..2f288fe2b7 100644\n--- a/Makefile.INCLUDE\n+++ b/Makefile.INCLUDE\n@@ -89,6 +89,9 @@ BUILDFLAGS := -ldflags \\\n \t\t-X main.goVersion $(GO_VERSION)\\\n \t\t-X main.leveldbVersion $(LEVELDB_VERSION)\\\n \t\t-X main.protobufVersion $(PROTOCOL_BUFFERS_VERSION)\\\n-\t\t-X main.snappyVersion $(SNAPPY_VERSION)\"\n+\t\t-X main.snappyVersion $(SNAPPY_VERSION)\\\n+\t\t-linkmode external\\\n+\t\t-extldflags '-lstdc++ -lpthread -static\\\n+\t\t$(PREFIX)/lib/libleveldb.a $(PREFIX)/lib/libsnappy.a'\"\n \n PROTOC := $(LOCAL_BINARIES)/protoc\n",
+   "ms": 254,
+   "seq": 8,
+   "t": 4.493
+  },
+  {
+   "type": "thinking_started",
+   "turn": 2,
+   "seq": 9,
+   "t": 4.493
+  },
+  {
+   "type": "reasoning",
+   "turn": 2,
+   "text": "It adds -linkmode external and -extldflags '-static' with static leveldb and snappy libraries. Apple's linker can't produce fully static binaries, which fits 'refuses to build on Mac OS X'. Checking the only other build change in the window.",
+   "seq": 10,
+   "t": 7.589
+  },
+  {
+   "type": "tool_start",
+   "step": 2,
+   "name": "get_commit_diff",
+   "args": {
+    "sha": "c7052ede27"
+   },
+   "seq": 11,
+   "t": 7.589
+  },
+  {
+   "type": "tool_result",
+   "step": 2,
+   "name": "get_commit_diff",
+   "args": {
+    "sha": "c7052ede27"
+   },
+   "output": "commit c7052ede27b2027b2aa0e7a7108a5a9d2bd7da53\nAuthor: Julius Volz <julius@soundcloud.com>\nDate:   Wed Aug 14 19:23:28 2013 +0200\n\n    Tarball build rule fixups.\n    \n    Change-Id: Idc4db7e20cd705901ea9ad39a0f7269bbb5572b7\n---\n Makefile | 3 ++-\n 1 file changed, 2 insertions(+), 1 deletion(-)\n\ndiff --git a/Makefile b/Makefile\nindex fb26ceef19..050b51a65a 100644\n--- a/Makefile\n+++ b/Makefile\n@@ -47,6 +47,7 @@ clean:\n \t$(MAKE) -C tools clean\n \t$(MAKE) -C web clean\n \trm -rf $(TEST_ARTIFACTS)\n+\t-rm prometheus-$(REV).tar.gz\n \t-find . -type f -iname '*~' -exec rm '{}' ';'\n \t-find . -type f -iname '*#' -exec rm '{}' ';'\n \t-find . -type f -iname '.#*' -exec rm '{}' ';'\n@@ -102,4 +103,4 @@ update:\n web: config dependencies model preparation\n \t$(MAKE) -C web\n \n-.PHONY: advice binary build clean config dependencies documentation format model package preparation race_condition_binary race_condition_run run search_index test tools update\n+.PHONY: advice binary build clean config dependencies documentation format model package preparation race_condition_binary race_condition_run run search_index tarball test tools update\n",
+   "ms": 276,
+   "seq": 12,
+   "t": 7.865
+  },
+  {
+   "type": "thinking_started",
+   "turn": 3,
+   "seq": 13,
+   "t": 7.865
+  },
+  {
+   "type": "verdict",
+   "diagnosis": {
+    "root_cause": "0e9e3e068d adds -linkmode external and -extldflags '-static' to the build flags. macOS does not support fully static linking, so the build fails there.",
+    "offending_sha": "0e9e3e068d7e164a0069240cf54cbddc53abbe22",
+    "confidence": 0.88,
+    "reasoning": "The pasted command in the report carries the new ldflags, and this is the only commit that changes them. The other build change only adjusts tarball rules.",
+    "evidence": [
+     "Makefile.INCLUDE gains -linkmode external and -extldflags '-static ...'",
+     "The failing command in the report uses those flags",
+     "c7052ede27 only edits tarball targets in the Makefile"
+    ],
+    "ruled_out": [
+     "c7052ede27: tarball rule fixups only"
+    ],
+    "runbook_ids": [],
+    "remediation": [
+     "Revert 0e9e3e068d",
+     "Apply the static flags only on Linux"
+    ],
+    "rollback_command": "git revert --no-edit 0e9e3e068d",
+    "needs_human": false,
+    "source": "agent"
+   },
+   "seq": 14,
+   "t": 9.865
+  },
+  {
+   "type": "done",
+   "model": "claude-sonnet-5 (SCRIPTED STAND-IN)",
+   "duration_s": 9.9,
+   "tool_calls": 3,
+   "usage": null,
+   "cost_usd": null,
+   "source": "agent",
+   "slack": [
+    {
+     "type": "header",
+     "text": {
+      "type": "plain_text",
+      "text": ":warning: INC-20130815-b29f1b \u00b7 prometheus"
+     }
+    },
+    {
+     "type": "section",
+     "text": {
+      "type": "mrkdwn",
+      "text": "*Not only do we know this to produce problematic artifacts, it refuses*\nNot only do we know this to produce problematic artifacts, it refuses\nto build on Mac OS X.\nTMPDIR=/tmp GOROOT=/Users/mattproud/Development/go/src/github.com/prometheus/prometheus/.build/root/go GOPATH=/Users/mattproud/Development/go/src/github.com/prometheus/prometheus/.build/root/gopath /Users/ma\u2026"
+     }
+    },
+    {
+     "type": "section",
+     "fields": [
+      {
+       "type": "mrkdwn",
+       "text": "*Severity*\nSEV2"
+      },
+      {
+       "type": "mrkdwn",
+       "text": "*Started*\n<!date^1376554784^{time_secs}|2013-08-15T08:19:44+00:00>"
+      },
+      {
+       "type": "mrkdwn",
+       "text": "*Users affected*\n~0 (0\u20130)"
+      },
+      {
+       "type": "mrkdwn",
+       "text": "*Error budget*\n166.67% of 30-day budget"
+      }
+     ]
+    },
+    {
+     "type": "divider"
+    },
+    {
+     "type": "section",
+     "text": {
+      "type": "mrkdwn",
+      "text": "*Suspected root cause* \u2014 confidence \u25b0\u25b0\u25b0\u25b0\u25b1 88%\n0e9e3e068d adds -linkmode external and -extldflags '-static' to the build flags. macOS does not support fully static linking, so the build fails there.\n\n*Offending commit:* `0e9e3e068d`\nThe pasted command in the report carries the new ldflags, and this is the only commit that changes them. The other build change only adjusts tarball rules."
+     }
+    },
+    {
+     "type": "section",
+     "text": {
+      "type": "mrkdwn",
+      "text": "*Evidence*\n\u2022 Makefile.INCLUDE gains -linkmode external and -extldflags '-static ...'\n\u2022 The failing command in the report uses those flags\n\u2022 c7052ede27 only edits tarball targets in the Makefile"
+     }
+    },
+    {
+     "type": "section",
+     "text": {
+      "type": "mrkdwn",
+      "text": "*Recommended actions*\n1. Revert 0e9e3e068d\n2. Apply the static flags only on Linux"
+     }
+    },
+    {
+     "type": "section",
+     "text": {
+      "type": "mrkdwn",
+      "text": "*Rollback*\n```git revert --no-edit 0e9e3e068d```"
+     }
+    },
+    {
+     "type": "context",
+     "elements": [
+      {
+       "type": "mrkdwn",
+       "text": "3 tool calls \u00b7 9.9s to diagnosis \u00b7 12 commits correlated \u00b7 source: scripted stand-in"
+      }
+     ]
+    }
+   ],
+   "report_md": "# INC-20130815-b29f1b \u2014 prometheus: Not only do we know this to produce problematic artifacts, it refuses\n\n**SEV2** \u00b7 **DIAGNOSED** \u00b7 fired 2013-08-15T08:19:44+00:00 \u00b7 diagnosed in 9.9s (3 tool calls)\n\n## Summary\n\n0e9e3e068d adds -linkmode external and -extldflags '-static' to the build flags. macOS does not support fully static linking, so the build fails there.\n\n**Offending commit:** `0e9e3e068d` \u00b7 **Confidence:** 88% (high)\n\n## Impact\n\n| Metric | Value |\n| --- | --- |\n| Users affected | ~0 (0\u20130) |\n| Failed requests | 432,000 |\n| Duration | 720 min |\n| Error budget burned | 166.67% of the 30-day budget |\n| Blast radius | prometheus |\n| Estimate confidence | low |\n\n_Method: no error-rate metric on the alert; assumed 10% from sev2; 100 rps x 720m sustained; reach 0 distinct users over that window (saturating toward 0/day, which is the hard ceiling); P(user hit) = 1-(1-delta)^20.0 = 87.8%; dependents contribute only their non-overlapping users, capped at 0_\n\n## Root-cause analysis\n\nThe pasted command in the report carries the new ldflags, and this is the only commit that changes them. The other build change only adjusts tarball rules.\n\n### Evidence\n\n- Makefile.INCLUDE gains -linkmode external and -extldflags '-static ...'\n- The failing command in the report uses those flags\n- c7052ede27 only edits tarball targets in the Makefile\n\n### Candidates ruled out\n\n- c7052ede27: tarball rule fixups only\n\n## Correlated commits\n\n| # | Commit | Authored | Author | Score | Subject |\n| --- | --- | --- | --- | --- | --- |\n| 1 | `0e9e3e068d` \u2b05\ufe0e | 2013-08-12 16:18 | Johannes 'fish' Ziemke | 0.1925 | Add flags to build prometheus statically |\n| 2 | `aa5d251f8d` | 2013-08-12 17:18 | Julius Volz | 0.1767 | Use github.com/golang/glog for all logging. |\n| 3 | `3b970c5133` | 2013-08-09 19:32 | Julius Volz | 0.1745 | Add variable interpolation to notification messages. |\n| 4 | `acf91f38bd` | 2013-08-13 18:08 | Matt T. Proud | 0.1722 | Build layered indexers. |\n| 5 | `aaaf3367d6` | 2013-08-14 18:52 | Matt T. Proud | 0.163 | Include forgotten imports. |\n| 6 | `a5141e4d0a` | 2013-08-10 17:02 | Matt T. Proud | 0.1537 | Depointerize storage conf. and chain ingester. |\n| 7 | `0003027dce` | 2013-08-12 18:22 | Julius Volz | 0.1503 | Add needed trailing spaces in logs. |\n| 8 | `d69b85e6c9` | 2013-08-13 16:14 | Julius Volz | 0.1496 | Add global label support via Ingesters. |\n| 9 | `c7052ede27` | 2013-08-14 19:23 | Julius Volz | 0.0623 | Tarball build rule fixups. |\n| 10 | `972e856d9b` | 2013-08-13 17:19 | Matt T. Proud | 0.0493 | Kill the curation state channel. |\n\n## Remediation\n\n1. Revert 0e9e3e068d\n2. Apply the static flags only on Linux\n\n```bash\ngit revert --no-edit 0e9e3e068d\n```\n\n## Investigation trace\n\n| Step | Tool | Arguments | Result |\n| --- | --- | --- | --- |\n| 1 | `get_commit_diff` (254ms) | `{\"sha\": \"0e9e3e068d\"}` | commit 0e9e3e068d7e164a0069240cf54cbddc53abbe22 Author: Johannes 'fish' Ziemke < |\n| 2 | `get_commit_diff` (276ms) | `{\"sha\": \"c7052ede27\"}` | commit c7052ede27b2027b2aa0e7a7108a5a9d2bd7da53 Author: Julius Volz <julius@soun |\n| 3 | `submit_diagnosis` (0ms) | `{\"offending_sha\": \"0e9e3e068d7e164a0069240cf54cbddc53abbe22\", \"runbook_ids\": [],` | verdict recorded |\n\n## Cost\n\ncache creation input tokens: 0 \u00b7 cache read input tokens: 0 \u00b7 input tokens: 0 \u00b7 output tokens: 0 \u00b7 requests: 3 \u00b7 uncached followups: 2\n\n---\n\n_Generated by IncidentPilot \u00b7 diagnosis source: agent_",
+   "seq": 15,
+   "t": 9.866
+  }
+ ]
+}

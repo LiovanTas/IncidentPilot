@@ -183,7 +183,11 @@ class RunManager:
                 verdict_sha = event["diagnosis"].get("offending_sha")
             body = {k: v for k, v in event.items() if k not in ("seq", "t")}
             run.push(body, t=event["t"])  # keep the recorded clock on screen
-        run.push(answer_event(run.scenario, verdict_sha), t=run.events[-1]["t"])
+        answer = answer_event(run.scenario, verdict_sha)
+        # A stand-in was scripted knowing the answer, so its "match" proves nothing.
+        answer["scripted"] = bool(recording.get("stand_in")
+                                  or "stand-in" in str(recording.get("model", "")).lower())
+        run.push(answer, t=run.events[-1]["t"])
         run.push({"type": "end"}, t=run.events[-1]["t"])
 
     # --------------------------------------------------------------- recording

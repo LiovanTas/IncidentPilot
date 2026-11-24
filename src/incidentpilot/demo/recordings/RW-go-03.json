@@ -1,0 +1,663 @@
+{
+ "schema": 1,
+ "scenario": "RW-go-03",
+ "recorded_at": "2026-11-24T12:00:00+00:00",
+ "model": "claude-sonnet-5 (SCRIPTED STAND-IN)",
+ "stand_in": true,
+ "events": [
+  {
+   "type": "start",
+   "mode": "live",
+   "speed": 1.0,
+   "scenario": {
+    "id": "RW-go-03",
+    "title": "CockroachDB benchmark fails",
+    "hook": "A CockroachDB benchmark regressed on Go. The report's link to the suspect change was lost.",
+    "suite": "realworld",
+    "source": "reverted upstream in go",
+    "repo": "go",
+    "alert": {
+     "fingerprint": "go-489917fc40",
+     "source": "generic",
+     "service": "go",
+     "severity": "sev2",
+     "title": "cockroachdb benchmark failing. Likely due to .",
+     "description": "cockroachdb benchmark failing. Likely due to .",
+     "started_at": "2025-04-22T21:49:52Z",
+     "labels": {
+      "repo": "go"
+     },
+     "metrics": {}
+    },
+    "answer_subject": "runtime: only poll network from one P at a time in findRunnable"
+   },
+   "seq": 0,
+   "t": 0.0
+  },
+  {
+   "type": "alert",
+   "incident_id": "INC-20250422-74b0c5",
+   "alert": {
+    "fingerprint": "go-489917fc40",
+    "source": "generic",
+    "service": "go",
+    "severity": "sev2",
+    "title": "cockroachdb benchmark failing. Likely due to .",
+    "description": "cockroachdb benchmark failing. Likely due to .",
+    "started_at": "2025-04-22T21:49:52Z",
+    "labels": {
+     "repo": "go"
+    },
+    "metrics": {},
+    "runbook_hints": []
+   },
+   "seq": 1,
+   "t": 0.0
+  },
+  {
+   "type": "candidates",
+   "lookback_hours": 72.0,
+   "candidates": [
+    {
+     "sha": "7ce45a014c52375d6a3da577828c9f035a72857a",
+     "author": "Rhys Hiltner",
+     "authored_at": "2025-04-08T18:34:56Z",
+     "subject": "runtime: fix test of when a mutex is contended",
+     "body": "This is used only in tests that verify reports of runtime-internal mutex",
+     "files": [
+      "src/runtime/lock_spinbit.go"
+     ],
+     "insertions": 1,
+     "deletions": 1,
+     "services": [],
+     "score": 0.343,
+     "signals": {
+      "recency": 0.545,
+      "ownership": 0.0,
+      "keyword": 0.3333,
+      "risk": 0.7301
+     },
+     "rationale": [
+      "landed 4.9h before onset",
+      "alert terms present in commit: repo",
+      "risk class: concurrency"
+     ],
+     "landed_at": "2025-04-22T16:58:32Z",
+     "short_sha": "7ce45a014c",
+     "churn": 2
+    },
+    {
+     "sha": "7a177114df3e26f4362378e907a869c4fbbf38b7",
+     "author": "Rhys Hiltner",
+     "authored_at": "2025-03-14T19:38:34Z",
+     "subject": "runtime: commit to spinbitmutex GOEXPERIMENT",
+     "body": "Use the \"spinbit\" mutex implementation always (including on platforms",
+     "files": [
+      "src/internal/buildcfg/exp.go",
+      "src/internal/goexperiment/exp_spinbitmutex_off.go",
+      "src/internal/goexperiment/exp_spinbitmutex_on.go",
+      "src/internal/goexperiment/flags.go",
+      "src/runtime/lock_futex_tristate.go",
+      "src/runtime/lock_sema_tristate.go",
+      "src/runtime/lock_spinbit.go",
+      "src/runtime/runtime2.go"
+     ],
+     "insertions": 4,
+     "deletions": 314,
+     "services": [],
+     "score": 0.3067,
+     "signals": {
+      "recency": 0.5472,
+      "ownership": 0.0,
+      "keyword": 0.0,
+      "risk": 0.9502
+     },
+     "rationale": [
+      "landed 4.8h before onset",
+      "risk class: config, concurrency; large diff (318 lines)"
+     ],
+     "landed_at": "2025-04-22T17:00:26Z",
+     "short_sha": "7a177114df",
+     "churn": 318
+    },
+    {
+     "sha": "8a85a2e70a97773ac96e899df7411eda4f5da2cb",
+     "author": "Mateusz Poliwczak",
+     "authored_at": "2025-04-07T13:21:16Z",
+     "subject": "runtime, internal/runtime/maps: speed-up empty/zero map lookups",
+     "body": "This lets the inliner do a better job optimizing the mapKeyError call.",
+     "files": [
+      "src/cmd/link/internal/loader/loader.go",
+      "src/internal/abi/iface.go",
+      "src/internal/runtime/maps/map.go",
+      "src/internal/runtime/maps/runtime_noswiss.go",
+      "src/internal/runtime/maps/runtime_swiss.go",
+      "src/runtime/alg.go",
+      "src/runtime/map_benchmark_test.go",
+      "src/runtime/map_noswiss.go",
+      "src/runtime/map_swiss.go",
+      "src/runtime/type.go"
+     ],
+     "insertions": 138,
+     "deletions": 97,
+     "services": [],
+     "score": 0.2918,
+     "signals": {
+      "recency": 0.6209,
+      "ownership": 0.0,
+      "keyword": 0.3333,
+      "risk": 0.2371
+     },
+     "rationale": [
+      "landed 3.8h before onset",
+      "alert terms present in commit: benchmark"
+     ],
+     "landed_at": "2025-04-22T18:01:05Z",
+     "short_sha": "8a85a2e70a",
+     "churn": 235
+    },
+    {
+     "sha": "83b53527fa738ac3364a5f7e4921f2e81f69584e",
+     "author": "1911860538",
+     "authored_at": "2025-04-17T14:51:18Z",
+     "subject": "net/http: replace map lookup with switch for scheme port",
+     "body": "Improve scheme port lookup by replacing map with switch, reducing overhead and improving performance.",
+     "files": [
+      "src/net/http/transport.go"
+     ],
+     "insertions": 12,
+     "deletions": 6,
+     "services": [],
+     "score": 0.2628,
+     "signals": {
+      "recency": 0.8131,
+      "ownership": 0.0,
+      "keyword": 0.0,
+      "risk": 0.1255
+     },
+     "rationale": [
+      "landed 99m before onset"
+     ],
+     "landed_at": "2025-04-22T20:10:32Z",
+     "short_sha": "83b53527fa",
+     "churn": 18
+    },
+    {
+     "sha": "7d0cb2a2adec493b8ad9d79ef35354c8e20f0213",
+     "author": "Keith Randall",
+     "authored_at": "2025-04-21T19:44:24Z",
+     "subject": "cmd/compile: constant fold 128-bit multiplies",
+     "body": "The full 64x64->128 multiply comes up when using bits.Mul64.",
+     "files": [
+      "src/cmd/compile/internal/ssa/_gen/generic.rules",
+      "src/cmd/compile/internal/ssa/rewrite.go",
+      "src/cmd/compile/internal/ssa/rewritegeneric.go",
+      "test/codegen/mathbits.go"
+     ],
+     "insertions": 138,
+     "deletions": 1,
+     "services": [],
+     "score": 0.2047,
+     "signals": {
+      "recency": 0.5751,
+      "ownership": 0.0,
+      "keyword": 0.0,
+      "risk": 0.2143
+     },
+     "rationale": [
+      "landed 4.4h before onset"
+     ],
+     "landed_at": "2025-04-22T17:24:18Z",
+     "short_sha": "7d0cb2a2ad",
+     "churn": 139
+    },
+    {
+     "sha": "95611c0eb4436102ab0dad3a705acff5f5eb7aca",
+     "author": "Prabhav Dogra",
+     "authored_at": "2025-04-20T07:52:58Z",
+     "subject": "sync: use atomic.Bool for Once.done",
+     "body": "Updated the use of atomic.Uint32 to atomic.Bool for sync package.",
+     "files": [
+      "src/sync/once.go",
+      "test/inline_sync.go"
+     ],
+     "insertions": 5,
+     "deletions": 5,
+     "services": [],
+     "score": 0.1504,
+     "signals": {
+      "recency": 0.4515,
+      "ownership": 0.0,
+      "keyword": 0.0,
+      "risk": 0.1
+     },
+     "rationale": [
+      "landed 6.4h before onset"
+     ],
+     "landed_at": "2025-04-22T15:28:13Z",
+     "short_sha": "95611c0eb4",
+     "churn": 10
+    },
+    {
+     "sha": "352dd2d932c1c1c6dbc3e112fcdfface07d4fffb",
+     "author": "Ian Lance Taylor",
+     "authored_at": "2024-02-15T01:54:00Z",
+     "subject": "runtime: only poll network from one P at a time in findRunnable",
+     "body": "For #65064",
+     "files": [
+      "src/runtime/proc.go",
+      "src/runtime/runtime2.go"
+     ],
+     "insertions": 10,
+     "deletions": 5,
+     "services": [],
+     "score": 0.0846,
+     "signals": {
+      "recency": 0.2231,
+      "ownership": 0.0,
+      "keyword": 0.0,
+      "risk": 0.1176
+     },
+     "rationale": [
+      "landed 12.0h before onset"
+     ],
+     "landed_at": "2025-04-22T09:49:42Z",
+     "short_sha": "352dd2d932",
+     "churn": 15
+    },
+    {
+     "sha": "8af32240c6c8f21695cdcb3b6df8293d7f2d3bc7",
+     "author": "Keith Randall",
+     "authored_at": "2025-03-19T17:17:22Z",
+     "subject": "cmd/compile: don't evaluate side effects of range over array",
+     "body": "If the thing we're ranging over is an array or ptr to array, and",
+     "files": [
+      "src/cmd/compile/internal/ssa/nilcheck.go",
+      "src/cmd/compile/internal/types2/range.go",
+      "src/cmd/compile/internal/walk/range.go",
+      "src/go/types/range.go",
+      "test/codegen/issue52635.go"
+     ],
+     "insertions": 94,
+     "deletions": 7,
+     "services": [],
+     "score": 0.047,
+     "signals": {
+      "recency": 0.0565,
+      "ownership": 0.0,
+      "keyword": 0.0,
+      "risk": 0.2004
+     },
+     "rationale": [
+      "landed 23.0h before onset"
+     ],
+     "landed_at": "2025-04-21T22:50:43Z",
+     "short_sha": "8af32240c6",
+     "churn": 101
+    },
+    {
+     "sha": "336626bac4c62b617127d41dccae17eed0350b0f",
+     "author": "Keith Randall",
+     "authored_at": "2025-03-14T20:36:58Z",
+     "subject": "cmd/compile: ensure we evaluate side effects of len() arg",
+     "body": "For any len() which requires the evaluation of its arg (according to the spec).",
+     "files": [
+      "src/cmd/compile/internal/ssagen/ssa.go",
+      "src/cmd/compile/internal/walk/builtin.go",
+      "test/fixedbugs/issue72844.go"
+     ],
+     "insertions": 22,
+     "deletions": 12,
+     "services": [],
+     "score": 0.0399,
+     "signals": {
+      "recency": 0.0565,
+      "ownership": 0.0,
+      "keyword": 0.0,
+      "risk": 0.1531
+     },
+     "rationale": [
+      "landed 23.0h before onset"
+     ],
+     "landed_at": "2025-04-21T22:50:54Z",
+     "short_sha": "336626bac4",
+     "churn": 34
+    },
+    {
+     "sha": "04a9b16f3d69aa66f3aaab44dcd322e4a02a82aa",
+     "author": "thepudds",
+     "authored_at": "2025-03-12T18:45:17Z",
+     "subject": "cmd/compile/internal/escape: avoid reading ir.Node during inner loop of walkOne",
+     "body": "Broadly speaking, escape analysis has two main phases. First, it",
+     "files": [
+      "src/cmd/compile/internal/escape/graph.go",
+      "src/cmd/compile/internal/escape/solve.go"
+     ],
+     "insertions": 9,
+     "deletions": 2,
+     "services": [],
+     "score": 0.0323,
+     "signals": {
+      "recency": 0.0557,
+      "ownership": 0.0,
+      "keyword": 0.0,
+      "risk": 0.1041
+     },
+     "rationale": [
+      "landed 23.1h before onset"
+     ],
+     "landed_at": "2025-04-21T22:44:05Z",
+     "short_sha": "04a9b16f3d",
+     "churn": 11
+    },
+    {
+     "sha": "a204ed53d907c3b325e3c2bdd6f847a8f97e90d9",
+     "author": "1911860538",
+     "authored_at": "2025-04-18T14:11:29Z",
+     "subject": "net: simplify readProtocols via sync.OnceFunc",
+     "body": "In this case, using sync.OnceFunc is a better choice.",
+     "files": [
+      "src/net/lookup_unix.go"
+     ],
+     "insertions": 4,
+     "deletions": 6,
+     "services": [],
+     "score": 0.015,
+     "signals": {
+      "recency": 0.0001,
+      "ownership": 0.0,
+      "keyword": 0.0,
+      "risk": 0.1
+     },
+     "rationale": [
+      "landed 70.6h before onset"
+     ],
+     "landed_at": "2025-04-19T23:11:06Z",
+     "short_sha": "a204ed53d9",
+     "churn": 10
+    },
+    {
+     "sha": "c893e1cf821b06aa0602f7944ce52f0eb28fd7b5",
+     "author": "Joel Sing",
+     "authored_at": "2025-04-19T05:57:37Z",
+     "subject": "crypto/internal/fips140/aes: actually use the VTBL instruction on arm64",
+     "body": "Support for the VTBL instruction was added in CL 110015 - use it",
+     "files": [
+      "src/crypto/internal/fips140/aes/aes_arm64.s"
+     ],
+     "insertions": 4,
+     "deletions": 4,
+     "services": [],
+     "score": 0.0137,
+     "signals": {
+      "recency": 0.0005,
+      "ownership": 0.0,
+      "keyword": 0.0,
+      "risk": 0.0903
+     },
+     "rationale": [
+      "landed 60.6h before onset"
+     ],
+     "landed_at": "2025-04-20T09:15:23Z",
+     "short_sha": "c893e1cf82",
+     "churn": 8
+    }
+   ],
+   "ranker_pick": "7ce45a014c52375d6a3da577828c9f035a72857a",
+   "seq": 2,
+   "t": 0.799
+  },
+  {
+   "type": "runbooks",
+   "runbooks": [],
+   "seq": 3,
+   "t": 0.799
+  },
+  {
+   "type": "impact",
+   "impact": {
+    "affected_users_low": 0,
+    "affected_users_point": 0,
+    "affected_users_high": 0,
+    "failed_requests": 432000,
+    "duration_minutes": 720.0,
+    "error_budget_burn_pct": 166.67,
+    "blast_radius": [
+     "go"
+    ],
+    "method": "no error-rate metric on the alert; assumed 10% from sev2; 100 rps x 720m sustained; reach 0 distinct users over that window (saturating toward 0/day, which is the hard ceiling); P(user hit) = 1-(1-delta)^20.0 = 87.8%; dependents contribute only their non-overlapping users, capped at 0",
+    "confidence": "low"
+   },
+   "seq": 4,
+   "t": 0.799
+  },
+  {
+   "type": "thinking_started",
+   "turn": 1,
+   "seq": 5,
+   "t": 0.799
+  },
+  {
+   "type": "reasoning",
+   "turn": 1,
+   "text": "CockroachDB is network-heavy and runs on many cores, so a scheduler or network-poller change is the likeliest cause of a benchmark failure. The top pick says it only affects tests; reading it to be sure.",
+   "seq": 6,
+   "t": 3.723
+  },
+  {
+   "type": "tool_start",
+   "step": 1,
+   "name": "get_commit_diff",
+   "args": {
+    "sha": "7ce45a014c"
+   },
+   "seq": 7,
+   "t": 3.723
+  },
+  {
+   "type": "tool_result",
+   "step": 1,
+   "name": "get_commit_diff",
+   "args": {
+    "sha": "7ce45a014c"
+   },
+   "output": "commit 7ce45a014c52375d6a3da577828c9f035a72857a\nAuthor: Rhys Hiltner <rhys.hiltner@gmail.com>\nDate:   Tue Apr 8 11:34:56 2025 -0700\n\n    runtime: fix test of when a mutex is contended\n    \n    This is used only in tests that verify reports of runtime-internal mutex\n    contention.\n    \n    For #66999\n    For #70602\n    \n    Change-Id: I72cb1302d8ea0524f1182ec892f5c9a1923cddba\n    Reviewed-on: https://go-review.googlesource.com/c/go/+/667095\n    Reviewed-by: Michael Knyszek <mknyszek@google.com>\n    LUCI-TryBot-Result: Go LUCI <golang-scoped@luci-project-accounts.iam.gserviceaccount.com>\n    Auto-Submit: Rhys Hiltner <rhys.hiltner@gmail.com>\n    Reviewed-by: Junyang Shao <shaojunyang@google.com>\n---\n src/runtime/lock_spinbit.go | 2 +-\n 1 file changed, 1 insertion(+), 1 deletion(-)\n\ndiff --git a/src/runtime/lock_spinbit.go b/src/runtime/lock_spinbit.go\nindex ba5268abdd..7b7bc651ad 100644\n--- a/src/runtime/lock_spinbit.go\n+++ b/src/runtime/lock_spinbit.go\n@@ -143,7 +143,7 @@ func mutexPreferLowLatency(l *mutex) bool {\n }\n \n func mutexContended(l *mutex) bool {\n-\treturn atomic.Loaduintptr(&l.key) > mutexLocked\n+\treturn atomic.Loaduintptr(&l.key)&^mutexMMask != 0\n }\n \n func lock(l *mutex) {\n",
+   "ms": 588,
+   "seq": 8,
+   "t": 4.311
+  },
+  {
+   "type": "thinking_started",
+   "turn": 2,
+   "seq": 9,
+   "t": 4.311
+  },
+  {
+   "type": "reasoning",
+   "turn": 2,
+   "text": "Test-only, as it says. #7 changes how findRunnable polls the network; reading it.",
+   "seq": 10,
+   "t": 6.679
+  },
+  {
+   "type": "tool_start",
+   "step": 2,
+   "name": "get_commit_diff",
+   "args": {
+    "sha": "352dd2d932"
+   },
+   "seq": 11,
+   "t": 6.679
+  },
+  {
+   "type": "tool_result",
+   "step": 2,
+   "name": "get_commit_diff",
+   "args": {
+    "sha": "352dd2d932"
+   },
+   "output": "commit 352dd2d932c1c1c6dbc3e112fcdfface07d4fffb\nAuthor: Ian Lance Taylor <iant@golang.org>\nDate:   Wed Feb 14 17:54:00 2024 -0800\n\n    runtime: only poll network from one P at a time in findRunnable\n    \n    For #65064\n    \n    Change-Id: Ifecd7e332d2cf251750752743befeda4ed396f33\n    Reviewed-on: https://go-review.googlesource.com/c/go/+/564197\n    LUCI-TryBot-Result: Go LUCI <golang-scoped@luci-project-accounts.iam.gserviceaccount.com>\n    Reviewed-by: Artur M. Wolff <artur.m.wolff@gmail.com>\n    Reviewed-by: Carlos Amedee <carlos@golang.org>\n    Reviewed-by: Mauri de Souza Meneguzzo <mauri870@gmail.com>\n    Reviewed-by: Michael Pratt <mpratt@google.com>\n---\n src/runtime/proc.go     | 8 ++++++--\n src/runtime/runtime2.go | 7 ++++---\n 2 files changed, 10 insertions(+), 5 deletions(-)\n\ndiff --git a/src/runtime/proc.go b/src/runtime/proc.go\nindex db7a5b2bb1..44c6d0b4e4 100644\n--- a/src/runtime/proc.go\n+++ b/src/runtime/proc.go\n@@ -3387,8 +3387,12 @@ top:\n \t// blocked thread (e.g. it has already returned from netpoll, but does\n \t// not set lastpoll yet), this thread will do blocking netpoll below\n \t// anyway.\n-\tif netpollinited() && netpollAnyWaiters() && sched.lastpoll.Load() != 0 {\n-\t\tif list, delta := netpoll(0); !list.empty() { // non-blocking\n+\t// We only poll from one thread at a time to avoid kernel contention\n+\t// on machines with many cores.\n+\tif netpollinited() && netpollAnyWaiters() && sched.lastpoll.Load() != 0 && sched.pollingNet.Swap(1) == 0 {\n+\t\tlist, delta := netpoll(0)\n+\t\tsched.pollingNet.Store(0)\n+\t\tif !list.empty() { // non-blocking\n \t\t\tgp := list.pop()\n \t\t\tinjectglist(&list)\n \t\t\tnetpollAdjustWaiters(delta)\ndiff --git a/src/runtime/runtime2.go b/src/runtime/runtime2.go\nindex e56b45053e..27d14b890b 100644\n--- a/src/runtime/runtime2.go\n+++ b/src/runtime/runtime2.go\n@@ -757,9 +757,10 @@ type p struct {\n }\n \n type schedt struct {\n-\tgoidgen   atomic.Uint64\n-\tlastpoll  atomic.Int64 // time of last network poll, 0 if currently polling\n-\tpollUntil atomic.Int64 // time to which current poll is sleeping\n+\tgoidgen    atomic.Uint64\n+\tlastpoll   atomic.Int64 // time of last network poll, 0 if currently polling\n+\tpollUntil  atomic.Int64 // time to which current poll is sleeping\n+\tpollingNet atomic.Int32 // 1 if some P doing non-blocking network poll\n \n \tlock mutex\n \n",
+   "ms": 661,
+   "seq": 12,
+   "t": 7.341
+  },
+  {
+   "type": "thinking_started",
+   "turn": 3,
+   "seq": 13,
+   "t": 7.341
+  },
+  {
+   "type": "reasoning",
+   "turn": 3,
+   "text": "#7 lets only one P poll the network at a time. #2 also changes the runtime, its lock implementation; checking it before deciding.",
+   "seq": 14,
+   "t": 9.928
+  },
+  {
+   "type": "tool_start",
+   "step": 3,
+   "name": "get_commit_diff",
+   "args": {
+    "sha": "7a177114df"
+   },
+   "seq": 15,
+   "t": 9.928
+  },
+  {
+   "type": "tool_result",
+   "step": 3,
+   "name": "get_commit_diff",
+   "args": {
+    "sha": "7a177114df"
+   },
+   "output": "commit 7a177114df3e26f4362378e907a869c4fbbf38b7\nAuthor: Rhys Hiltner <rhys.hiltner@gmail.com>\nDate:   Fri Mar 14 12:38:34 2025 -0700\n\n    runtime: commit to spinbitmutex GOEXPERIMENT\n    \n    Use the \"spinbit\" mutex implementation always (including on platforms\n    that need to emulate atomic.Xchg8), and delete the prior \"tristate\"\n    implementations.\n    \n    The exception is GOARCH=wasm, where the Go runtime does not use multiple\n    threads.\n    \n    For #68578\n    \n    Change-Id: Ifc29bbfa05071d776c23a19ae185891a03a82417\n    Reviewed-on: https://go-review.googlesource.com/c/go/+/658456\n    Auto-Submit: Rhys Hiltner <rhys.hiltner@gmail.com>\n    Reviewed-by: Junyang Shao <shaojunyang@google.com>\n    Reviewed-by: Michael Knyszek <mknyszek@google.com>\n    LUCI-TryBot-Result: Go LUCI <golang-scoped@luci-project-accounts.iam.gserviceaccount.com>\n---\n src/internal/buildcfg/exp.go                      |   3 -\n src/internal/goexperiment/exp_spinbitmutex_off.go |   8 --\n src/internal/goexperiment/exp_spinbitmutex_on.go  |   8 --\n src/internal/goexperiment/flags.go                |   4 -\n src/runtime/lock_futex_tristate.go                | 138 --------------------\n src/runtime/lock_sema_tristate.go                 | 148 ----------------------\n src/runtime/lock_spinbit.go                       |   2 +-\n src/runtime/runtime2.go                           |   7 +-\n 8 files changed, 4 insertions(+), 314 deletions(-)\n\ndiff --git a/src/internal/buildcfg/exp.go b/src/internal/buildcfg/exp.go\nindex ccdf465ffb..e36ec08a5b 100644\n--- a/src/internal/buildcfg/exp.go\n+++ b/src/internal/buildcfg/exp.go\n@@ -67,8 +67,6 @@ func ParseGOEXPERIMENT(goos, goarch, goexp string) (*ExperimentFlags, error) {\n \t\tregabiSupported = true\n \t}\n \n-\thaveThreads := goarch != \"wasm\"\n-\n \t// Older versions (anything before V16) of dsymutil don't handle\n \t// the .debug_rnglists section in DWARF5. See\n \t// https://github.com/golang/go/issues/26379#issuecomment-2677068742\n@@ -85,7 +83,6 @@ func ParseGOEXPERIMENT(goos, goarch, goexp string) (*ExperimentFlags, error) {\n \t\tRegabiArgs:      regabiSupported,\n \t\tAliasTypeParams: true,\n \t\tSwissMap:        true,\n-\t\tSpinbitMutex:    haveThreads,\n \t\tSyncHashTrieMap: true,\n \t\tDwarf5:          dwarf5Supported,\n \t}\ndiff --git a/src/internal/goexperiment/exp_spinbitmutex_off.go b/src/internal/goexperiment/exp_spinbitmutex_off.go\ndeleted file mode 100644\nindex 776b0dc77f..0000000000\n--- a/src/internal/goexperiment/exp_spinbitmutex_off.go\n+++ /dev/null\n@@ -1,8 +0,0 @@\n-// Code generated by mkconsts.go. DO NOT EDIT.\n-\n-//go:build !goexperiment.spinbitmutex\n-\n-package goexperiment\n-\n-const SpinbitMutex = false\n-const SpinbitMutexInt = 0\ndiff --git a/src/internal/goexperiment/exp_spinbitmutex_on.go b/src/internal/goexperiment/exp_spinbitmutex_on.go\ndeleted file mode 100644\nindex 8468030c76..0000000000\n--- a/src/internal/goexperiment/exp_spinbitmutex_on.go\n+++ /dev/null\n@@ -1,8 +0,0 @@\n-// Code generated by mkconsts.go. DO NOT EDIT.\n-\n-//go:build goexperiment.spinbitmutex\n-\n-package goexperiment\n-\n-const SpinbitMutex = true\n-const SpinbitMutexInt = 1\ndiff --git a/src/internal/goexperiment/flags.go b/src/internal/goexperiment/flags.go\nindex 271fdc2b3c..0961764bee 100644\n--- a/src/internal/goexperiment/flags.go\n+++ b/src/internal/goexperiment/flags.go\n@@ -115,10 +115,6 @@ type Flags struct {\n \t// SwissMap enables the SwissTable-based map implementation.\n \tSwissMap bool\n \n-\t// SpinbitMutex enables the new \"spinbit\" mutex implementation on supported\n-\t// platforms. See https://go.dev/issue/68578.\n-\tSpinbitMutex bool\n-\n \t// SyncHashTrieMap enables the HashTrieMap sync.Map implementation.\n \tSyncHashTrieMap bool\n \ndiff --git a/src/runtime/lock_futex_tristate.go b/src/runtime/lock_futex_tristate.go\ndeleted file mode 100644\nindex b7df18c86c..0000000000\n--- a/src/runtime/lock_futex_tristate.go\n+++ /dev/null\n@@ -1,138 +0,0 @@\n-// Copyright 2011 The Go Authors. All rights reserved.\n-// Use of this source code is governed by a BSD-style\n-// license that can be found in the LICENSE file.\n-\n-//go:build (dragonfly || freebsd || linux) && !goexperiment.spinbitmutex\n-\n-package runtime\n-\n-import (\n-\t\"internal/runtime/atomic\"\n-)\n-\n-// This implementation depends on OS-specific implementations of\n-//\n-//\tfutexsleep(addr *uint32, val uint32, ns int64)\n-//\t\tAtomically,\n-//\t\t\tif *addr == val { sleep }\n-//\t\tMight be woken up spuriously; that's allowed.\n-//\t\tDon't sleep longer than ns; ns < 0 means forever.\n-//\n-//\tfutexwakeup(addr *uint32, cnt uint32)\n-//\t\tIf any procs are sleeping on addr, wake up at most cnt.\n-\n-const (\n-\tmutex_unlocked = 0\n-\tmutex_locked   = 1\n-\tmutex_sleeping = 2\n-\n-\tactive_spin     = 4\n-\tactive_spin_cnt = 30\n-\tpassive_spin    = 1\n-)\n-\n-// Possible lock states are mutex_unlocked, mutex_locked and mutex_sleeping.\n-// mutex_sleeping means that there is presumably at least one sleeping thread.\n-// Note that there can be spinning threads during all states - they do not\n-// affect mutex's state.\n-\n-type mWaitList struct{}\n-\n-func lockVerifyMSize() {}\n-\n-func mutexContended(l *mutex) bool {\n-\treturn atomic.Load(key32(&l.key)) > mutex_locked\n-}\n-\n-func lock(l *mutex) {\n-\tlockWithRank(l, getLockRank(l))\n-}\n-\n-func lock2(l *mutex) {\n-\tgp := getg()\n-\n-\tif gp.m.locks < 0 {\n-\t\tthrow(\"runtime\u00b7lock: lock count\")\n-\t}\n-\tgp.m.locks++\n-\n-\t// Speculative grab for lock.\n-\tv := atomic.Xchg(key32(&l.key), mutex_locked)\n-\tif v == mutex_unlocked {\n-\t\treturn\n-\t}\n-\n-\t// wait is either MUTEX_LOCKED or MUTEX_SLEEPING\n-\t// depending on whether there is a thread sleeping\n-\t// on this mutex. If we ever change l->key from\n-\t// MUTEX_SLEEPING to some other value, we must be\n-\t// careful to change it back to MUTEX_SLEEPING before\n-\t// returning, to ensure that the sleeping thread gets\n-\t// its wakeup call.\n-\twait := v\n-\n-\ttimer := &lockTimer{lock: l}\n-\ttimer.begin()\n-\t// On uniprocessors, no point spinning.\n-\t// On multiprocessors, spin for ACTIVE_SPIN attempts.\n-\tspin := 0\n-\tif ncpu > 1 {\n-\t\tspin = active_spin\n-\t}\n-\tfor {\n-\t\t// Try for loc",
+   "ms": 616,
+   "seq": 16,
+   "t": 10.545
+  },
+  {
+   "type": "thinking_started",
+   "turn": 4,
+   "seq": 17,
+   "t": 10.545
+  },
+  {
+   "type": "verdict",
+   "diagnosis": {
+    "root_cause": "352dd2d932 lets only one P poll the network at a time in findRunnable. On a many-core, network-heavy server like CockroachDB, other Ps can no longer pick up ready network work themselves, which fits a benchmark that suddenly fails.",
+    "offending_sha": "352dd2d932c1c1c6dbc3e112fcdfface07d4fffb",
+    "confidence": 0.72,
+    "reasoning": "The workload points at the scheduler's network path, and this is the only suspect that changes it. The runtime lock change is possible, but it would show up across benchmarks rather than in one network-bound one, so I'm less sure than usual and say so.",
+    "evidence": [
+     "352dd2d932 adds sched.pollingNet so only one P does non-blocking netpoll",
+     "CockroachDB is network-bound and runs on many cores",
+     "7ce45a014c only changes a test helper"
+    ],
+    "ruled_out": [
+     "7ce45a014c: affects runtime tests only",
+     "7a177114df: lock implementation change; would not single out one network-bound benchmark"
+    ],
+    "runbook_ids": [],
+    "remediation": [
+     "Revert 352dd2d932",
+     "Benchmark netpoll contention on many-core machines before re-landing"
+    ],
+    "rollback_command": "git revert --no-edit 352dd2d932",
+    "needs_human": false,
+    "source": "agent"
+   },
+   "seq": 18,
+   "t": 12.546
+  },
+  {
+   "type": "done",
+   "model": "claude-sonnet-5 (SCRIPTED STAND-IN)",
+   "duration_s": 12.5,
+   "tool_calls": 4,
+   "usage": null,
+   "cost_usd": null,
+   "source": "agent",
+   "slack": [
+    {
+     "type": "header",
+     "text": {
+      "type": "plain_text",
+      "text": ":warning: INC-20250422-74b0c5 \u00b7 go"
+     }
+    },
+    {
+     "type": "section",
+     "text": {
+      "type": "mrkdwn",
+      "text": "*cockroachdb benchmark failing. Likely due to .*\ncockroachdb benchmark failing. Likely due to ."
+     }
+    },
+    {
+     "type": "section",
+     "fields": [
+      {
+       "type": "mrkdwn",
+       "text": "*Severity*\nSEV2"
+      },
+      {
+       "type": "mrkdwn",
+       "text": "*Started*\n<!date^1745358592^{time_secs}|2025-04-22T21:49:52+00:00>"
+      },
+      {
+       "type": "mrkdwn",
+       "text": "*Users affected*\n~0 (0\u20130)"
+      },
+      {
+       "type": "mrkdwn",
+       "text": "*Error budget*\n166.67% of 30-day budget"
+      }
+     ]
+    },
+    {
+     "type": "divider"
+    },
+    {
+     "type": "section",
+     "text": {
+      "type": "mrkdwn",
+      "text": "*Suspected root cause* \u2014 confidence \u25b0\u25b0\u25b0\u25b0\u25b1 72%\n352dd2d932 lets only one P poll the network at a time in findRunnable. On a many-core, network-heavy server like CockroachDB, other Ps can no longer pick up ready network work themselves, which fits a benchmark that suddenly fails.\n\n*Offending commit:* `352dd2d932`\nThe workload points at the scheduler's network path, and this is the only suspect that changes it. The runtime lock change is possible, but it would show up across benchmarks rather than in one network-bound one, so I'm less sure than usual and say so."
+     }
+    },
+    {
+     "type": "section",
+     "text": {
+      "type": "mrkdwn",
+      "text": "*Evidence*\n\u2022 352dd2d932 adds sched.pollingNet so only one P does non-blocking netpoll\n\u2022 CockroachDB is network-bound and runs on many cores\n\u2022 7ce45a014c only changes a test helper"
+     }
+    },
+    {
+     "type": "section",
+     "text": {
+      "type": "mrkdwn",
+      "text": "*Recommended actions*\n1. Revert 352dd2d932\n2. Benchmark netpoll contention on many-core machines before re-landing"
+     }
+    },
+    {
+     "type": "section",
+     "text": {
+      "type": "mrkdwn",
+      "text": "*Rollback*\n```git revert --no-edit 352dd2d932```"
+     }
+    },
+    {
+     "type": "context",
+     "elements": [
+      {
+       "type": "mrkdwn",
+       "text": "4 tool calls \u00b7 12.5s to diagnosis \u00b7 12 commits correlated \u00b7 source: scripted stand-in"
+      }
+     ]
+    }
+   ],
+   "report_md": "# INC-20250422-74b0c5 \u2014 go: cockroachdb benchmark failing. Likely due to .\n\n**SEV2** \u00b7 **DIAGNOSED** \u00b7 fired 2025-04-22T21:49:52+00:00 \u00b7 diagnosed in 12.5s (4 tool calls)\n\n## Summary\n\n352dd2d932 lets only one P poll the network at a time in findRunnable. On a many-core, network-heavy server like CockroachDB, other Ps can no longer pick up ready network work themselves, which fits a benchmark that suddenly fails.\n\n**Offending commit:** `352dd2d932` \u00b7 **Confidence:** 72% (medium)\n\n## Impact\n\n| Metric | Value |\n| --- | --- |\n| Users affected | ~0 (0\u20130) |\n| Failed requests | 432,000 |\n| Duration | 720 min |\n| Error budget burned | 166.67% of the 30-day budget |\n| Blast radius | go |\n| Estimate confidence | low |\n\n_Method: no error-rate metric on the alert; assumed 10% from sev2; 100 rps x 720m sustained; reach 0 distinct users over that window (saturating toward 0/day, which is the hard ceiling); P(user hit) = 1-(1-delta)^20.0 = 87.8%; dependents contribute only their non-overlapping users, capped at 0_\n\n## Root-cause analysis\n\nThe workload points at the scheduler's network path, and this is the only suspect that changes it. The runtime lock change is possible, but it would show up across benchmarks rather than in one network-bound one, so I'm less sure than usual and say so.\n\n### Evidence\n\n- 352dd2d932 adds sched.pollingNet so only one P does non-blocking netpoll\n- CockroachDB is network-bound and runs on many cores\n- 7ce45a014c only changes a test helper\n\n### Candidates ruled out\n\n- 7ce45a014c: affects runtime tests only\n- 7a177114df: lock implementation change; would not single out one network-bound benchmark\n\n## Correlated commits\n\n| # | Commit | Authored | Author | Score | Subject |\n| --- | --- | --- | --- | --- | --- |\n| 1 | `7ce45a014c` | 2025-04-08 11:34 | Rhys Hiltner | 0.343 | runtime: fix test of when a mutex is contended |\n| 2 | `7a177114df` | 2025-03-14 12:38 | Rhys Hiltner | 0.3067 | runtime: commit to spinbitmutex GOEXPERIMENT |\n| 3 | `8a85a2e70a` | 2025-04-07 15:21 | Mateusz Poliwczak | 0.2918 | runtime, internal/runtime/maps: speed-up empty/zero map lookups |\n| 4 | `83b53527fa` | 2025-04-17 14:51 | 1911860538 | 0.2628 | net/http: replace map lookup with switch for scheme port |\n| 5 | `7d0cb2a2ad` | 2025-04-21 12:44 | Keith Randall | 0.2047 | cmd/compile: constant fold 128-bit multiplies |\n| 6 | `95611c0eb4` | 2025-04-20 07:52 | Prabhav Dogra | 0.1504 | sync: use atomic.Bool for Once.done |\n| 7 | `352dd2d932` \u2b05\ufe0e | 2024-02-14 17:54 | Ian Lance Taylor | 0.0846 | runtime: only poll network from one P at a time in findRunnable |\n| 8 | `8af32240c6` | 2025-03-19 10:17 | Keith Randall | 0.047 | cmd/compile: don't evaluate side effects of range over array |\n| 9 | `336626bac4` | 2025-03-14 13:36 | Keith Randall | 0.0399 | cmd/compile: ensure we evaluate side effects of len() arg |\n| 10 | `04a9b16f3d` | 2025-03-12 14:45 | thepudds | 0.0323 | cmd/compile/internal/escape: avoid reading ir.Node during inner loop o |\n\n## Remediation\n\n1. Revert 352dd2d932\n2. Benchmark netpoll contention on many-core machines before re-landing\n\n```bash\ngit revert --no-edit 352dd2d932\n```\n\n## Investigation trace\n\n| Step | Tool | Arguments | Result |\n| --- | --- | --- | --- |\n| 1 | `get_commit_diff` (588ms) | `{\"sha\": \"7ce45a014c\"}` | commit 7ce45a014c52375d6a3da577828c9f035a72857a Author: Rhys Hiltner <rhys.hiltn |\n| 2 | `get_commit_diff` (661ms) | `{\"sha\": \"352dd2d932\"}` | commit 352dd2d932c1c1c6dbc3e112fcdfface07d4fffb Author: Ian Lance Taylor <iant@g |\n| 3 | `get_commit_diff` (616ms) | `{\"sha\": \"7a177114df\"}` | commit 7a177114df3e26f4362378e907a869c4fbbf38b7 Author: Rhys Hiltner <rhys.hiltn |\n| 4 | `submit_diagnosis` (0ms) | `{\"offending_sha\": \"352dd2d932c1c1c6dbc3e112fcdfface07d4fffb\", \"runbook_ids\": [],` | verdict recorded |\n\n## Cost\n\ncache creation input tokens: 0 \u00b7 cache read input tokens: 0 \u00b7 input tokens: 0 \u00b7 output tokens: 0 \u00b7 requests: 4 \u00b7 uncached followups: 3\n\n---\n\n_Generated by IncidentPilot \u00b7 diagnosis source: agent_",
+   "seq": 19,
+   "t": 12.546
+  }
+ ]
+}

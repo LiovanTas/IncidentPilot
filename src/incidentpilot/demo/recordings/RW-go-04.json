@@ -1,0 +1,691 @@
+{
+ "schema": 1,
+ "scenario": "RW-go-04",
+ "recorded_at": "2026-11-24T12:00:00+00:00",
+ "model": "claude-sonnet-5 (SCRIPTED STAND-IN)",
+ "stand_in": true,
+ "events": [
+  {
+   "type": "start",
+   "mode": "live",
+   "speed": 1.0,
+   "scenario": {
+    "id": "RW-go-04",
+    "title": "Toolchain bootstrap panics",
+    "hook": "Go's toolchain bootstrap broke. The report carries the compiler's own panic message.",
+    "suite": "realworld",
+    "source": "reverted upstream in go",
+    "repo": "go",
+    "alert": {
+     "fingerprint": "go-5bb4f49471",
+     "source": "generic",
+     "service": "go",
+     "severity": "sev2",
+     "title": "This breaks toolchain bootstrapping in Google. Root cause investigation is pending.",
+     "description": "This breaks toolchain bootstrapping in Google. Root cause investigation is pending.\nError message is\n```\n<unknown line number>: internal compiler error: panic: godebug: Value of name not listed in godebugs.All: gotypesalias\n```",
+     "started_at": "2024-04-17T13:04:17Z",
+     "labels": {
+      "repo": "go"
+     },
+     "metrics": {}
+    },
+    "answer_subject": "go/types, types2: track gotypesalias non-default behavior"
+   },
+   "seq": 0,
+   "t": 0.0
+  },
+  {
+   "type": "alert",
+   "incident_id": "INC-20240417-a5829b",
+   "alert": {
+    "fingerprint": "go-5bb4f49471",
+    "source": "generic",
+    "service": "go",
+    "severity": "sev2",
+    "title": "This breaks toolchain bootstrapping in Google. Root cause investigation is pending.",
+    "description": "This breaks toolchain bootstrapping in Google. Root cause investigation is pending.\nError message is\n```\n<unknown line number>: internal compiler error: panic: godebug: Value of name not listed in godebugs.All: gotypesalias\n```",
+    "started_at": "2024-04-17T13:04:17Z",
+    "labels": {
+     "repo": "go"
+    },
+    "metrics": {},
+    "runbook_hints": []
+   },
+   "seq": 1,
+   "t": 0.0
+  },
+  {
+   "type": "candidates",
+   "lookback_hours": 72.0,
+   "candidates": [
+    {
+     "sha": "ca94e9e223888d6d99a8f7b559f08bb59d2cc5fd",
+     "author": "Alan Donovan",
+     "authored_at": "2024-04-12T20:08:22Z",
+     "subject": "os: make File.Readdir et al concurrency-safe",
+     "body": "Before, all methods of File (including Close) were",
+     "files": [
+      "src/os/dir_darwin.go",
+      "src/os/dir_plan9.go",
+      "src/os/dir_unix.go",
+      "src/os/dir_windows.go",
+      "src/os/file.go",
+      "src/os/file_plan9.go",
+      "src/os/file_unix.go",
+      "src/os/file_windows.go",
+      "src/os/types.go"
+     ],
+     "insertions": 82,
+     "deletions": 45,
+     "services": [],
+     "score": 0.156,
+     "signals": {
+      "recency": 0.0066,
+      "ownership": 0.0,
+      "keyword": 0.0833,
+      "risk": 0.9104
+     },
+     "rationale": [
+      "landed 40.2h before onset",
+      "alert terms present in commit: all",
+      "risk class: concurrency"
+     ],
+     "landed_at": "2024-04-15T20:52:06Z",
+     "short_sha": "ca94e9e223",
+     "churn": 127
+    },
+    {
+     "sha": "15cec430d75741960829e7e227c1b7c3e1f79114",
+     "author": "Robert Griesemer",
+     "authored_at": "2024-04-15T21:10:40Z",
+     "subject": "types2: flip the default value of GODEBUG=gotypesalias=1",
+     "body": "This CL changes the interpretation of the unset value",
+     "files": [
+      "src/cmd/compile/internal/noder/irgen.go",
+      "src/cmd/compile/internal/types2/check.go",
+      "src/cmd/compile/internal/types2/check_test.go",
+      "src/cmd/compile/internal/types2/decl.go",
+      "src/cmd/compile/internal/types2/named_test.go",
+      "src/go/types/api_test.go",
+      "src/go/types/check.go",
+      "src/go/types/check_test.go",
+      "src/go/types/issues_test.go"
+     ],
+     "insertions": 31,
+     "deletions": 16,
+     "services": [],
+     "score": 0.1534,
+     "signals": {
+      "recency": 0.1361,
+      "ownership": 0.0,
+      "keyword": 0.4167,
+      "risk": 0.1672
+     },
+     "rationale": [
+      "landed 16.0h before onset",
+      "alert terms present in commit: godebug, gotypesalias, internal, name, value"
+     ],
+     "landed_at": "2024-04-16T21:06:56Z",
+     "short_sha": "15cec430d7",
+     "churn": 47
+    },
+    {
+     "sha": "c51f6c62576ab3088a981b9cef90e413ac99e333",
+     "author": "Robert Griesemer",
+     "authored_at": "2024-03-18T22:14:54Z",
+     "subject": "go/types, types2: track gotypesalias non-default behavior",
+     "body": "Fixes #66216.",
+     "files": [
+      "src/cmd/compile/internal/types2/check.go",
+      "src/cmd/compile/internal/types2/check_test.go",
+      "src/cmd/compile/internal/types2/decl.go",
+      "src/go/types/check.go",
+      "src/go/types/check_test.go",
+      "src/go/types/decl.go",
+      "src/internal/godebugs/table.go",
+      "src/runtime/metrics/doc.go"
+     ],
+     "insertions": 40,
+     "deletions": 4,
+     "services": [],
+     "score": 0.1443,
+     "signals": {
+      "recency": 0.1655,
+      "ownership": 0.0,
+      "keyword": 0.3333,
+      "risk": 0.1643
+     },
+     "rationale": [
+      "landed 14.4h before onset",
+      "alert terms present in commit: godebug, godebugs, gotypesalias, internal"
+     ],
+     "landed_at": "2024-04-16T22:41:00Z",
+     "short_sha": "c51f6c6257",
+     "churn": 44
+    },
+    {
+     "sha": "55e4097cbaf67307eeb981150da774329a03b88d",
+     "author": "Carlos Amedee",
+     "authored_at": "2024-04-03T15:58:54Z",
+     "subject": "internal/goexperiment: remove the ExecTracer2 experiment",
+     "body": "This change removes the ExecTracer2 experiment flag. This flag was",
+     "files": [
+      "src/internal/buildcfg/exp.go",
+      "src/internal/goexperiment/exp_exectracer2_off.go",
+      "src/internal/goexperiment/exp_exectracer2_on.go",
+      "src/internal/goexperiment/flags.go"
+     ],
+     "insertions": 0,
+     "deletions": 21,
+     "services": [],
+     "score": 0.1436,
+     "signals": {
+      "recency": 0.0043,
+      "ownership": 0.0,
+      "keyword": 0.0833,
+      "risk": 0.8322
+     },
+     "rationale": [
+      "landed 43.6h before onset",
+      "alert terms present in commit: internal",
+      "risk class: config"
+     ],
+     "landed_at": "2024-04-15T17:26:50Z",
+     "short_sha": "55e4097cba",
+     "churn": 21
+    },
+    {
+     "sha": "661f98141ac8b919802343467c05ea74abf8fae1",
+     "author": "Alan Donovan",
+     "authored_at": "2024-04-16T20:01:50Z",
+     "subject": "go/internal/gcimporter: suppress 3 test cases when gotypesalias=1",
+     "body": "CL 577715 caused these test cases to fail, but this was not",
+     "files": [
+      "src/go/internal/gcimporter/gcimporter_test.go"
+     ],
+     "insertions": 11,
+     "deletions": 0,
+     "services": [],
+     "score": 0.1232,
+     "signals": {
+      "recency": 0.1254,
+      "ownership": 0.0,
+      "keyword": 0.3333,
+      "risk": 0.1041
+     },
+     "rationale": [
+      "landed 16.6h before onset",
+      "alert terms present in commit: cause, gotypesalias, internal, not"
+     ],
+     "landed_at": "2024-04-16T20:27:33Z",
+     "short_sha": "661f98141a",
+     "churn": 11
+    },
+    {
+     "sha": "cf760ce29ce96be610d79a639eb930e85f78a149",
+     "author": "Alan Donovan",
+     "authored_at": "2024-04-09T19:20:21Z",
+     "subject": "go/types: flip the default value of GODEBUG=gotypesalias=1",
+     "body": "This CL changes the interpretation of the unset value",
+     "files": [
+      "src/go/internal/gcimporter/ureader.go",
+      "src/go/types/api_test.go",
+      "src/go/types/check.go",
+      "src/go/types/check_test.go",
+      "src/go/types/decl.go",
+      "src/go/types/eval_test.go",
+      "src/go/types/issues_test.go",
+      "src/internal/godebugs/table.go"
+     ],
+     "insertions": 21,
+     "deletions": 21,
+     "services": [],
+     "score": 0.1136,
+     "signals": {
+      "recency": 0.0058,
+      "ownership": 0.0,
+      "keyword": 0.4167,
+      "risk": 0.1623
+     },
+     "rationale": [
+      "landed 41.1h before onset",
+      "alert terms present in commit: godebug, godebugs, gotypesalias, internal, value"
+     ],
+     "landed_at": "2024-04-15T19:56:15Z",
+     "short_sha": "cf760ce29c",
+     "churn": 42
+    },
+    {
+     "sha": "2c5849dc40152cef6b7c3465ba0a1d6eb8f3c985",
+     "author": "Carlos Amedee",
+     "authored_at": "2024-04-02T22:16:07Z",
+     "subject": "runtime, cmd/trace: remove code paths that include v1 tracer",
+     "body": "This change makes the new execution tracer described in #60773, the",
+     "files": [
+      "src/cmd/trace/annotations_test.go",
+      "src/cmd/trace/trace_test.go",
+      "src/cmd/trace/trace_unix_test.go",
+      "src/cmd/trace/v2/testdata/mktests.go",
+      "src/internal/trace/v2/testdata/mktests.go",
+      "src/internal/trace/v2/trace_test.go",
+      "src/runtime/crash_cgo_test.go",
+      "src/runtime/crash_test.go",
+      "src/runtime/mgcmark.go",
+      "src/runtime/proc.go",
+      "src/runtime/sizeof_test.go",
+      "src/runtime/trace.go",
+      "src/runtime/trace/annotation_test.go",
+      "src/runtime/trace/trace_stack_test.go",
+      "src/runtime/trace/trace_test.go",
+      "src/runtime/trace2.go",
+      "src/runtime/trace2buf.go",
+      "src/runtime/trace2cpu.go",
+      "src/runtime/trace2event.go",
+      "src/runtime/trace2map.go",
+      "src/runtime/trace2region.go",
+      "src/runtime/trace2runtime.go",
+      "src/runtime/trace2stack.go",
+      "src/runtime/trace2status.go",
+      "src/runtime/trace2string.go",
+      "src/runtime/trace2time.go",
+      "src/runtime/trace_cgo_test.go"
+     ],
+     "insertions": 68,
+     "deletions": 3974,
+     "services": [],
+     "score": 0.0887,
+     "signals": {
+      "recency": 0.0039,
+      "ownership": 0.0,
+      "keyword": 0.1667,
+      "risk": 0.35
+     },
+     "rationale": [
+      "landed 44.3h before onset",
+      "alert terms present in commit: internal, not",
+      "large diff (4042 lines)"
+     ],
+     "landed_at": "2024-04-15T16:44:47Z",
+     "short_sha": "2c5849dc40",
+     "churn": 4042
+    },
+    {
+     "sha": "91c04826723a10f6778a935e743a34de81312489",
+     "author": "Andy Pan",
+     "authored_at": "2024-04-08T03:51:45Z",
+     "subject": "net: implement TCP_KEEPIDLE, TCP_KEEPINTVL, and TCP_KEEPCNT on Solaris 11.4",
+     "body": "Also simulate TCP_KEEPIDLE, TCP_KEEPINTVL, and TCP_KEEPCNT with",
+     "files": [
+      "src/internal/syscall/unix/kernel_version_solaris.go",
+      "src/net/tcpconn_keepalive_conf_solaris_test.go",
+      "src/net/tcpconn_keepalive_conf_unix_test.go",
+      "src/net/tcpconn_keepalive_solaris_test.go",
+      "src/net/tcpconn_keepalive_test.go",
+      "src/net/tcpsock.go",
+      "src/net/tcpsock_solaris.go",
+      "src/net/tcpsock_unix.go",
+      "src/net/tcpsockopt_solaris.go"
+     ],
+     "insertions": 384,
+     "deletions": 80,
+     "services": [],
+     "score": 0.0752,
+     "signals": {
+      "recency": 0.0007,
+      "ownership": 0.0,
+      "keyword": 0.1667,
+      "risk": 0.2667
+     },
+     "rationale": [
+      "landed 57.9h before onset",
+      "alert terms present in commit: all, internal",
+      "large diff (464 lines)"
+     ],
+     "landed_at": "2024-04-15T03:10:07Z",
+     "short_sha": "91c0482672",
+     "churn": 464
+    },
+    {
+     "sha": "37f482223f331c4400797f72158fcf1eaa1793c4",
+     "author": "Andy Pan",
+     "authored_at": "2024-04-04T08:30:30Z",
+     "subject": "net: separate the Solaris fast/slow path of setting SOCK_* from others",
+     "body": "Along with the removal of the slow path from Linux and *BSD.",
+     "files": [
+      "src/internal/poll/sock_cloexec.go",
+      "src/internal/poll/sock_cloexec_solaris.go",
+      "src/internal/syscall/unix/asm_solaris.s",
+      "src/internal/syscall/unix/at_solaris.go",
+      "src/internal/syscall/unix/kernel_version_other.go",
+      "src/internal/syscall/unix/kernel_version_solaris.go",
+      "src/internal/syscall/unix/kernel_version_solaris_test.go",
+      "src/net/sock_cloexec.go",
+      "src/net/sock_cloexec_solaris.go"
+     ],
+     "insertions": 263,
+     "deletions": 54,
+     "services": [],
+     "score": 0.0726,
+     "signals": {
+      "recency": 0.0002,
+      "ownership": 0.0,
+      "keyword": 0.1667,
+      "risk": 0.2501
+     },
+     "rationale": [
+      "landed 66.8h before onset",
+      "alert terms present in commit: all, internal",
+      "large diff (317 lines)"
+     ],
+     "landed_at": "2024-04-14T18:17:25Z",
+     "short_sha": "37f482223f",
+     "churn": 317
+    },
+    {
+     "sha": "7a0e2db135daef2c0aeb98d5e3019807a71a7b4d",
+     "author": "apocelipes",
+     "authored_at": "2024-04-16T07:42:26Z",
+     "subject": "cmd,crypto/elliptic: fix typos in comments",
+     "body": "Replace these incorrect fullwidth brackets with halfwidth brackets.",
+     "files": [
+      "src/cmd/internal/obj/mips/asm0.go",
+      "src/cmd/internal/obj/s390x/asmz.go",
+      "src/crypto/elliptic/params.go"
+     ],
+     "insertions": 3,
+     "deletions": 3,
+     "services": [],
+     "score": 0.056,
+     "signals": {
+      "recency": 0.0896,
+      "ownership": 0.0,
+      "keyword": 0.0833,
+      "risk": 0.0778
+     },
+     "rationale": [
+      "landed 19.3h before onset",
+      "alert terms present in commit: internal"
+     ],
+     "landed_at": "2024-04-16T17:46:09Z",
+     "short_sha": "7a0e2db135",
+     "churn": 6
+    },
+    {
+     "sha": "f7f56ded0179cd27f21afdd09014a51795db6419",
+     "author": "Guoqi Chen",
+     "authored_at": "2023-08-15T18:09:49Z",
+     "subject": "cmd/internal/obj/loong64: recheck jump offset boundary after auto-aligning loop heads",
+     "body": "After the alignment of the loop header is performed, the offset of the checked",
+     "files": [
+      "src/cmd/internal/obj/loong64/asm.go",
+      "src/cmd/internal/obj/loong64/asm_test.go"
+     ],
+     "insertions": 112,
+     "deletions": 14,
+     "services": [],
+     "score": 0.0503,
+     "signals": {
+      "recency": 0.0044,
+      "ownership": 0.0,
+      "keyword": 0.0833,
+      "risk": 0.21
+     },
+     "rationale": [
+      "landed 43.4h before onset",
+      "alert terms present in commit: internal"
+     ],
+     "landed_at": "2024-04-15T17:39:37Z",
+     "short_sha": "f7f56ded01",
+     "churn": 126
+    },
+    {
+     "sha": "b1ae67501af6385856fe2d8812c030f34c69e55c",
+     "author": "Ian Lance Taylor",
+     "authored_at": "2024-02-05T22:56:54Z",
+     "subject": "doc: fix tense in godebug (s/revert/reverted)",
+     "body": "Change-Id: Ida6ed22102a6da36739c7581aeab297fdd7bc9f8",
+     "files": [
+      "doc/godebug.md"
+     ],
+     "insertions": 1,
+     "deletions": 1,
+     "services": [],
+     "score": 0.048,
+     "signals": {
+      "recency": 0.0866,
+      "ownership": 0.0,
+      "keyword": 0.0833,
+      "risk": 0.0301
+     },
+     "rationale": [
+      "landed 19.6h before onset",
+      "alert terms present in commit: godebug"
+     ],
+     "landed_at": "2024-04-16T17:29:58Z",
+     "short_sha": "b1ae67501a",
+     "churn": 2
+    }
+   ],
+   "ranker_pick": "ca94e9e223888d6d99a8f7b559f08bb59d2cc5fd",
+   "seq": 2,
+   "t": 0.748
+  },
+  {
+   "type": "runbooks",
+   "runbooks": [],
+   "seq": 3,
+   "t": 0.748
+  },
+  {
+   "type": "impact",
+   "impact": {
+    "affected_users_low": 0,
+    "affected_users_point": 0,
+    "affected_users_high": 0,
+    "failed_requests": 432000,
+    "duration_minutes": 720.0,
+    "error_budget_burn_pct": 166.67,
+    "blast_radius": [
+     "go"
+    ],
+    "method": "no error-rate metric on the alert; assumed 10% from sev2; 100 rps x 720m sustained; reach 0 distinct users over that window (saturating toward 0/day, which is the hard ceiling); P(user hit) = 1-(1-delta)^20.0 = 87.8%; dependents contribute only their non-overlapping users, capped at 0",
+    "confidence": "low"
+   },
+   "seq": 4,
+   "t": 0.748
+  },
+  {
+   "type": "thinking_started",
+   "turn": 1,
+   "seq": 5,
+   "t": 0.748
+  },
+  {
+   "type": "reasoning",
+   "turn": 1,
+   "text": "The panic says gotypesalias is not listed in godebugs.All. So something now reports the gotypesalias setting, and the compiler's table doesn't know it. That rules out the top pick, an os change. #2, #3 and #6 all touch gotypesalias; reading #2 first.",
+   "seq": 6,
+   "t": 3.891
+  },
+  {
+   "type": "tool_start",
+   "step": 1,
+   "name": "get_commit_diff",
+   "args": {
+    "sha": "15cec430d7"
+   },
+   "seq": 7,
+   "t": 3.891
+  },
+  {
+   "type": "tool_result",
+   "step": 1,
+   "name": "get_commit_diff",
+   "args": {
+    "sha": "15cec430d7"
+   },
+   "output": "commit 15cec430d75741960829e7e227c1b7c3e1f79114\nAuthor: Robert Griesemer <gri@golang.org>\nDate:   Mon Apr 15 14:10:40 2024 -0700\n\n    types2: flip the default value of GODEBUG=gotypesalias=1\n    \n    This CL changes the interpretation of the unset value\n    of gotypesalias to not equal \"0\".\n    \n    This is a port of CL 577715 from go/types to types2,\n    with adjustments to go/types to keep the source code\n    in sync. Specifically:\n    \n    - Re-introduce testing of both modes (gotypesalias=0,\n      gotypesalias=1) in go/types.\n    - Re-introduce setting of gotypesalias in some of the\n      tests for explicit documentation in go/types.\n    \n    The compiler still uses the (now) non-default setting\n    due to a panic with the default setting that needs to\n    be debugged.\n    \n    Also, the type checkers still don't call IncNonDefault\n    when the non-default setting of gotypesalias is used.\n    \n    Change-Id: I1feed3eb334c202950ac5aadf49a74adcce0d8c3\n    Reviewed-on: https://go-review.googlesource.com/c/go/+/579076\n    TryBot-Bypass: Robert Griesemer <gri@google.com>\n    Reviewed-by: Robert Griesemer <gri@google.com>\n    Reviewed-by: Alan Donovan <adonovan@google.com>\n    Reviewed-by: Robert Findley <rfindley@google.com>\n    Auto-Submit: Robert Griesemer <gri@google.com>\n---\n src/cmd/compile/internal/noder/irgen.go       |  5 +++++\n src/cmd/compile/internal/types2/check.go      |  7 +++++--\n src/cmd/compile/internal/types2/check_test.go |  4 ++--\n src/cmd/compile/internal/types2/decl.go       |  2 +-\n src/cmd/compile/internal/types2/named_test.go |  2 +-\n src/go/types/api_test.go                      |  1 +\n src/go/types/check.go                         | 13 ++++---------\n src/go/types/check_test.go                    | 11 +++++++++++\n src/go/types/issues_test.go                   |  2 +-\n 9 files changed, 31 insertions(+), 16 deletions(-)\n\ndiff --git a/src/cmd/compile/internal/noder/irgen.go b/src/cmd/compile/internal/noder/irgen.go\nindex e0b7bb946d..c159e4823e 100644\n--- a/src/cmd/compile/internal/noder/irgen.go\n+++ b/src/cmd/compile/internal/noder/irgen.go\n@@ -8,6 +8,7 @@ import (\n \t\"fmt\"\n \t\"internal/buildcfg\"\n \t\"internal/types/errors\"\n+\t\"os\"\n \t\"regexp\"\n \t\"sort\"\n \n@@ -85,6 +86,10 @@ func checkFiles(m posMap, noders []*noder) (*types2.Package, *types2.Info) {\n \t\tbase.ErrorfAt(m.makeXPos(terr.Pos), terr.Code, \"%s\", msg)\n \t}\n \n+\t// Currently, the compiler panics when using Alias types.\n+\t// Use the non-default setting for now.\n+\t// TODO(gri) set this to gotypesalias=1 or remove this call.\n+\tos.Setenv(\"GODEBUG\", \"gotypesalias=0\")\n \tpkg, err := conf.Check(base.Ctxt.Pkgpath, files, info)\n \tbase.ExitIfErrors()\n \tif err != nil {\ndiff --git a/src/cmd/compile/internal/types2/check.go b/src/cmd/compile/internal/types2/check.go\nindex b59e471e15..cc723f2012 100644\n--- a/src/cmd/compile/internal/types2/check.go\n+++ b/src/cmd/compile/internal/types2/check.go\n@@ -21,7 +21,10 @@ var nopos syntax.Pos\n const debug = false // leave on during development\n \n // gotypesalias controls the use of Alias types.\n-var gotypesalias = godebug.New(\"#gotypesalias\")\n+// As of Apr 16 2024 they are used by default.\n+// To disable their use, set GODEBUG to gotypesalias=0.\n+// This GODEBUG flag will be removed in the near future (tentatively Go 1.24).\n+var gotypesalias = godebug.New(\"gotypesalias\")\n \n // exprInfo stores information about an untyped expression.\n type exprInfo struct {\n@@ -255,7 +258,7 @@ func NewChecker(conf *Config, pkg *Package, info *Info) *Checker {\n \t// (previously, pkg.goVersion was mutated here: go.dev/issue/61212)\n \n \treturn &Checker{\n-\t\tenableAlias: gotypesalias.Value() == \"1\",\n+\t\tenableAlias: gotypesalias.Value() != \"0\",\n \t\tconf:        conf,\n \t\tctxt:        conf.Context,\n \t\tpkg:         pkg,\ndiff --git a/src/cmd/compile/internal/types2/check_test.go b/src/cmd/compile/internal/types2/check_test.go\nindex 8b309898d2..066218772e 100644\n--- a/src/cmd/compile/internal/types2/check_test.go\n+++ b/src/cmd/compile/internal/types2/check_test.go\n@@ -122,10 +122,10 @@ func parseFlags(src []byte, flags *flag.FlagSet) error {\n //\n // If provided, opts may be used to mutate the Config before type-checking.\n func testFiles(t *testing.T, filenames []string, srcs [][]byte, colDelta uint, manual bool, opts ...func(*Config)) {\n-\t// Alias types are disabled by default\n+\t// Alias types are enabled by default\n \ttestFilesImpl(t, filenames, srcs, colDelta, manual, opts...)\n \tif !manual {\n-\t\tt.Setenv(\"GODEBUG\", \"gotypesalias=1\")\n+\t\tt.Setenv(\"GODEBUG\", \"gotypesalias=0\")\n \t\ttestFilesImpl(t, filenames, srcs, colDelta, manual, opts...)\n \t}\n }\ndiff --git a/src/cmd/compile/internal/types2/decl.go b/src/cmd/compile/internal/types2/decl.go\nindex 8bf9c58307..26ce49d87a 100644\n--- a/src/cmd/compile/internal/types2/decl.go\n+++ b/src/cmd/compile/internal/types2/decl.go\n@@ -533,7 +533,7 @@ func (check *Checker) typeDecl(obj *TypeName, tdecl *syntax.TypeDecl, def *TypeN\n \t\t\tUnalias(alias) // resolve alias.actual\n \t\t} else {\n \t\t\tif !versionErr && tparam0 != nil {\n-\t\t\t\tcheck.error(tdecl, UnsupportedFeature, \"generic type alias requires GODEBUG=gotypesalias=1\")\n+\t\t\t\tcheck.error(tdecl, UnsupportedFeature, \"generic type alias requires GODEBUG=gotypesalias=1 or unset\")\n \t\t\t\tversionErr = true\n \t\t\t}\n \ndiff --git a/src/cmd/compile/internal/types2/named_test.go b/src/cmd/compile/internal/types2/named_test.go\nindex 25aea26792..7609306099 100644\n--- a/src/cmd/compile/internal/types2/named_test.go\n+++ b/src/cmd/compile/internal/types2/named_test.go\n@@ -102,7 +102,7 @@ type Inst = *Tree[int]\n \t\treturn n.Underlying().(*Struct).Field(0).Type().(*Pointer).Elem().(*Named)\n \t}\n \n-\tInst := pkg.Scope().Lookup(\"Inst\").Type().(*Pointer).Elem().(*Named)\n+\tInst := Unalias(pkg.Scope().Lookup(\"Inst\").Type()).(*Pointer).Elem().(*Named)\n \tNode := firstFieldType(Inst)\n \tTree := firstFieldType(Node)\n \tif !Identical(Inst, Tree) {\ndiff --git a/src/go/types/api_test.go b/src/go/types/api_test.go\nindex 7ab695d365..5bc4e8a61f 100644\n--- a/src/go/types/api_test.go\n+++ ",
+   "ms": 661,
+   "seq": 8,
+   "t": 4.552
+  },
+  {
+   "type": "thinking_started",
+   "turn": 2,
+   "seq": 9,
+   "t": 4.552
+  },
+  {
+   "type": "reasoning",
+   "turn": 2,
+   "text": "#2 flips the default in types2 but adds no godebug tracking. #3 says it tracks non-default gotypesalias behaviour, which means reporting the setting through the godebug package.",
+   "seq": 10,
+   "t": 7.357
+  },
+  {
+   "type": "tool_start",
+   "step": 2,
+   "name": "get_commit_diff",
+   "args": {
+    "sha": "c51f6c6257"
+   },
+   "seq": 11,
+   "t": 7.357
+  },
+  {
+   "type": "tool_result",
+   "step": 2,
+   "name": "get_commit_diff",
+   "args": {
+    "sha": "c51f6c6257"
+   },
+   "output": "commit c51f6c62576ab3088a981b9cef90e413ac99e333\nAuthor: Robert Griesemer <gri@golang.org>\nDate:   Mon Mar 18 15:14:54 2024 -0700\n\n    go/types, types2: track gotypesalias non-default behavior\n    \n    Fixes #66216.\n    \n    Change-Id: I2750a744d0dcf636a00d388299e1f2f993e5ac26\n    Reviewed-on: https://go-review.googlesource.com/c/go/+/572575\n    LUCI-TryBot-Result: Go LUCI <golang-scoped@luci-project-accounts.iam.gserviceaccount.com>\n    Reviewed-by: Robert Griesemer <gri@google.com>\n    Reviewed-by: Alan Donovan <adonovan@google.com>\n    Auto-Submit: Robert Griesemer <gri@google.com>\n---\n src/cmd/compile/internal/types2/check.go      |  6 ++++++\n src/cmd/compile/internal/types2/check_test.go |  2 +-\n src/cmd/compile/internal/types2/decl.go       | 16 ++++++++++++++++\n src/go/types/check.go                         |  8 +++++++-\n src/go/types/check_test.go                    |  2 +-\n src/go/types/decl.go                          |  4 ++++\n src/internal/godebugs/table.go                |  2 +-\n src/runtime/metrics/doc.go                    |  4 ++++\n 8 files changed, 40 insertions(+), 4 deletions(-)\n\ndiff --git a/src/cmd/compile/internal/types2/check.go b/src/cmd/compile/internal/types2/check.go\nindex cc723f2012..17d1577ee1 100644\n--- a/src/cmd/compile/internal/types2/check.go\n+++ b/src/cmd/compile/internal/types2/check.go\n@@ -102,6 +102,12 @@ type Checker struct {\n \t// If enableAlias is set, alias declarations produce an Alias type.\n \t// Otherwise the alias information is only in the type name, which\n \t// points directly to the actual (aliased) type.\n+\t// Starting with Go 1.23, enableAlias is set by default.\n+\t// Non-default behavior is tracked with gotypesalias.IncNonDefault()\n+\t// for each declaration of an alias type where enableAlias is not set.\n+\t//\n+\t// TODO(gri) Testing runs tests in both modes. Do we need to exclude\n+\t//           tracking of non-default behavior for tests?\n \tenableAlias bool\n \n \tconf *Config\ndiff --git a/src/cmd/compile/internal/types2/check_test.go b/src/cmd/compile/internal/types2/check_test.go\nindex 066218772e..f1b520d33c 100644\n--- a/src/cmd/compile/internal/types2/check_test.go\n+++ b/src/cmd/compile/internal/types2/check_test.go\n@@ -122,7 +122,7 @@ func parseFlags(src []byte, flags *flag.FlagSet) error {\n //\n // If provided, opts may be used to mutate the Config before type-checking.\n func testFiles(t *testing.T, filenames []string, srcs [][]byte, colDelta uint, manual bool, opts ...func(*Config)) {\n-\t// Alias types are enabled by default\n+\t// Alias types are enabled by default.\n \ttestFilesImpl(t, filenames, srcs, colDelta, manual, opts...)\n \tif !manual {\n \t\tt.Setenv(\"GODEBUG\", \"gotypesalias=0\")\ndiff --git a/src/cmd/compile/internal/types2/decl.go b/src/cmd/compile/internal/types2/decl.go\nindex 26ce49d87a..fff2da4953 100644\n--- a/src/cmd/compile/internal/types2/decl.go\n+++ b/src/cmd/compile/internal/types2/decl.go\n@@ -532,6 +532,22 @@ func (check *Checker) typeDecl(obj *TypeName, tdecl *syntax.TypeDecl, def *TypeN\n \t\t\talias.fromRHS = rhs\n \t\t\tUnalias(alias) // resolve alias.actual\n \t\t} else {\n+\t\t\t// With Go1.23, the default behavior is to use Alias nodes,\n+\t\t\t// reflected by check.enableAlias. Signal non-default behavior\n+\t\t\t// by calling gotypesalias.IncNonDefault().\n+\t\t\t//\n+\t\t\t// Note: As of Go 1.23, Settings.IncNonDefault is not present\n+\t\t\t// in internal/godebug/godebug.go used during bootstrapping,\n+\t\t\t// only after the tool chain is built and recompiles itself.\n+\t\t\t// Check dynamically for the presence of IncNonDefault.\n+\t\t\t// (This is not an issue for go/types because it is not used\n+\t\t\t// during bootstrap.)\n+\t\t\t//\n+\t\t\t// TODO(gri) replace with direct call when we bootstrap with Go 1.20\n+\t\t\tif s, ok := any(gotypesalias).(interface{ IncNonDefault() }); ok {\n+\t\t\t\ts.IncNonDefault()\n+\t\t\t}\n+\n \t\t\tif !versionErr && tparam0 != nil {\n \t\t\t\tcheck.error(tdecl, UnsupportedFeature, \"generic type alias requires GODEBUG=gotypesalias=1 or unset\")\n \t\t\t\tversionErr = true\ndiff --git a/src/go/types/check.go b/src/go/types/check.go\nindex be990eabfe..c651e57fa9 100644\n--- a/src/go/types/check.go\n+++ b/src/go/types/check.go\n@@ -102,9 +102,15 @@ type Checker struct {\n \t// package information\n \t// (initialized by NewChecker, valid for the life-time of checker)\n \n-\t// If EnableAlias is set, alias declarations produce an Alias type.\n+\t// If enableAlias is set, alias declarations produce an Alias type.\n \t// Otherwise the alias information is only in the type name, which\n \t// points directly to the actual (aliased) type.\n+\t// Starting with Go 1.23, enableAlias is set by default.\n+\t// Non-default behavior is tracked with gotypesalias.IncNonDefault()\n+\t// for each declaration of an alias type where enableAlias is not set.\n+\t//\n+\t// TODO(gri) Testing runs tests in both modes. Do we need to exclude\n+\t//           tracking of non-default behavior for tests?\n \tenableAlias bool\n \n \tconf *Config\ndiff --git a/src/go/types/check_test.go b/src/go/types/check_test.go\nindex 6ad7ef3a27..068507dade 100644\n--- a/src/go/types/check_test.go\n+++ b/src/go/types/check_test.go\n@@ -134,7 +134,7 @@ func parseFlags(src []byte, flags *flag.FlagSet) error {\n //\n // If provided, opts may be used to mutate the Config before type-checking.\n func testFiles(t *testing.T, filenames []string, srcs [][]byte, manual bool, opts ...func(*Config)) {\n-\t// Alias types are enabled by default\n+\t// Alias types are enabled by default.\n \ttestFilesImpl(t, filenames, srcs, manual, opts...)\n \tif !manual {\n \t\tt.Setenv(\"GODEBUG\", \"gotypesalias=0\")\ndiff --git a/src/go/types/decl.go b/src/go/types/decl.go\nindex 937163fc75..3dab94aa0f 100644\n--- a/src/go/types/decl.go\n+++ b/src/go/types/decl.go\n@@ -607,6 +607,10 @@ func (check *Checker) typeDecl(obj *TypeName, tdecl *ast.TypeSpec, def *TypeName\n \t\t\talias.fromRHS = rhs\n \t\t\tUnalias(alias) // resolve alias.actual\n \t\t} else {\n+\t\t\t// With Go1.23, the default behavior is to use Alias nodes,\n+\t\t\t// reflected by check.enableAlias. Signal non-default behavior.\n+\t\t\tgotypesalias.IncNonDefault()\n+",
+   "ms": 609,
+   "seq": 12,
+   "t": 7.967
+  },
+  {
+   "type": "thinking_started",
+   "turn": 3,
+   "seq": 13,
+   "t": 7.967
+  },
+  {
+   "type": "verdict",
+   "diagnosis": {
+    "root_cause": "c51f6c6257 makes types2, which is compiled into the compiler, report non-default gotypesalias uses through the godebug package. The panic is godebug refusing a setting it can't find in godebugs.All, which happens when this code runs against a table without the entry, as in a bootstrap build.",
+    "offending_sha": "c51f6c62576ab3088a981b9cef90e413ac99e333",
+    "confidence": 0.82,
+    "reasoning": "The panic message names the mechanism: a godebug setting looked up in godebugs.All. Three suspects touch gotypesalias, but only this one starts reporting it through godebug, and it edits the table in the same commit.",
+    "evidence": [
+     "Panic: godebug: Value of name not listed in godebugs.All: gotypesalias",
+     "c51f6c6257 adds gotypesalias tracking in types2 and go/types",
+     "The same commit edits src/internal/godebugs/table.go"
+    ],
+    "ruled_out": [
+     "ca94e9e223: os.File ReadDir locking, unrelated to the compiler",
+     "15cec430d7: flips the default but adds no godebug tracking"
+    ],
+    "runbook_ids": [],
+    "remediation": [
+     "Revert c51f6c6257",
+     "Re-land with the tracking guarded for bootstrap toolchains"
+    ],
+    "rollback_command": "git revert --no-edit c51f6c6257",
+    "needs_human": false,
+    "source": "agent"
+   },
+   "seq": 14,
+   "t": 9.967
+  },
+  {
+   "type": "done",
+   "model": "claude-sonnet-5 (SCRIPTED STAND-IN)",
+   "duration_s": 10.0,
+   "tool_calls": 3,
+   "usage": null,
+   "cost_usd": null,
+   "source": "agent",
+   "slack": [
+    {
+     "type": "header",
+     "text": {
+      "type": "plain_text",
+      "text": ":warning: INC-20240417-a5829b \u00b7 go"
+     }
+    },
+    {
+     "type": "section",
+     "text": {
+      "type": "mrkdwn",
+      "text": "*This breaks toolchain bootstrapping in Google. Root cause investigation is pending.*\nThis breaks toolchain bootstrapping in Google. Root cause investigation is pending.\nError message is\n```\n<unknown line number>: internal compiler error: panic: godebug: Value of name not listed in godebugs.All: gotypesalias\n```"
+     }
+    },
+    {
+     "type": "section",
+     "fields": [
+      {
+       "type": "mrkdwn",
+       "text": "*Severity*\nSEV2"
+      },
+      {
+       "type": "mrkdwn",
+       "text": "*Started*\n<!date^1713359057^{time_secs}|2024-04-17T13:04:17+00:00>"
+      },
+      {
+       "type": "mrkdwn",
+       "text": "*Users affected*\n~0 (0\u20130)"
+      },
+      {
+       "type": "mrkdwn",
+       "text": "*Error budget*\n166.67% of 30-day budget"
+      }
+     ]
+    },
+    {
+     "type": "divider"
+    },
+    {
+     "type": "section",
+     "text": {
+      "type": "mrkdwn",
+      "text": "*Suspected root cause* \u2014 confidence \u25b0\u25b0\u25b0\u25b0\u25b1 82%\nc51f6c6257 makes types2, which is compiled into the compiler, report non-default gotypesalias uses through the godebug package. The panic is godebug refusing a setting it can't find in godebugs.All, which happens when this code runs against a table without the entry, as in a bootstrap build.\n\n*Offending commit:* `c51f6c6257`\nThe panic message names the mechanism: a godebug setting looked up in godebugs.All. Three suspects touch gotypesalias, but only this one starts reporting it through godebug, and it edits the table in the same commit."
+     }
+    },
+    {
+     "type": "section",
+     "text": {
+      "type": "mrkdwn",
+      "text": "*Evidence*\n\u2022 Panic: godebug: Value of name not listed in godebugs.All: gotypesalias\n\u2022 c51f6c6257 adds gotypesalias tracking in types2 and go/types\n\u2022 The same commit edits src/internal/godebugs/table.go"
+     }
+    },
+    {
+     "type": "section",
+     "text": {
+      "type": "mrkdwn",
+      "text": "*Recommended actions*\n1. Revert c51f6c6257\n2. Re-land with the tracking guarded for bootstrap toolchains"
+     }
+    },
+    {
+     "type": "section",
+     "text": {
+      "type": "mrkdwn",
+      "text": "*Rollback*\n```git revert --no-edit c51f6c6257```"
+     }
+    },
+    {
+     "type": "context",
+     "elements": [
+      {
+       "type": "mrkdwn",
+       "text": "3 tool calls \u00b7 10.0s to diagnosis \u00b7 12 commits correlated \u00b7 source: scripted stand-in"
+      }
+     ]
+    }
+   ],
+   "report_md": "# INC-20240417-a5829b \u2014 go: This breaks toolchain bootstrapping in Google. Root cause investigation is pending.\n\n**SEV2** \u00b7 **DIAGNOSED** \u00b7 fired 2024-04-17T13:04:17+00:00 \u00b7 diagnosed in 10.0s (3 tool calls)\n\n## Summary\n\nc51f6c6257 makes types2, which is compiled into the compiler, report non-default gotypesalias uses through the godebug package. The panic is godebug refusing a setting it can't find in godebugs.All, which happens when this code runs against a table without the entry, as in a bootstrap build.\n\n**Offending commit:** `c51f6c6257` \u00b7 **Confidence:** 82% (high)\n\n## Impact\n\n| Metric | Value |\n| --- | --- |\n| Users affected | ~0 (0\u20130) |\n| Failed requests | 432,000 |\n| Duration | 720 min |\n| Error budget burned | 166.67% of the 30-day budget |\n| Blast radius | go |\n| Estimate confidence | low |\n\n_Method: no error-rate metric on the alert; assumed 10% from sev2; 100 rps x 720m sustained; reach 0 distinct users over that window (saturating toward 0/day, which is the hard ceiling); P(user hit) = 1-(1-delta)^20.0 = 87.8%; dependents contribute only their non-overlapping users, capped at 0_\n\n## Root-cause analysis\n\nThe panic message names the mechanism: a godebug setting looked up in godebugs.All. Three suspects touch gotypesalias, but only this one starts reporting it through godebug, and it edits the table in the same commit.\n\n### Evidence\n\n- Panic: godebug: Value of name not listed in godebugs.All: gotypesalias\n- c51f6c6257 adds gotypesalias tracking in types2 and go/types\n- The same commit edits src/internal/godebugs/table.go\n\n### Candidates ruled out\n\n- ca94e9e223: os.File ReadDir locking, unrelated to the compiler\n- 15cec430d7: flips the default but adds no godebug tracking\n\n## Correlated commits\n\n| # | Commit | Authored | Author | Score | Subject |\n| --- | --- | --- | --- | --- | --- |\n| 1 | `ca94e9e223` | 2024-04-12 16:08 | Alan Donovan | 0.156 | os: make File.Readdir et al concurrency-safe |\n| 2 | `15cec430d7` | 2024-04-15 14:10 | Robert Griesemer | 0.1534 | types2: flip the default value of GODEBUG=gotypesalias=1 |\n| 3 | `c51f6c6257` \u2b05\ufe0e | 2024-03-18 15:14 | Robert Griesemer | 0.1443 | go/types, types2: track gotypesalias non-default behavior |\n| 4 | `55e4097cba` | 2024-04-03 11:58 | Carlos Amedee | 0.1436 | internal/goexperiment: remove the ExecTracer2 experiment |\n| 5 | `661f98141a` | 2024-04-16 16:01 | Alan Donovan | 0.1232 | go/internal/gcimporter: suppress 3 test cases when gotypesalias=1 |\n| 6 | `cf760ce29c` | 2024-04-09 15:20 | Alan Donovan | 0.1136 | go/types: flip the default value of GODEBUG=gotypesalias=1 |\n| 7 | `2c5849dc40` | 2024-04-02 18:16 | Carlos Amedee | 0.0887 | runtime, cmd/trace: remove code paths that include v1 tracer |\n| 8 | `91c0482672` | 2024-04-08 11:51 | Andy Pan | 0.0752 | net: implement TCP_KEEPIDLE, TCP_KEEPINTVL, and TCP_KEEPCNT on Solaris |\n| 9 | `37f482223f` | 2024-04-04 16:30 | Andy Pan | 0.0726 | net: separate the Solaris fast/slow path of setting SOCK_* from others |\n| 10 | `7a0e2db135` | 2024-04-16 07:42 | apocelipes | 0.056 | cmd,crypto/elliptic: fix typos in comments |\n\n## Remediation\n\n1. Revert c51f6c6257\n2. Re-land with the tracking guarded for bootstrap toolchains\n\n```bash\ngit revert --no-edit c51f6c6257\n```\n\n## Investigation trace\n\n| Step | Tool | Arguments | Result |\n| --- | --- | --- | --- |\n| 1 | `get_commit_diff` (661ms) | `{\"sha\": \"15cec430d7\"}` | commit 15cec430d75741960829e7e227c1b7c3e1f79114 Author: Robert Griesemer <gri@go |\n| 2 | `get_commit_diff` (609ms) | `{\"sha\": \"c51f6c6257\"}` | commit c51f6c62576ab3088a981b9cef90e413ac99e333 Author: Robert Griesemer <gri@go |\n| 3 | `submit_diagnosis` (0ms) | `{\"offending_sha\": \"c51f6c62576ab3088a981b9cef90e413ac99e333\", \"runbook_ids\": [],` | verdict recorded |\n\n## Cost\n\ncache creation input tokens: 0 \u00b7 cache read input tokens: 0 \u00b7 input tokens: 0 \u00b7 output tokens: 0 \u00b7 requests: 3 \u00b7 uncached followups: 2\n\n---\n\n_Generated by IncidentPilot \u00b7 diagnosis source: agent_",
+   "seq": 15,
+   "t": 9.968
+  }
+ ]
+}

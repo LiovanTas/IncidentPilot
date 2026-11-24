@@ -194,6 +194,27 @@ def test_instant_replay_skips_the_recorded_pauses(tmp_path, monkeypatch):
     assert events[2]["t"] == 60.0  # still shows how long the real run took
 
 
+def test_a_stand_in_replay_never_claims_a_match(tmp_path, monkeypatch):
+    monkeypatch.setattr(runs_mod, "RECORDINGS", tmp_path)
+    (tmp_path / "S-1.json").write_text(json.dumps({
+        "schema": 1, "scenario": "S-1", "recorded_at": "2026-11-24T12:00:00+00:00",
+        "model": "claude-sonnet-5 (SCRIPTED STAND-IN)", "stand_in": True,
+        "events": [{"type": "verdict", "t": 0.1, "diagnosis": {"offending_sha": "abcdef1234"}}],
+    }), encoding="utf-8")
+    run = RunManager().start(_scenario(), "replay", speed=0)
+    events = [json.loads(f[6:]) for f in run.stream(heartbeat=0.05) if f.startswith("data: ")]
+    answer = next(e for e in events if e["type"] == "answer")
+    assert answer["scripted"] is True
+
+
+def test_every_demo_incident_ships_with_a_replay():
+    for s in scenario_mod.load(None):
+        recording = runs_mod.load_recording(s.id)
+        assert recording is not None, f"{s.id} has no replay"
+        verdicts = [e for e in recording["events"] if e["type"] == "verdict"]
+        assert len(verdicts) == 1
+
+
 def test_replay_without_a_recording_says_so(tmp_path, monkeypatch):
     monkeypatch.setattr(runs_mod, "RECORDINGS", tmp_path)
     run = RunManager().start(_scenario(), "replay")

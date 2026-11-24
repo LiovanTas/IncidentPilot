@@ -1,0 +1,846 @@
+{
+ "schema": 1,
+ "scenario": "RW-moby-01",
+ "recorded_at": "2026-11-24T12:00:00+00:00",
+ "model": "claude-sonnet-5 (SCRIPTED STAND-IN)",
+ "stand_in": true,
+ "events": [
+  {
+   "type": "start",
+   "mode": "live",
+   "speed": 1.0,
+   "scenario": {
+    "id": "RW-moby-01",
+    "title": "Breaks docker/cli formatting",
+    "hook": "An engine change caused problems in another repository: the docker/cli formatting code.",
+    "suite": "realworld",
+    "source": "reverted upstream in moby",
+    "repo": "moby",
+    "alert": {
+     "fingerprint": "moby-eacbbdeec6",
+     "source": "generic",
+     "service": "moby",
+     "severity": "sev2",
+     "title": "caused some issues in the docker/cli formatting code that needs some",
+     "description": "caused some issues in the docker/cli formatting code that needs some\ninvestigating.",
+     "started_at": "2025-04-11T11:47:10Z",
+     "labels": {
+      "repo": "moby"
+     },
+     "metrics": {}
+    },
+    "answer_subject": "API: /info: remove BridgeNfIptables, BridgeNfIp6tables fields"
+   },
+   "seq": 0,
+   "t": 0.0
+  },
+  {
+   "type": "alert",
+   "incident_id": "INC-20250411-8e851b",
+   "alert": {
+    "fingerprint": "moby-eacbbdeec6",
+    "source": "generic",
+    "service": "moby",
+    "severity": "sev2",
+    "title": "caused some issues in the docker/cli formatting code that needs some",
+    "description": "caused some issues in the docker/cli formatting code that needs some\ninvestigating.",
+    "started_at": "2025-04-11T11:47:10Z",
+    "labels": {
+     "repo": "moby"
+    },
+    "metrics": {},
+    "runbook_hints": []
+   },
+   "seq": 1,
+   "t": 0.0
+  },
+  {
+   "type": "candidates",
+   "lookback_hours": 72.0,
+   "candidates": [
+    {
+     "sha": "ece7e02b868adb93914322e7adf08c39b3d1d64f",
+     "author": "Pawe\u0142 Gronowski",
+     "authored_at": "2025-04-11T11:08:19Z",
+     "subject": "Update AUTHORS",
+     "body": "Signed-off-by: Pawe\u0142 Gronowski <pawel.gronowski@docker.com>",
+     "files": [
+      "AUTHORS"
+     ],
+     "insertions": 4,
+     "deletions": 0,
+     "services": [],
+     "score": 0.4328,
+     "signals": {
+      "recency": 0.9854,
+      "ownership": 0.0,
+      "keyword": 0.1818,
+      "risk": 0.6602
+     },
+     "rationale": [
+      "landed 7m before onset",
+      "alert terms present in commit: docker",
+      "risk class: auth"
+     ],
+     "landed_at": "2025-04-11T11:40:06Z",
+     "short_sha": "ece7e02b86",
+     "churn": 4
+    },
+    {
+     "sha": "5f9d99b4cc21d66cec6f6762329bad55ee0b77f1",
+     "author": "Pawe\u0142 Gronowski",
+     "authored_at": "2025-04-09T15:14:24Z",
+     "subject": "integration-cli/swarm: Update to use gotest.tools",
+     "body": "Signed-off-by: Pawe\u0142 Gronowski <pawel.gronowski@docker.com>",
+     "files": [
+      "integration-cli/docker_cli_swarm_test.go"
+     ],
+     "insertions": 22,
+     "deletions": 22,
+     "services": [],
+     "score": 0.3578,
+     "signals": {
+      "recency": 0.8561,
+      "ownership": 0.0,
+      "keyword": 0.3636,
+      "risk": 0.1643
+     },
+     "rationale": [
+      "landed 75m before onset",
+      "alert terms present in commit: cli, docker"
+     ],
+     "landed_at": "2025-04-11T10:32:36Z",
+     "short_sha": "5f9d99b4cc",
+     "churn": 44
+    },
+    {
+     "sha": "ea6c76ee03baa9db3b11015f68d707392afe4cba",
+     "author": "Pawe\u0142 Gronowski",
+     "authored_at": "2025-04-09T15:13:44Z",
+     "subject": "integration-cli/TestSwarmInit: Skip failing part on CLI after 18.06",
+     "body": "Signed-off-by: Pawe\u0142 Gronowski <pawel.gronowski@docker.com>",
+     "files": [
+      "integration-cli/docker_cli_swarm_test.go"
+     ],
+     "insertions": 29,
+     "deletions": 9,
+     "services": [],
+     "score": 0.3569,
+     "signals": {
+      "recency": 0.8561,
+      "ownership": 0.0,
+      "keyword": 0.3636,
+      "risk": 0.158
+     },
+     "rationale": [
+      "landed 75m before onset",
+      "alert terms present in commit: cli, docker"
+     ],
+     "landed_at": "2025-04-11T10:32:36Z",
+     "short_sha": "ea6c76ee03",
+     "churn": 38
+    },
+    {
+     "sha": "adb9e9135a3ab58ba7b91d7a24d952c4ff97751d",
+     "author": "Pawe\u0142 Gronowski",
+     "authored_at": "2025-04-11T11:01:02Z",
+     "subject": "docs/api: add documentation for API v1.49",
+     "body": "Copy the swagger / OpenAPI file to the documentation. This is the API",
+     "files": [
+      "docs/api/v1.49.yaml"
+     ],
+     "insertions": 13539,
+     "deletions": 0,
+     "services": [],
+     "score": 0.3483,
+     "signals": {
+      "recency": 0.9859,
+      "ownership": 0.0,
+      "keyword": 0.0,
+      "risk": 0.35
+     },
+     "rationale": [
+      "landed 7m before onset",
+      "large diff (13539 lines)"
+     ],
+     "landed_at": "2025-04-11T11:40:21Z",
+     "short_sha": "adb9e9135a",
+     "churn": 13539
+    },
+    {
+     "sha": "fab94808f55f3ce55ce00b742900519e23f37f23",
+     "author": "Pawe\u0142 Gronowski",
+     "authored_at": "2025-03-20T18:34:52Z",
+     "subject": "integration-cli: Update default CLI version to v18.06.3-ce",
+     "body": "This updates the Docker CLI version used for integration-cli tests from",
+     "files": [
+      "Dockerfile",
+      "hack/dockerfile/install/dockercli.installer",
+      "integration-cli/docker_cli_build_test.go"
+     ],
+     "insertions": 3,
+     "deletions": 3,
+     "services": [],
+     "score": 0.3449,
+     "signals": {
+      "recency": 0.8561,
+      "ownership": 0.0,
+      "keyword": 0.3636,
+      "risk": 0.0778
+     },
+     "rationale": [
+      "landed 75m before onset",
+      "alert terms present in commit: cli, docker"
+     ],
+     "landed_at": "2025-04-11T10:32:36Z",
+     "short_sha": "fab94808f5",
+     "churn": 6
+    },
+    {
+     "sha": "5d2006256f15f7252c11bd72d632de26a8b2ff06",
+     "author": "Sebastiaan van Stijn",
+     "authored_at": "2025-04-09T09:45:58Z",
+     "subject": "API: /info: remove BridgeNfIptables, BridgeNfIp6tables fields",
+     "body": "The `BridgeNfIptables` and `BridgeNfIp6tables` fields in the",
+     "files": [
+      "api/server/router/system/system_routes.go",
+      "api/types/system/info.go",
+      "docs/api/version-history.md",
+      "integration/system/info_linux_test.go",
+      "pkg/sysinfo/sysinfo.go"
+     ],
+     "insertions": 92,
+     "deletions": 12,
+     "services": [],
+     "score": 0.2949,
+     "signals": {
+      "recency": 0.8822,
+      "ownership": 0.0,
+      "keyword": 0.0,
+      "risk": 0.2017
+     },
+     "rationale": [
+      "landed 60m before onset"
+     ],
+     "landed_at": "2025-04-11T10:46:59Z",
+     "short_sha": "5d2006256f",
+     "churn": 104
+    },
+    {
+     "sha": "0c5e8166382442edb3725568719b3f9f2c72185a",
+     "author": "Albin Kerouanton",
+     "authored_at": "2025-04-08T19:46:52Z",
+     "subject": "daemon: trace containerCreate",
+     "body": "This commit adds a new OTel span to `(*Daemon).containerCreate()` and",
+     "files": [
+      "daemon/create.go"
+     ],
+     "insertions": 42,
+     "deletions": 1,
+     "services": [],
+     "score": 0.2821,
+     "signals": {
+      "recency": 0.8587,
+      "ownership": 0.0,
+      "keyword": 0.0,
+      "risk": 0.1633
+     },
+     "rationale": [
+      "landed 73m before onset"
+     ],
+     "landed_at": "2025-04-11T10:34:02Z",
+     "short_sha": "0c5e816638",
+     "churn": 43
+    },
+    {
+     "sha": "099d3ee008dd82c7cea30b259a01291a5ac71a07",
+     "author": "Albin Kerouanton",
+     "authored_at": "2025-04-10T16:11:34Z",
+     "subject": "daemon: containerStart: add filtered labels to OTel span",
+     "body": "Like for containerCreate, filter the list of container labels based on",
+     "files": [
+      "daemon/start.go"
+     ],
+     "insertions": 9,
+     "deletions": 3,
+     "services": [],
+     "score": 0.2738,
+     "signals": {
+      "recency": 0.8587,
+      "ownership": 0.0,
+      "keyword": 0.0,
+      "risk": 0.1079
+     },
+     "rationale": [
+      "landed 73m before onset"
+     ],
+     "landed_at": "2025-04-11T10:34:02Z",
+     "short_sha": "099d3ee008",
+     "churn": 12
+    },
+    {
+     "sha": "ae3a1ac602167e61f374f9d215e861ca5960c267",
+     "author": "Jonathan A. Sternberg",
+     "authored_at": "2025-04-09T19:37:09Z",
+     "subject": "vendor: github.com/moby/buildkit v0.21.0-rc1",
+     "body": "Signed-off-by: Jonathan A. Sternberg <jonathan.sternberg@docker.com>",
+     "files": [
+      "builder/builder-next/adapters/snapshot/snapshot.go",
+      "builder/builder-next/executor_linux.go",
+      "builder/builder-next/exporter/wrapper.go",
+      "vendor.mod",
+      "vendor.sum",
+      "vendor/github.com/moby/buildkit/cache/blobs.go",
+      "vendor/github.com/moby/buildkit/cache/contenthash/checksum.go",
+      "vendor/github.com/moby/buildkit/cache/contenthash/checksum_unix.go",
+      "vendor/github.com/moby/buildkit/cache/contenthash/checksum_windows.go",
+      "vendor/github.com/moby/buildkit/cache/contenthash/filehash.go",
+      "vendor/github.com/moby/buildkit/cache/manager.go",
+      "vendor/github.com/moby/buildkit/cache/metadata.go",
+      "vendor/github.com/moby/buildkit/cache/metadata/metadata.go",
+      "vendor/github.com/moby/buildkit/cache/refs.go",
+      "vendor/github.com/moby/buildkit/cache/remote.go",
+      "vendor/github.com/moby/buildkit/cache/remotecache/inline/inline.go",
+      "vendor/github.com/moby/buildkit/cache/remotecache/local/local.go",
+      "vendor/github.com/moby/buildkit/cache/remotecache/registry/registry.go",
+      "vendor/github.com/moby/buildkit/cache/remotecache/v1/cachestorage.go",
+      "vendor/github.com/moby/buildkit/cache/remotecache/v1/chains.go",
+      "vendor/github.com/moby/buildkit/cache/remotecache/v1/utils.go",
+      "vendor/github.com/moby/buildkit/client/llb/exec.go",
+      "vendor/github.com/moby/buildkit/client/llb/marshal.go",
+      "vendor/github.com/moby/buildkit/client/llb/meta.go",
+      "vendor/github.com/moby/buildkit/client/llb/source.go",
+      "vendor/github.com/moby/buildkit/client/llb/state.go",
+      "vendor/github.com/moby/buildkit/client/solve.go",
+      "vendor/github.com/moby/buildkit/cmd/buildkitd/config/config.go",
+      "vendor/github.com/moby/buildkit/control/control.go",
+      "vendor/github.com/moby/buildkit/executor/containerdexecutor/executor.go",
+      "vendor/github.com/moby/buildkit/executor/containerdexecutor/executor_unix.go",
+      "vendor/github.com/moby/buildkit/executor/containerdexecutor/executor_windows.go",
+      "vendor/github.com/moby/buildkit/executor/executor.go",
+      "vendor/github.com/moby/buildkit/executor/oci/hosts.go",
+      "vendor/github.com/moby/buildkit/executor/oci/resolvconf.go",
+      "vendor/github.com/moby/buildkit/executor/oci/spec.go",
+      "vendor/github.com/moby/buildkit/executor/oci/spec_darwin.go",
+      "vendor/github.com/moby/buildkit/executor/oci/spec_freebsd.go",
+      "vendor/github.com/moby/buildkit/executor/oci/spec_linux.go",
+      "vendor/github.com/moby/buildkit/executor/oci/spec_unix.go",
+      "vendor/github.com/moby/buildkit/executor/oci/spec_windows.go",
+      "vendor/github.com/moby/buildkit/executor/oci/user.go",
+      "vendor/github.com/moby/buildkit/executor/runcexecutor/executor.go",
+      "vendor/github.com/moby/buildkit/exporter/containerimage/export.go",
+      "vendor/github.com/moby/buildkit/exporter/containerimage/exptypes/keys.go",
+      "vendor/github.com/moby/buildkit/exporter/containerimage/exptypes/parse.go",
+      "vendor/github.com/moby/buildkit/exporter/containerimage/exptypes/types.go",
+      "vendor/github.com/moby/buildkit/exporter/local/fs.go",
+      "vendor/github.com/moby/buildkit/exporter/oci/export.go",
+      "vendor/github.com/moby/buildkit/exporter/verifier/platforms.go",
+      "vendor/github.com/moby/buildkit/frontend/dockerfile/builder/build.go",
+      "vendor/github.com/moby/buildkit/frontend/dockerfile/dockerfile2llb/convert.go",
+      "vendor/github.com/moby/buildkit/frontend/dockerfile/dockerfile2llb/convert_runmount.go",
+      "vendor/github.com/moby/buildkit/frontend/dockerfile/dockerfile2llb/image.go",
+      "vendor/github.com/moby/buildkit/frontend/dockerfile/dockerfile2llb/outline.go",
+      "vendor/github.com/moby/buildkit/frontend/dockerfile/instructions/commands.go",
+      "vendor/github.com/moby/buildkit/frontend/dockerfile/instructions/parse.go",
+      "vendor/github.com/moby/buildkit/frontend/dockerfile/parser/directives.go",
+      "vendor/github.com/moby/buildkit/frontend/dockerfile/parser/line_parsers.go",
+      "vendor/github.com/moby/buildkit/frontend/dockerfile/parser/parser.go",
+      "vendor/github.com/moby/buildkit/frontend/dockerfile/parser/split_command.go",
+      "vendor/github.com/moby/buildkit/frontend/dockerui/build.go",
+      "vendor/github.com/moby/buildkit/frontend/dockerui/config.go",
+      "vendor/github.com/moby/buildkit/frontend/gateway/container/container.go",
+      "vendor/github.com/moby/buildkit/frontend/gateway/gateway.go",
+      "vendor/github.com/moby/buildkit/frontend/subrequests/lint/lint.go",
+      "vendor/github.com/moby/buildkit/session/filesync/diffcopy.go",
+      "vendor/github.com/moby/buildkit/session/grpchijack/dial.go",
+      "vendor/github.com/moby/buildkit/session/sshforward/copy.go",
+      "vendor/github.com/moby/buildkit/snapshot/containerd/content.go",
+      "vendor/github.com/moby/buildkit/snapshot/containerd/snapshotter.go",
+      "vendor/github.com/moby/buildkit/snapshot/diffapply_linux.go",
+      "vendor/github.com/moby/buildkit/snapshot/localmounter_darwin.go",
+      "vendor/github.com/moby/buildkit/snapshot/localmounter_freebsd.go",
+      "vendor/github.com/moby/buildkit/snapshot/localmounter_linux.go",
+      "vendor/github.com/moby/buildkit/snapshot/localmounter_windows.go",
+      "vendor/github.com/moby/buildkit/snapshot/snapshotter.go",
+      "vendor/github.com/moby/buildkit/snapshot/staticmountable.go",
+      "vendor/github.com/moby/buildkit/solver/bboltcachestorage/storage.go",
+      "vendor/github.com/moby/buildkit/solver/cachekey.go",
+      "vendor/github.com/moby/buildkit/solver/cachemanager.go",
+      "vendor/github.com/moby/buildkit/solver/cacheopts.go",
+      "vendor/github.com/moby/buildkit/solver/edge.go",
+      "vendor/github.com/moby/buildkit/solver/errdefs/op.go",
+      "vendor/github.com/moby/buildkit/solver/errdefs/source.go",
+      "vendor/github.com/moby/buildkit/solver/jobs.go",
+      "vendor/github.com/moby/buildkit/solver/llbsolver/bridge.go",
+      "vendor/github.com/moby/buildkit/solver/llbsolver/cdidevices/manager.go",
+      "vendor/github.com/moby/buildkit/solver/llbsolver/file/backend.go",
+      "vendor/github.com/moby/buildkit/solver/llbsolver/file/backend_unix.go",
+      "vendor/github.com/moby/buildkit/solver/llbsolver/file/backend_windows.go",
+      "vendor/github.com/moby/buildkit/solver/llbsolver/file/unpack.go",
+      "vendor/github.com/moby/buildkit/solver/llbsolver/mounts/mount.go",
+      "vendor/github.com/moby/buildkit/solver/llbsolver/ops/exec.go",
+      "vendor/github.com/moby/buildkit/solver/llbsolver/ops/exec_binfmt.go",
+      "vendor/github.com/moby/buildkit/solver/llbsolver/ops/file.go",
+      "vendor/github.com/moby/buildkit/solver/llbsolver/ops/user_windows.go",
+      "vendor/github.com/moby/buildkit/solver/llbsolver/provenance.go",
+      "vendor/github.com/moby/buildkit/solver/llbsolver/solver.go",
+      "vendor/github.com/moby/buildkit/solver/llbsolver/vertex.go",
+      "vendor/github.com/moby/buildkit/solver/pb/attr.go",
+      "vendor/github.com/moby/buildkit/solver/pb/caps.go",
+      "vendor/github.com/moby/buildkit/solver/pb/platform.go",
+      "vendor/github.com/moby/buildkit/solver/scheduler.go",
+      "vendor/github.com/moby/buildkit/solver/types.go",
+      "vendor/github.com/moby/buildkit/source/containerimage/pull.go",
+      "vendor/github.com/moby/buildkit/source/containerimage/source.go",
+      "vendor/github.com/moby/buildkit/source/git/source.go",
+      "vendor/github.com/moby/buildkit/source/http/identifier.go",
+      "vendor/github.com/moby/buildkit/source/http/source.go",
+      "vendor/github.com/moby/buildkit/source/local/source.go",
+      "vendor/github.com/moby/buildkit/util/contentutil/source.go",
+      "vendor/github.com/moby/buildkit/util/converter/converter.go",
+      "vendor/github.com/moby/buildkit/util/flightcontrol/flightcontrol.go",
+      "vendor/github.com/moby/buildkit/util/gitutil/git_cli.go",
+      "vendor/github.com/moby/buildkit/util/grpcerrors/intercept.go",
+      "vendor/github.com/moby/buildkit/util/network/cniprovider/bridge.go",
+      "vendor/github.com/moby/buildkit/util/overlay/overlay_linux.go",
+      "vendor/github.com/moby/buildkit/util/progress/logs/logs.go",
+      "vendor/github.com/moby/buildkit/util/progress/multiwriter.go",
+      "vendor/github.com/moby/buildkit/util/progress/progress.go",
+      "vendor/github.com/moby/buildkit/util/progress/progressui/display.go",
+      "vendor/github.com/moby/buildkit/util/resolver/pool.go",
+      "vendor/github.com/moby/buildkit/util/resolver/retryhandler/retry.go",
+      "vendor/github.com/moby/buildkit/util/system/path.go",
+      "vendor/github.com/moby/buildkit/util/system/path_unix.go",
+      "vendor/github.com/moby/buildkit/util/system/path_windows.go",
+      "vendor/github.com/moby/buildkit/util/tracing/tracing.go",
+      "vendor/github.com/moby/buildkit/util/tracing/transform/span.go",
+      "vendor/github.com/moby/buildkit/util/windows/util_windows.go",
+      "vendor/github.com/moby/buildkit/worker/base/worker.go",
+      "vendor/github.com/moby/buildkit/worker/containerd/containerd.go",
+      "vendor/github.com/moby/buildkit/worker/result.go",
+      "vendor/github.com/tonistiigi/dchapes-mode/mode.go",
+      "vendor/github.com/tonistiigi/fsutil/copy/copy.go",
+      "vendor/github.com/tonistiigi/fsutil/copy/copy_linux.go",
+      "vendor/github.com/tonistiigi/fsutil/copy/copy_unix.go",
+      "vendor/github.com/tonistiigi/fsutil/copy/copy_windows.go",
+      "vendor/github.com/tonistiigi/fsutil/copy/hardlink_windows.go",
+      "vendor/github.com/tonistiigi/fsutil/diskwriter_windows.go",
+      "vendor/github.com/tonistiigi/fsutil/docker-bake.hcl",
+      "vendor/modules.txt"
+     ],
+     "insertions": 1001,
+     "deletions": 698,
+     "services": [],
+     "score": 0.2677,
+     "signals": {
+      "recency": 0.0105,
+      "ownership": 0.0,
+      "keyword": 0.5455,
+      "risk": 1.0
+     },
+     "rationale": [
+      "landed 36.5h before onset",
+      "alert terms present in commit: cli, docker, moby",
+      "risk class: timeouts, config, concurrency, caching, auth; large diff (1699 lines)"
+     ],
+     "landed_at": "2025-04-09T23:18:47Z",
+     "short_sha": "ae3a1ac602",
+     "churn": 1699
+    },
+    {
+     "sha": "d0154d3e59c602e64fa29982c84b2f966681ef44",
+     "author": "Derek McGowan",
+     "authored_at": "2025-04-04T06:31:17Z",
+     "subject": "Update to use github.com/moby/go-archive",
+     "body": "Update use of idtools to moby/user for archive and other deprecated uses",
+     "files": [
+      "api/server/router/container/backend.go",
+      "builder/builder-next/adapters/snapshot/snapshot.go",
+      "builder/builder-next/builder.go",
+      "builder/builder-next/executor_linux.go",
+      "builder/builder-next/executor_nolinux.go",
+      "builder/dockerfile/builder.go",
+      "builder/dockerfile/copy.go",
+      "builder/dockerfile/copy_unix.go",
+      "builder/dockerfile/copy_windows.go",
+      "builder/dockerfile/evaluator_test.go",
+      "builder/dockerfile/internals.go",
+      "builder/dockerfile/internals_linux.go",
+      "builder/dockerfile/internals_linux_test.go",
+      "builder/dockerfile/internals_test.go",
+      "builder/dockerfile/internals_windows.go",
+      "builder/remotecontext/archive.go",
+      "builder/remotecontext/filehash.go",
+      "builder/remotecontext/git.go",
+      "builder/remotecontext/tarsum_test.go",
+      "container/archive_windows.go",
+      "daemon/archive_tarcopyoptions.go",
+      "daemon/archive_tarcopyoptions_unix.go",
+      "daemon/archive_unix.go",
+      "daemon/archive_windows.go",
+      "daemon/changes.go",
+      "daemon/container_operations_unix.go",
+      "daemon/containerd/image_builder.go",
+      "daemon/containerd/image_changes.go",
+      "daemon/containerd/image_commit.go",
+      "daemon/containerd/image_exporter.go",
+      "daemon/containerd/image_import.go",
+      "daemon/containerd/image_load_test.go",
+      "daemon/containerd/image_snapshot_unix.go",
+      "daemon/containerd/service.go",
+      "daemon/create.go",
+      "daemon/daemon.go",
+      "daemon/export.go",
+      "daemon/graphdriver/btrfs/btrfs.go",
+      "daemon/graphdriver/driver.go",
+      "daemon/graphdriver/fsdiff.go",
+      "daemon/graphdriver/fuse-overlayfs/fuseoverlayfs.go",
+      "daemon/graphdriver/fuse-overlayfs/fuseoverlayfs_test.go",
+      "daemon/graphdriver/graphtest/testutil.go",
+      "daemon/graphdriver/overlay2/overlay.go",
+      "daemon/graphdriver/overlay2/overlay_test.go",
+      "daemon/graphdriver/vfs/copy_unsupported.go",
+      "daemon/graphdriver/vfs/driver.go",
+      "daemon/graphdriver/windows/windows.go",
+      "daemon/graphdriver/zfs/zfs.go",
+      "daemon/image_service.go",
+      "daemon/images/image_changes.go",
+      "daemon/images/image_import.go",
+      "daemon/snapshotter/mount.go",
+      "distribution/xfer/download.go",
+      "image/tarexport/load.go",
+      "image/tarexport/save.go",
+      "integration-cli/docker_cli_build_test.go",
+      "integration-cli/docker_cli_cp_utils_test.go",
+      "integration-cli/docker_utils_test.go",
+      "integration/container/copy_test.go",
+      "integration/container/overlayfs_linux_test.go",
+      "integration/image/save_test.go",
+      "integration/plugin/authz/authz_plugin_test.go",
+      "internal/testutils/archive.go",
+      "internal/testutils/specialimage/load.go",
+      "internal/testutils/specialimage/multilayer.go",
+      "layer/layer.go",
+      "layer/layer_store.go",
+      "layer/layer_test.go",
+      "layer/mount_test.go",
+      "layer/mounted_layer.go",
+      "libnetwork/drivers/windows/overlay/overlay.pb.go",
+      "plugin/backend_linux.go",
+      "plugin/fetch_linux.go",
+      "testutil/fakecontext/context.go",
+      "testutil/fakestorage/fixtures.go",
+      "testutil/fixtures/plugin/plugin.go"
+     ],
+     "insertions": 264,
+     "deletions": 286,
+     "services": [],
+     "score": 0.2462,
+     "signals": {
+      "recency": 0.0019,
+      "ownership": 0.0,
+      "keyword": 0.5455,
+      "risk": 0.874
+     },
+     "rationale": [
+      "landed 49.9h before onset",
+      "alert terms present in commit: cli, docker, moby",
+      "risk class: auth; large diff (550 lines)"
+     ],
+     "landed_at": "2025-04-09T09:51:14Z",
+     "short_sha": "d0154d3e59",
+     "churn": 550
+    },
+    {
+     "sha": "cd89a35ea08fb8821d0a0753c86df84f806bc361",
+     "author": "Derek McGowan",
+     "authored_at": "2025-04-08T20:21:30Z",
+     "subject": "Run CLI tests with cgroups v2",
+     "body": "Signed-off-by: Derek McGowan <derek@mcg.dev>",
+     "files": [
+      "Makefile",
+      "hack/make/.integration-daemon-start",
+      "integration-cli/docker_api_stats_test.go",
+      "integration-cli/docker_cli_build_test.go",
+      "integration-cli/docker_cli_daemon_test.go",
+      "integration-cli/docker_cli_run_test.go",
+      "integration-cli/docker_cli_run_unix_test.go",
+      "integration-cli/docker_cli_update_unix_test.go",
+      "integration-cli/requirements_unix_test.go",
+      "integration-cli/requirements_windows_test.go"
+     ],
+     "insertions": 39,
+     "deletions": 7,
+     "services": [],
+     "score": 0.2023,
+     "signals": {
+      "recency": 0.0115,
+      "ownership": 0.0,
+      "keyword": 0.3636,
+      "risk": 0.8163
+     },
+     "rationale": [
+      "landed 35.7h before onset",
+      "alert terms present in commit: cli, docker",
+      "risk class: dependency"
+     ],
+     "landed_at": "2025-04-10T00:05:30Z",
+     "short_sha": "cd89a35ea0",
+     "churn": 46
+    },
+    {
+     "sha": "7435e4a1be22a5a44f945d6b45e1e81273fd868d",
+     "author": "Sebastiaan van Stijn",
+     "authored_at": "2025-04-04T18:39:57Z",
+     "subject": "registry: remove deprecated ServiceConfig.AllowNondistributableArtifacts",
+     "body": "This option was deprecated in 1932091e21b64abc52b42320393b0ac5f6921668, and",
+     "files": [
+      "cmd/dockerd/config.go",
+      "cmd/dockerd/daemon.go",
+      "daemon/config/config.go",
+      "daemon/config/config_linux_test.go",
+      "registry/config.go"
+     ],
+     "insertions": 11,
+     "deletions": 13,
+     "services": [],
+     "score": 0.176,
+     "signals": {
+      "recency": 0.0405,
+      "ownership": 0.0,
+      "keyword": 0.1818,
+      "risk": 0.838
+     },
+     "rationale": [
+      "landed 25.6h before onset",
+      "alert terms present in commit: docker",
+      "risk class: config"
+     ],
+     "landed_at": "2025-04-10T10:08:14Z",
+     "short_sha": "7435e4a1be",
+     "churn": 24
+    }
+   ],
+   "ranker_pick": "ece7e02b868adb93914322e7adf08c39b3d1d64f",
+   "seq": 2,
+   "t": 4.569
+  },
+  {
+   "type": "runbooks",
+   "runbooks": [],
+   "seq": 3,
+   "t": 4.569
+  },
+  {
+   "type": "impact",
+   "impact": {
+    "affected_users_low": 0,
+    "affected_users_point": 0,
+    "affected_users_high": 0,
+    "failed_requests": 432000,
+    "duration_minutes": 720.0,
+    "error_budget_burn_pct": 166.67,
+    "blast_radius": [
+     "moby"
+    ],
+    "method": "no error-rate metric on the alert; assumed 10% from sev2; 100 rps x 720m sustained; reach 0 distinct users over that window (saturating toward 0/day, which is the hard ceiling); P(user hit) = 1-(1-delta)^20.0 = 87.8%; dependents contribute only their non-overlapping users, capped at 0",
+    "confidence": "low"
+   },
+   "seq": 4,
+   "t": 4.569
+  },
+  {
+   "type": "thinking_started",
+   "turn": 1,
+   "seq": 5,
+   "t": 4.569
+  },
+  {
+   "type": "reasoning",
+   "turn": 1,
+   "text": "The docker/cli formatting code renders whatever the engine API returns, so I'm looking for a change to an API response, not to the CLI. The top pick only edits AUTHORS. #6 changes the /info response; reading it.",
+   "seq": 6,
+   "t": 7.528
+  },
+  {
+   "type": "tool_start",
+   "step": 1,
+   "name": "get_commit_diff",
+   "args": {
+    "sha": "5d2006256f"
+   },
+   "seq": 7,
+   "t": 7.528
+  },
+  {
+   "type": "tool_result",
+   "step": 1,
+   "name": "get_commit_diff",
+   "args": {
+    "sha": "5d2006256f"
+   },
+   "output": "commit 5d2006256f15f7252c11bd72d632de26a8b2ff06\nAuthor: Sebastiaan van Stijn <github@gone.nl>\nDate:   Wed Apr 9 11:45:58 2025 +0200\n\n    API: /info: remove BridgeNfIptables, BridgeNfIp6tables fields\n    \n    The `BridgeNfIptables` and `BridgeNfIp6tables` fields in the\n    `GET /info` response were deprecated in API v1.48, and are now omitted\n    in API v1.49.\n    \n    With this patch, old API version continue to return the field:\n    \n        curl -s --unix-socket /var/run/docker.sock http://localhost/v1.48/info | jq .BridgeNfIp6tables\n        false\n    \n        curl -s --unix-socket /var/run/docker.sock http://localhost/v1.48/info | jq .BridgeNfIptables\n        false\n    \n    Omitting the field in API v1.49 and above\n    \n        curl -s --unix-socket /var/run/docker.sock http://localhost/v1.49/info | jq .BridgeNfIp6tables\n        null\n    \n        curl -s --unix-socket /var/run/docker.sock http://localhost/v1.49/info | jq .BridgeNfIptables\n        null\n    \n    Signed-off-by: Sebastiaan van Stijn <github@gone.nl>\n---\n api/server/router/system/system_routes.go |  7 ++++\n api/types/system/info.go                  | 27 +++++++++++++--\n docs/api/version-history.md               |  3 ++\n integration/system/info_linux_test.go     | 57 +++++++++++++++++++++++++++++++\n pkg/sysinfo/sysinfo.go                    | 10 ------\n 5 files changed, 92 insertions(+), 12 deletions(-)\n\ndiff --git a/api/server/router/system/system_routes.go b/api/server/router/system/system_routes.go\nindex 37fc6cbdc6..eddc9b9a7f 100644\n--- a/api/server/router/system/system_routes.go\n+++ b/api/server/router/system/system_routes.go\n@@ -122,6 +122,13 @@ func (s *systemRouter) getInfo(ctx context.Context, w http.ResponseWriter, r *ht\n \t\t\tinfo.ContainerdCommit.Expected = info.ContainerdCommit.ID //nolint:staticcheck // ignore SA1019: field is deprecated, but still used on API < v1.49.\n \t\t\tinfo.RuncCommit.Expected = info.RuncCommit.ID             //nolint:staticcheck // ignore SA1019: field is deprecated, but still used on API < v1.49.\n \t\t\tinfo.InitCommit.Expected = info.InitCommit.ID             //nolint:staticcheck // ignore SA1019: field is deprecated, but still used on API < v1.49.\n+\n+\t\t\t// These fields are omitted in > API 1.49, and always false\n+\t\t\t// older API versions.\n+\t\t\tinfo.ExtraFields = map[string]any{\n+\t\t\t\t\"BridgeNfIptables\":  json.RawMessage(\"false\"),\n+\t\t\t\t\"BridgeNfIp6tables\": json.RawMessage(\"false\"),\n+\t\t\t}\n \t\t}\n \t\tif versions.GreaterThanOrEqualTo(version, \"1.42\") {\n \t\t\tinfo.KernelMemory = false\ndiff --git a/api/types/system/info.go b/api/types/system/info.go\nindex 27173d4630..e0f8626825 100644\n--- a/api/types/system/info.go\n+++ b/api/types/system/info.go\n@@ -1,6 +1,11 @@\n+// FIXME(thaJeztah): remove once we are a module; the go:build directive prevents go from downgrading language version to go1.16:\n+//go:build go1.22\n+\n package system\n \n import (\n+\t\"encoding/json\"\n+\n \t\"github.com/docker/docker/api/types/container\"\n \t\"github.com/docker/docker/api/types/registry\"\n \t\"github.com/docker/docker/api/types/swarm\"\n@@ -29,8 +34,6 @@ type Info struct {\n \tCPUSet             bool\n \tPidsLimit          bool\n \tIPv4Forwarding     bool\n-\tBridgeNfIptables   bool `json:\"BridgeNfIptables\"`  // Deprecated: netfilter module is now loaded on-demand and no longer during daemon startup, making this field obsolete. This field is always false and will be removed in the next release.\n-\tBridgeNfIP6tables  bool `json:\"BridgeNfIp6tables\"` // Deprecated: netfilter module is now loaded on-demand and no longer during daemon startup, making this field obsolete. This field is always false and will be removed in the next release.\n \tDebug              bool\n \tNFd                int\n \tOomKillDisable     bool\n@@ -83,6 +86,26 @@ type Info struct {\n \t// messages for the user, and are not intended to be parsed / used for\n \t// other purposes, as they do not have a fixed format.\n \tWarnings []string\n+\n+\t// ExtraFields is for internal use to include deprecated fields on older API versions.\n+\tExtraFields map[string]any `json:\"-\"`\n+}\n+\n+// MarshalJSON implements a custom marshaler to include legacy fields\n+// in API responses.\n+func (sc *Info) MarshalJSON() ([]byte, error) {\n+\ttype tmp Info\n+\tbase, err := json.Marshal((*tmp)(sc))\n+\tif err != nil {\n+\t\treturn nil, err\n+\t}\n+\tvar merged map[string]any\n+\t_ = json.Unmarshal(base, &merged)\n+\n+\tfor k, v := range sc.ExtraFields {\n+\t\tmerged[k] = v\n+\t}\n+\treturn json.Marshal(merged)\n }\n \n // ContainerdInfo holds information about the containerd instance used by the daemon.\ndiff --git a/docs/api/version-history.md b/docs/api/version-history.md\nindex 3184e42d73..1beb660462 100644\n--- a/docs/api/version-history.md\n+++ b/docs/api/version-history.md\n@@ -29,6 +29,9 @@ keywords: \"API, Docker, rcli, REST, documentation\"\n * Deprecated: The `ContainerdCommit.Expected`, `RuncCommit.Expected`, and\n   `InitCommit.Expected` fields in the `GET /info` endpoint were deprecated\n   in API v1.48, and are now omitted in API v1.49.\n+* Deprecated: The `BridgeNfIptables` and `BridgeNfIp6tables` fields in the\n+  `GET /info` response were deprecated in API v1.48, and are now omitted\n+  in API v1.49.\n \n ## v1.48 API changes\n \ndiff --git a/integration/system/info_linux_test.go b/integration/system/info_linux_test.go\nindex 79ab97ea5e..24898dd737 100644\n--- a/integration/system/info_linux_test.go\n+++ b/integration/system/info_linux_test.go\n@@ -3,9 +3,13 @@\n package system // import \"github.com/docker/docker/integration/system\"\n \n import (\n+\t\"encoding/json\"\n+\t\"io\"\n+\t\"net/http\"\n \t\"testing\"\n \n \t\"github.com/docker/docker/client\"\n+\t\"github.com/docker/docker/testutil/request\"\n \t\"gotest.tools/v3/assert\"\n \tis \"gotest.tools/v3/assert/cmp\"\n )\n@@ -47,3 +51,56 @@ func TestInfoBinaryCommits(t *testing.T) {\n \t\tassert.Check(t, is.Equal(info.RuncCommit.Expected, info.RuncCommit.ID)) //nolint:staticcheck // ignore SA1019: field is deprecated, but still used on API < v1.49.\n \t})\n }\n+\n+func TestInfoLegacyFields(t *testing.T) {\n+\tctx := setupTest(t)\n+\n+\tconst notPresent =",
+   "ms": 391,
+   "seq": 8,
+   "t": 7.92
+  },
+  {
+   "type": "thinking_started",
+   "turn": 2,
+   "seq": 9,
+   "t": 7.92
+  },
+  {
+   "type": "reasoning",
+   "turn": 2,
+   "text": "#6 drops BridgeNfIptables and BridgeNfIp6tables from GET /info for API 1.49 and up. The CLI's info output reads those fields. #4 documents API 1.49; checking it to rule it out.",
+   "seq": 10,
+   "t": 10.721
+  },
+  {
+   "type": "tool_start",
+   "step": 2,
+   "name": "get_commit_diff",
+   "args": {
+    "sha": "adb9e9135a"
+   },
+   "seq": 11,
+   "t": 10.721
+  },
+  {
+   "type": "tool_result",
+   "step": 2,
+   "name": "get_commit_diff",
+   "args": {
+    "sha": "adb9e9135a"
+   },
+   "output": "commit adb9e9135a3ab58ba7b91d7a24d952c4ff97751d\nAuthor: Pawe\u0142 Gronowski <pawel.gronowski@docker.com>\nDate:   Fri Apr 11 13:01:02 2025 +0200\n\n    docs/api: add documentation for API v1.49\n    \n    Copy the swagger / OpenAPI file to the documentation. This is the API\n    version used by the upcoming v28.1.0 release.\n    \n    Signed-off-by: Pawe\u0142 Gronowski <pawel.gronowski@docker.com>\n---\n docs/api/v1.49.yaml | 13539 ++++++++++++++++++++++++++++++++++++++++++++++++++\n 1 file changed, 13539 insertions(+)\n\ndiff --git a/docs/api/v1.49.yaml b/docs/api/v1.49.yaml\nnew file mode 100644\nindex 0000000000..9d75e98d27\n--- /dev/null\n+++ b/docs/api/v1.49.yaml\n@@ -0,0 +1,13539 @@\n+# A Swagger 2.0 (a.k.a. OpenAPI) definition of the Engine API.\n+#\n+# This is used for generating API documentation and the types used by the\n+# client/server. See api/README.md for more information.\n+#\n+# Some style notes:\n+# - This file is used by ReDoc, which allows GitHub Flavored Markdown in\n+#   descriptions.\n+# - There is no maximum line length, for ease of editing and pretty diffs.\n+# - operationIds are in the format \"NounVerb\", with a singular noun.\n+\n+swagger: \"2.0\"\n+schemes:\n+  - \"http\"\n+  - \"https\"\n+produces:\n+  - \"application/json\"\n+  - \"text/plain\"\n+consumes:\n+  - \"application/json\"\n+  - \"text/plain\"\n+basePath: \"/v1.49\"\n+info:\n+  title: \"Docker Engine API\"\n+  version: \"1.49\"\n+  x-logo:\n+    url: \"https://docs.docker.com/assets/images/logo-docker-main.png\"\n+  description: |\n+    The Engine API is an HTTP API served by Docker Engine. It is the API the\n+    Docker client uses to communicate with the Engine, so everything the Docker\n+    client can do can be done with the API.\n+\n+    Most of the client's commands map directly to API endpoints (e.g. `docker ps`\n+    is `GET /containers/json`). The notable exception is running containers,\n+    which consists of several API calls.\n+\n+    # Errors\n+\n+    The API uses standard HTTP status codes to indicate the success or failure\n+    of the API call. The body of the response will be JSON in the following\n+    format:\n+\n+    ```\n+    {\n+      \"message\": \"page not found\"\n+    }\n+    ```\n+\n+    # Versioning\n+\n+    The API is usually changed in each release, so API calls are versioned to\n+    ensure that clients don't break. To lock to a specific version of the API,\n+    you prefix the URL with its version, for example, call `/v1.30/info` to use\n+    the v1.30 version of the `/info` endpoint. If the API version specified in\n+    the URL is not supported by the daemon, a HTTP `400 Bad Request` error message\n+    is returned.\n+\n+    If you omit the version-prefix, the current version of the API (v1.49) is used.\n+    For example, calling `/info` is the same as calling `/v1.49/info`. Using the\n+    API without a version-prefix is deprecated and will be removed in a future release.\n+\n+    Engine releases in the near future should support this version of the API,\n+    so your client will continue to work even if it is talking to a newer Engine.\n+\n+    The API uses an open schema model, which means the server may add extra properties\n+    to responses. Likewise, the server will ignore any extra query parameters and\n+    request body properties. When you write clients, you need to ignore additional\n+    properties in responses to ensure they do not break when talking to newer\n+    daemons.\n+\n+\n+    # Authentication\n+\n+    Authentication for registries is handled client side. The client has to send\n+    authentication details to various endpoints that need to communicate with\n+    registries, such as `POST /images/(name)/push`. These are sent as\n+    `X-Registry-Auth` header as a [base64url encoded](https://tools.ietf.org/html/rfc4648#section-5)\n+    (JSON) string with the following structure:\n+\n+    ```\n+    {\n+      \"username\": \"string\",\n+      \"password\": \"string\",\n+      \"email\": \"string\",\n+      \"serveraddress\": \"string\"\n+    }\n+    ```\n+\n+    The `serveraddress` is a domain/IP without a protocol. Throughout this\n+    structure, double quotes are required.\n+\n+    If you have already got an identity token from the [`/auth` endpoint](#operation/SystemAuth),\n+    you can just pass this instead of credentials:\n+\n+    ```\n+    {\n+      \"identitytoken\": \"9cbaf023786cd7...\"\n+    }\n+    ```\n+\n+# The tags on paths define the menu sections in the ReDoc documentation, so\n+# the usage of tags must make sense for that:\n+# - They should be singular, not plural.\n+# - There should not be too many tags, or the menu becomes unwieldy. For\n+#   example, it is preferable to add a path to the \"System\" tag instead of\n+#   creating a tag with a single path in it.\n+# - The order of tags in this list defines the order in the menu.\n+tags:\n+  # Primary objects\n+  - name: \"Container\"\n+    x-displayName: \"Containers\"\n+    description: |\n+      Create and manage containers.\n+  - name: \"Image\"\n+    x-displayName: \"Images\"\n+  - name: \"Network\"\n+    x-displayName: \"Networks\"\n+    description: |\n+      Networks are user-defined networks that containers can be attached to.\n+      See the [networking documentation](https://docs.docker.com/network/)\n+      for more information.\n+  - name: \"Volume\"\n+    x-displayName: \"Volumes\"\n+    description: |\n+      Create and manage persistent storage that can be attached to containers.\n+  - name: \"Exec\"\n+    x-displayName: \"Exec\"\n+    description: |\n+      Run new commands inside running containers. Refer to the\n+      [command-line reference](https://docs.docker.com/engine/reference/commandline/exec/)\n+      for more information.\n+\n+      To exec a command in a container, you first need to create an exec instance,\n+      then start it. These two API endpoints are wrapped up in a single command-line\n+      command, `docker exec`.\n+\n+  # Swarm things\n+  - name: \"Swarm\"\n+    x-displayName: \"Swarm\"\n+    description: |\n+      Engines can be clustered together in a swarm. Refer to the\n+      [swarm mode documentation](https://docs.docker.com/engine/swarm/)\n+      for more information.",
+   "ms": 403,
+   "seq": 12,
+   "t": 11.124
+  },
+  {
+   "type": "thinking_started",
+   "turn": 3,
+   "seq": 13,
+   "t": 11.124
+  },
+  {
+   "type": "verdict",
+   "diagnosis": {
+    "root_cause": "5d2006256f removes BridgeNfIptables and BridgeNfIp6tables from the GET /info response for API 1.49 and up. docker/cli's info formatting still reads them, so its output breaks against the new API version.",
+    "offending_sha": "5d2006256f15f7252c11bd72d632de26a8b2ff06",
+    "confidence": 0.86,
+    "reasoning": "A formatting failure in a separate client points at a change in the data the engine sends. This is the only suspect that changes an API response shape. The others are tests, docs, tracing and vendoring.",
+    "evidence": [
+     "5d2006256f omits two /info fields for API >= 1.49 (api/types/system/info.go)",
+     "Older API versions keep returning them, so only new clients see the change",
+     "adb9e9135a is documentation only"
+    ],
+    "ruled_out": [
+     "ece7e02b86: AUTHORS file only",
+     "adb9e9135a: API documentation only"
+    ],
+    "runbook_ids": [],
+    "remediation": [
+     "Revert 5d2006256f",
+     "Update docker/cli to handle the missing fields, then re-land"
+    ],
+    "rollback_command": "git revert --no-edit 5d2006256f",
+    "needs_human": false,
+    "source": "agent"
+   },
+   "seq": 14,
+   "t": 13.125
+  },
+  {
+   "type": "done",
+   "model": "claude-sonnet-5 (SCRIPTED STAND-IN)",
+   "duration_s": 13.1,
+   "tool_calls": 3,
+   "usage": null,
+   "cost_usd": null,
+   "source": "agent",
+   "slack": [
+    {
+     "type": "header",
+     "text": {
+      "type": "plain_text",
+      "text": ":warning: INC-20250411-8e851b \u00b7 moby"
+     }
+    },
+    {
+     "type": "section",
+     "text": {
+      "type": "mrkdwn",
+      "text": "*caused some issues in the docker/cli formatting code that needs some*\ncaused some issues in the docker/cli formatting code that needs some\ninvestigating."
+     }
+    },
+    {
+     "type": "section",
+     "fields": [
+      {
+       "type": "mrkdwn",
+       "text": "*Severity*\nSEV2"
+      },
+      {
+       "type": "mrkdwn",
+       "text": "*Started*\n<!date^1744372030^{time_secs}|2025-04-11T11:47:10+00:00>"
+      },
+      {
+       "type": "mrkdwn",
+       "text": "*Users affected*\n~0 (0\u20130)"
+      },
+      {
+       "type": "mrkdwn",
+       "text": "*Error budget*\n166.67% of 30-day budget"
+      }
+     ]
+    },
+    {
+     "type": "divider"
+    },
+    {
+     "type": "section",
+     "text": {
+      "type": "mrkdwn",
+      "text": "*Suspected root cause* \u2014 confidence \u25b0\u25b0\u25b0\u25b0\u25b1 86%\n5d2006256f removes BridgeNfIptables and BridgeNfIp6tables from the GET /info response for API 1.49 and up. docker/cli's info formatting still reads them, so its output breaks against the new API version.\n\n*Offending commit:* `5d2006256f`\nA formatting failure in a separate client points at a change in the data the engine sends. This is the only suspect that changes an API response shape. The others are tests, docs, tracing and vendoring."
+     }
+    },
+    {
+     "type": "section",
+     "text": {
+      "type": "mrkdwn",
+      "text": "*Evidence*\n\u2022 5d2006256f omits two /info fields for API >= 1.49 (api/types/system/info.go)\n\u2022 Older API versions keep returning them, so only new clients see the change\n\u2022 adb9e9135a is documentation only"
+     }
+    },
+    {
+     "type": "section",
+     "text": {
+      "type": "mrkdwn",
+      "text": "*Recommended actions*\n1. Revert 5d2006256f\n2. Update docker/cli to handle the missing fields, then re-land"
+     }
+    },
+    {
+     "type": "section",
+     "text": {
+      "type": "mrkdwn",
+      "text": "*Rollback*\n```git revert --no-edit 5d2006256f```"
+     }
+    },
+    {
+     "type": "context",
+     "elements": [
+      {
+       "type": "mrkdwn",
+       "text": "3 tool calls \u00b7 13.1s to diagnosis \u00b7 12 commits correlated \u00b7 source: scripted stand-in"
+      }
+     ]
+    }
+   ],
+   "report_md": "# INC-20250411-8e851b \u2014 moby: caused some issues in the docker/cli formatting code that needs some\n\n**SEV2** \u00b7 **DIAGNOSED** \u00b7 fired 2025-04-11T11:47:10+00:00 \u00b7 diagnosed in 13.1s (3 tool calls)\n\n## Summary\n\n5d2006256f removes BridgeNfIptables and BridgeNfIp6tables from the GET /info response for API 1.49 and up. docker/cli's info formatting still reads them, so its output breaks against the new API version.\n\n**Offending commit:** `5d2006256f` \u00b7 **Confidence:** 86% (high)\n\n## Impact\n\n| Metric | Value |\n| --- | --- |\n| Users affected | ~0 (0\u20130) |\n| Failed requests | 432,000 |\n| Duration | 720 min |\n| Error budget burned | 166.67% of the 30-day budget |\n| Blast radius | moby |\n| Estimate confidence | low |\n\n_Method: no error-rate metric on the alert; assumed 10% from sev2; 100 rps x 720m sustained; reach 0 distinct users over that window (saturating toward 0/day, which is the hard ceiling); P(user hit) = 1-(1-delta)^20.0 = 87.8%; dependents contribute only their non-overlapping users, capped at 0_\n\n## Root-cause analysis\n\nA formatting failure in a separate client points at a change in the data the engine sends. This is the only suspect that changes an API response shape. The others are tests, docs, tracing and vendoring.\n\n### Evidence\n\n- 5d2006256f omits two /info fields for API >= 1.49 (api/types/system/info.go)\n- Older API versions keep returning them, so only new clients see the change\n- adb9e9135a is documentation only\n\n### Candidates ruled out\n\n- ece7e02b86: AUTHORS file only\n- adb9e9135a: API documentation only\n\n## Correlated commits\n\n| # | Commit | Authored | Author | Score | Subject |\n| --- | --- | --- | --- | --- | --- |\n| 1 | `ece7e02b86` | 2025-04-11 13:08 | Pawe\u0142 Gronowski | 0.4328 | Update AUTHORS |\n| 2 | `5f9d99b4cc` | 2025-04-09 17:14 | Pawe\u0142 Gronowski | 0.3578 | integration-cli/swarm: Update to use gotest.tools |\n| 3 | `ea6c76ee03` | 2025-04-09 17:13 | Pawe\u0142 Gronowski | 0.3569 | integration-cli/TestSwarmInit: Skip failing part on CLI after 18.06 |\n| 4 | `adb9e9135a` | 2025-04-11 13:01 | Pawe\u0142 Gronowski | 0.3483 | docs/api: add documentation for API v1.49 |\n| 5 | `fab94808f5` | 2025-03-20 19:34 | Pawe\u0142 Gronowski | 0.3449 | integration-cli: Update default CLI version to v18.06.3-ce |\n| 6 | `5d2006256f` \u2b05\ufe0e | 2025-04-09 11:45 | Sebastiaan van Stijn | 0.2949 | API: /info: remove BridgeNfIptables, BridgeNfIp6tables fields |\n| 7 | `0c5e816638` | 2025-04-08 21:46 | Albin Kerouanton | 0.2821 | daemon: trace containerCreate |\n| 8 | `099d3ee008` | 2025-04-10 18:11 | Albin Kerouanton | 0.2738 | daemon: containerStart: add filtered labels to OTel span |\n| 9 | `ae3a1ac602` | 2025-04-09 14:37 | Jonathan A. Sternberg | 0.2677 | vendor: github.com/moby/buildkit v0.21.0-rc1 |\n| 10 | `d0154d3e59` | 2025-04-03 23:31 | Derek McGowan | 0.2462 | Update to use github.com/moby/go-archive |\n\n## Remediation\n\n1. Revert 5d2006256f\n2. Update docker/cli to handle the missing fields, then re-land\n\n```bash\ngit revert --no-edit 5d2006256f\n```\n\n## Investigation trace\n\n| Step | Tool | Arguments | Result |\n| --- | --- | --- | --- |\n| 1 | `get_commit_diff` (391ms) | `{\"sha\": \"5d2006256f\"}` | commit 5d2006256f15f7252c11bd72d632de26a8b2ff06 Author: Sebastiaan van Stijn <gi |\n| 2 | `get_commit_diff` (403ms) | `{\"sha\": \"adb9e9135a\"}` | commit adb9e9135a3ab58ba7b91d7a24d952c4ff97751d Author: Pawe\u0142 Gronowski <pawel.g |\n| 3 | `submit_diagnosis` (0ms) | `{\"offending_sha\": \"5d2006256f15f7252c11bd72d632de26a8b2ff06\", \"runbook_ids\": [],` | verdict recorded |\n\n## Cost\n\ncache creation input tokens: 0 \u00b7 cache read input tokens: 0 \u00b7 input tokens: 0 \u00b7 output tokens: 0 \u00b7 requests: 3 \u00b7 uncached followups: 2\n\n---\n\n_Generated by IncidentPilot \u00b7 diagnosis source: agent_",
+   "seq": 15,
+   "t": 13.126
+  }
+ ]
+}
